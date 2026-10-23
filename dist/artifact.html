@@ -893,19 +893,23 @@ function extraProp(x,z,kind){const g=new THREE.Group();scene.add(g);g.position.s
  else if(kind==='bin'){cyl(.3,.85,mat(0x2f6e4a),0,.43,0,g);cyl(.32,.05,mat(0x24573a),0,.88,0,g)}
  else if(kind==='soccer'){ball(.3,mat(0xf5f5f5,.5),0,.3,0,g);for(let i=0;i<6;i++){const a=i*1.05;ball(.09,mat(0x1d1d1d),Math.cos(a)*.24,.3+Math.sin(i*2.1)*.15,Math.sin(a)*.24,g)}}
  else if(kind==='trash'){binInner=new THREE.Group();g.add(binInner);cyl(.28,.7,mat(0x5f6f6b),0,.35,0,binInner);cyl(.3,.05,mat(0x46524f),0,.72,0,binInner);box(.16,.04,.06,mat(0x46524f),0,.77,0,binInner)}
+ else if(kind==='tp'){cyl(.13,.22,mat(0xf6f3ec,.9),0,.11,0,g);cyl(.045,.23,mat(0xb89a74),0,.115,0,g)}
+ else if(kind==='baguette'){const m=cyl(.075,.72,mat(0xd9a557,.8),0,.08,0,g);m.rotation.z=Math.PI/2;for(const x of [-.2,0,.2]){const c=box(.02,.02,.1,mat(0xf0d29a),x,.15,0,g);c.rotation.y=.6}}
+ else if(kind==='can'){const m=cyl(.11,.26,mat(0xc0392b,.4),0,.11,0,g);m.rotation.z=Math.PI/2;const l=cyl(.112,.12,mat(0xf2e3c6,.6),0,.11,0,g);l.rotation.z=Math.PI/2}
+ else if(kind==='receipt'){box(.22,.012,.34,mat(0xf7f7f2,.9),0,.01,0,g);for(let i=0;i<4;i++)box(.14,.002,.012,mat(0x777777),0,.017,-.1+i*.06,g)}
  else if(kind==='shampoo'){cyl(.11,.42,mat(0xe85d9a,.5),0,.21,0,g);cyl(.06,.1,mat(0xf5f5f5),0,.47,0,g);box(.13,.03,.03,mat(0xf5f5f5),.06,.53,0,g)}
  else if(kind==='bowl'){cyl(.3,.12,mat(0xb8432f),0,.06,0,g);cyl(.23,.03,mat(0x8a5a35),0,.12,0,g)}
  extras.push({g,home:g.position.clone(),vx:0,vz:0,spin:0,kind,lock:0});}
 extraProp(2.4,4.6,'bottle');extraProp(-2.7,2.5,'book');extraProp(3.7,-2.7,'shoe');extraProp(-1.8,-5.7,'duck');extraProp(2.5,-1.8,'remote');extraProp(-3.2,5.3,'shoe');extraProp(4.5,5.0,'book');extraProp(2.7,14.45,'trash');extraProp(-5.4,10.1,'bowl');
-for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');
+for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');extraProp(-2.9,-3.4,'tp');extraProp(.2,-6.9,'baguette');extraProp(1.7,-7.0,'can');extraProp(1.3,-6.6,'receipt');
 const trashProp=extras.find(p=>p.kind==='trash');
 for(const p of chaosProps){addBody(p.g,p.kind==='cushion'?.34:.27,()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z},v=>{if(p.g.position.y<.05)p.vy=Math.max(p.vy,v)});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
-const extraRadius={shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
+const extraRadius={tp:.16,baguette:.2,can:.16,receipt:.15,shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
 for(const p of extras){addBody(p.g,extraRadius[p.kind],()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
 addBody(toyBall,.32,()=>[toyVelocity.x,toyVelocity.y],(x,z)=>{toyVelocity.x=x;toyVelocity.y=z});bodies[bodies.length-1].isBall=true;bodies[bodies.length-1].kind='ball';
 const training=['שב','ארצה','תן יד','סיבוב','נבח','השתולל'];let trainingIndex=0,trainingTime=0,dadSpeechTime=0,dadLastStage=0,activeCmd="";
 const trainButton=document.querySelector('#trainBtn'),interactButton=document.querySelector('#interactBtn'),dadBubble=document.querySelector('#dadBubble');
-function speakDad(message){addActivity('👨 אבא: '+message);dadSpeechTime=3.5}
+function speakDad(message){if(dadState==='away')return;addActivity('👨 אבא: '+message);dadSpeechTime=3.5}
 function setDadState(s,phrase){if(dadState===s)return;dadState=s;dadAction=0;if(phrase)speakDad(phrase);if(DAD_EMOJI[s])thought(dadB,DAD_EMOJI[s],2.2)}
 function train(){const cmd=training[trainingIndex];trainingIndex=(trainingIndex+1)%training.length;setBtn(trainButton,'🦴',training[trainingIndex]);trainingTime=1.5;activeCmd=cmd;
  if(cmd==='שב'){mood=3;notice('🐶 מילקי יושב... בערך!',1.6)}
@@ -931,9 +935,10 @@ function interact(){
  if(nearFridge()){toggleFridge();return}
  if(nearMangal()){stealKebab();return}
  let closest=null,dist=1.65;
- for(const p of extras){const d=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(d<dist){closest=p;dist=d}}
+ for(const p of extras){if(!p.g.visible)continue;const d=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(d<dist){closest=p;dist=d}}
  if(!closest){addActivity('🐽 מילקי מרחרח... אין משהו קרוב');return}
  const kind=closest.kind;
+ if(window.SHOP_READY&&shopInteract(closest))return;
  const a=Math.atan2(closest.g.position.z-pos.z,closest.g.position.x-pos.x);
  closest.vx+=Math.cos(a)*3.8;closest.vz+=Math.sin(a)*3.8;closest.lock=.5;
  if(kind==='remote'){toggleTelevision();completeChallenge('remote');dayEvent('remote');speakDad('מי שינה לי את הערוץ?!')}
@@ -963,7 +968,7 @@ function updateExtra(dt){trainingTime=Math.max(0,trainingTime-dt);dadSpeechTime=
  for(const p of extras){if(carried.has(p.g))continue;p.lock=Math.max(0,p.lock-dt);const dx=p.g.position.x-pos.x,dz=p.g.position.z-pos.z,d=Math.hypot(dx,dz);
  if(tryEat(p))continue;
  if(d<.76*mutReach()&&!p.lock){const a=Math.atan2(dz,dx);p.vx+=Math.cos(a)*2.6*mutPush();p.vz+=Math.sin(a)*2.6*mutPush();p.lock=.7;addChaos(4);if(p.kind==='trash'&&(keys.ShiftLeft||keys.ShiftRight))tipTrash()}
- p.g.position.x+=p.vx*dt;p.g.position.z+=p.vz*dt;p.g.rotation.y+=(Math.abs(p.vx)+Math.abs(p.vz))*dt*.5;p.vx*=Math.exp(-2.3*dt);p.vz*=Math.exp(-2.3*dt);
+ p.g.position.x+=p.vx*dt;p.g.position.z+=p.vz*dt;p.g.rotation.y+=(Math.abs(p.vx)+Math.abs(p.vz))*dt*.5;{const dmp=p.kind==='can'?.8:2.3;p.vx*=Math.exp(-dmp*dt);p.vz*=Math.exp(-dmp*dt)}
  }
 }
 
@@ -1068,6 +1073,7 @@ const armchairObs=()=>obstacles.find(o=>o.name==='כורסה');
 function unseatDad(){if(!dadSeated)return;dadSeated=false;dad.position.set(SEAT_APPROACH.x,0,SEAT_APPROACH.z)}
 
 function updateDadBehavior(dt){
+ if(dadState==='away'){dad.visible=false;return}
  const t=performance.now()*.001;
  dadBarkCooldown=Math.max(0,dadBarkCooldown-dt);
  dadGiftCooldown=Math.max(0,dadGiftCooldown-dt);
@@ -1968,8 +1974,8 @@ function updateContextHint(){
  if(nearSausage()){return setHint('🌭 תגנוב את הנקניקייה (E)')}
  if(nearFridge()){return setHint(fridgeOpen?'🧊 סגור את המקרר (E)':'🧊 פתח את המקרר (E)')}
  let near=null,d=1.65;
- for(const p of extras){const q=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(q<d){near=p;d=q}}
- const names={shampoo:'🧴 שמפו של אבא',remote:'📺 לחץ על השלט',duck:'🦆 צפצף עם הברווז',bottle:'🧴 גלגל בקבוק',shoe:'👟 העף נעל',book:'📚 פזר ספרים',trash:'🗑️ הפוך את הפח',bowl:'🥣 תאכל מהקערה',chair:'🪑 הפל כיסא',cone:'🔺 בעט בקונוס',cooler:'🧊 דחוף צידנית',bin:'🗑️ הפל פח',soccer:'⚽ כדורגל'};
+ for(const p of extras){if(!p.g.visible)continue;const q=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(q<d){near=p;d=q}}
+ const names={tp:'🧻 נייר טואלט',baguette:'🥖 בגט',can:'🥫 קופסת שימורים',receipt:'🧾 קבלה',shampoo:'🧴 שמפו של אבא',remote:'📺 לחץ על השלט',duck:'🦆 צפצף עם הברווז',bottle:'🧴 גלגל בקבוק',shoe:'👟 העף נעל',book:'📚 פזר ספרים',trash:'🗑️ הפוך את הפח',bowl:'🥣 תאכל מהקערה',chair:'🪑 הפל כיסא',cone:'🔺 בעט בקונוס',cooler:'🧊 דחוף צידנית',bin:'🗑️ הפל פח',soccer:'⚽ כדורגל'};
  return setHint(near?names[near.kind]+' · E · T לתפוס':nextTaskHint());
 }
 dad.position.set(4.1,0,5.7);const clock=new THREE.Clock();const look=new THREE.Vector3();let lastFrameDt=1/60;
@@ -2051,7 +2057,7 @@ for(const c of roundBlockers()){
 }
 landingCooldown=Math.max(0,landingCooldown-dt);
 // Paws planted on the floor: stride rate matches ground speed (longer strides in a gallop), so the legs never treadmill.
-steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
+steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
 const moving=Math.abs(speed)>0.01;
 runBlend+=(THREE.MathUtils.smoothstep(Math.abs(speed),3.3,5.4)-runBlend)*Math.min(1,dt*6);
 const running=moving&&runBlend>.5;
@@ -2571,6 +2577,108 @@ function updateBath(dt){
 }
 window.BATH_READY=true;
 loadWeekPhases();renderDay();weekPhaseStart(0,false);
+// ===== Shopping day: dad goes to the supermarket, comes back with bags, roast chicken in the evening =====
+WEEK[2].soon=false;WEEK[2].short='קניות';WEEK[2].intro='🛒 יום שלישי: אבא יצא לסופר. הבית שלך!';
+PHASE_SETS.shop=[
+ {name:'בוקר',icon:'🛒',banner:'🛒 אבא יצא לסופר. הבית כולו של מילקי!',tasks:[
+  {id:'chairNap',label:'💺 לנמנם על הכורסה של אבא',tip:'קפוץ על הכורסה ותעמוד בשקט'},
+  {id:'tpTrail',label:'🧻 לפרוש נייר טואלט 15 מטר',tip:'הגליל ליד הספה. תפוס בפה (T) ותרוץ'},
+  {id:'remote',label:'📺 להדליק טלוויזיה בלי אבא',tip:'השלט ליד שולחן הסלון'},
+  {id:'snack',label:'🍪 לגנוב את החטיף מהשולחן',tip:'קפוץ על השולחן ולחץ חטיף'}]},
+ {name:'צהריים',icon:'🛍️',banner:'🛍️ אבא חזר עם שקיות!',tasks:[
+  {id:'baguette',label:'🥖 לברוח עם הבגט לחצר',tip:'השקיות ליד דלת המרפסת. תפוס בפה (T)'},
+  {id:'bagHead',label:'🛍️ להיכנס לשקית עם הראש',tip:'השקית הגדולה על הרצפה'},
+  {id:'canRoll',label:'🥫 לגלגל קופסת שימורים רחוק',tip:'תדחוף אותה בריצה'},
+  {id:'receipt',label:'🧾 לאכול את הקבלה',tip:'הפתק הלבן ליד השקיות, לחץ E'}]},
+ {name:'ערב',icon:'🍗',banner:'🍗 עוף בתנור. ריח מטורף בכל הבית',tasks:[
+  {id:'sniffChicken',label:'👃 להריח את העוף ליד התנור',tip:'במטבח, ליד הכיריים. תעמוד רגע'},
+  {id:'drumstick',label:'🍗 לגנוב כרע עוף מהשולחן',tip:'העוף על שולחן האוכל במטבח'},
+  {id:'beg',label:'🐶 לשבת יפה ליד שולחן האוכל',tip:'כפתור אילוף (R) על "שב", ליד השולחן'},
+  {id:'sofaNap',label:'😴 להירדם על הספה עם בטן מלאה',tip:'אחרי העוף: קפוץ על הספה ותעמוד בשקט'}]}
+];
+const BAGS={x:.9,z:-7.6},STOVE={x:-3.8,z:15.4},DTABLE={x:2,z:11.8};
+// Grocery bags (decor) + a big one Milky can put his head into
+const bags=new THREE.Group();bags.position.set(BAGS.x,0,BAGS.z);scene.add(bags);
+{const paper=mat(0xc9a06a,.95),dark=mat(0xa57d4b,.95);
+ box(.5,.6,.32,paper,0,.3,0,bags);box(.5,.04,.33,dark,0,.6,0,bags);cyl(.05,.36,mat(0xe9c46a),.1,.72,0,bags);ball(.09,mat(0x7fb069),-.12,.66,.02,bags);
+ const b2=new THREE.Group();b2.position.set(.75,0,-.25);b2.rotation.y=.5;bags.add(b2);box(.46,.52,.3,paper,0,.26,0,b2);ball(.1,mat(0xd8573d),.05,.55,0,b2)}
+const bigBag=new THREE.Group();scene.add(bigBag);const BIGBAG_HOME=new THREE.Vector3(-.6,0,-7.3);bigBag.position.copy(BIGBAG_HOME);
+{const p=mat(0xd4ad78,.95);const s=mesh(new THREE.CylinderGeometry(.34,.38,.62,4,1,true),p,0,.31,0,bigBag);s.rotation.y=Math.PI/4;s.material.side=THREE.DoubleSide;box(.04,.02,.4,mat(0xa57d4b),0,.62,.0,bigBag)}
+bigBag.rotation.z=1.35;bigBag.position.y=.3;
+// Roast chicken on the dining table (evening)
+const chicken=new THREE.Group();chicken.position.set(DTABLE.x+.2,.82,DTABLE.z);scene.add(chicken);
+{cyl(.34,.04,mat(0xf2efe8,.4),0,.02,0,chicken);const c=ball(.2,mat(0xc77d36,.6),0,.15,0,chicken);c.scale.set(1.25,.85,1);
+ const legs=[];for(const s of [-1,1]){const g=new THREE.Group();g.position.set(.12,.13,s*.12);chicken.add(g);const l=ball(.07,mat(0xb86a2a,.6),.09,0,0,g);l.scale.set(1.6,.9,.9);cyl(.02,.08,mat(0xf5ecd8),.2,0,0,g).rotation.z=Math.PI/2;legs.push(g)}chicken.userData.legs=legs}
+chicken.visible=false;
+// A drumstick / receipt in Milky's mouth
+const mouthItem=new THREE.Group();mouthItem.position.set(0,-.16,.62);headPivot.add(mouthItem);mouthItem.visible=false;
+{const l=ball(.07,mat(0xb86a2a,.6),0,0,0,mouthItem);l.scale.set(.9,.9,1.6);const bn=cyl(.02,.1,mat(0xf5ecd8),.0,0,.14,mouthItem);bn.rotation.x=Math.PI/2}
+// Paper bag stuck on Milky's head
+const headBag=new THREE.Group();headBag.position.set(0,.05,.3);headPivot.add(headBag);headBag.visible=false;
+{const p=mat(0xd4ad78,.95);const s=mesh(new THREE.CylinderGeometry(.34,.36,.75,4,1,false),p,0,0,0,headBag);s.rotation.set(Math.PI/2,Math.PI/4,0)}
+// Toilet paper trail (works every day, it is just too fun)
+const TP_N=180,tpTrail=new THREE.InstancedMesh(new THREE.PlaneGeometry(.17,.42),new THREE.MeshStandardMaterial({color:0xf6f3ec,roughness:.9,polygonOffset:true,polygonOffsetFactor:-3,side:THREE.DoubleSide}),TP_N);
+tpTrail.count=0;tpTrail.castShadow=false;tpTrail.frustumCulled=false;scene.add(tpTrail);const _tm=new THREE.Matrix4(),_tq=new THREE.Quaternion(),_te=new THREE.Euler(),_tv=new THREE.Vector3(),_ts=new THREE.Vector3(1,1,1),_tqFlat=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);
+const shop={on:false,phase:-1,trail:0,lastX:0,lastZ:0,chairT:0,bagT:0,sniffT:0,mouthT:0,smokeT:0,dadOut:false};
+function shopProp(kind){return extras.find(p=>p.kind===kind)}
+function hideProp(p,hide){if(!p)return;if(hide){carried.add(p.g);p.g.visible=false;p.vx=p.vz=0}else{carried.delete(p.g);p.g.visible=true}}
+function shopResetProps(){
+ tpTrail.count=0;tpTrail.instanceMatrix.needsUpdate=true;shop.trail=0;shop.on=false;shop.phase=-1;shop.dadOut=false;
+ bags.visible=false;bigBag.visible=false;headBag.visible=false;mouthItem.visible=false;chicken.visible=false;chicken.userData.legs.forEach(l=>l.visible=true);
+ for(const k of ['baguette','can','receipt']){const p=shopProp(k);if(p){p.g.position.copy(p.home);p.g.rotation.set(0,0,0);hideProp(p,true)}}
+ if(!dad.visible){dad.visible=true;dad.position.set(4.1,0,5.7)}
+ if(dadState==='away')setDadState('rest');
+}
+const _origReset=bathResetProps;bathResetProps=function(){_origReset();shopResetProps()};
+DAY_HOOKS.shop=(phase,fresh)=>{
+ shop.on=true;shop.phase=phase;
+ if(phase===0){if(dadSeated)unseatDad();setDadState('away');dad.visible=false;dad.position.set(0,0,-70);shop.dadOut=true;
+  if(started)setTimeout(()=>{if(shop.on&&shop.phase===0)sayDani('אבא יצא לסופר. מילקי, אל תעשה שטויות... מילקי?')},1500)}
+ if(phase>=1&&shop.dadOut){shop.dadOut=false;dad.visible=true;dad.position.set(-1.2,0,-10.6);dadNav.path=[];setDadState('rest');
+  speakDad(pick(['חזרתי! מי עזר לי לסחוב? אף אחד. כרגיל.','אוף, איזה תור היה בקופה...']));setTimeout(()=>sayDani('קנית במבה?'),1600)}
+ if(phase===1){bags.visible=true;bigBag.visible=true;for(const k of ['baguette','can','receipt'])hideProp(shopProp(k),false)}
+ if(phase===2){chicken.visible=true;shop.smokeT=0;sayDani('העוף בתנור! מילקי, אפילו לא לחשוב על זה')}
+};
+function shopInteract(p){
+ if(p.kind==='receipt'){hideProp(p,true);mouthItem.visible=false;dayEvent('receipt');addScore(150,'אכלת קבלה');sayText(milkyB,'🧾 טעים... קצת יבש',2,'say',true);
+  speakDad(pick(['הקבלה! איך אני מחזיר עכשיו את הגבינה?!','מילקי! זה היה הקבלה!']));return true}
+ return false;
+}
+function updateShop(dt){
+ // Toilet paper trail follows the roll in Milky's mouth
+ if(grab&&grab.b.kind==='tp'&&grounded&&jumpY<.2){const d=Math.hypot(pos.x-shop.lastX,pos.z-shop.lastZ);
+  if(d>.36){const k=tpTrail.count<TP_N?tpTrail.count++:Math.floor(Math.random()*TP_N);const a=Math.atan2(pos.x-shop.lastX,pos.z-shop.lastZ);
+   _tv.set((pos.x+shop.lastX)/2,.012+(k%3)*.002,(pos.z+shop.lastZ)/2);_tq.setFromEuler(_te.set(0,a,0)).multiply(_tqFlat);_tm.compose(_tv,_tq,_ts.set(1,d/.42,1));
+   tpTrail.setMatrixAt(k,_tm);tpTrail.instanceMatrix.needsUpdate=true;shop.trail+=d;shop.lastX=pos.x;shop.lastZ=pos.z;
+   if(shop.trail>=15&&!day.done.has('tpTrail')){dayEvent('tpTrail');addScore(300,'שביל נייר טואלט!');if(dadState!=='away')speakDad('מי עטף לי את הבית?!');else sayDani('אבא הולך להתעלף כשהוא יחזור')}}}
+ else{shop.lastX=pos.x;shop.lastZ=pos.z}
+ if(shop.on&&shop.phase===0&&!day.done.has('tpTrail')&&grab&&grab.b.kind==='tp'&&!(typeof evt!=='undefined'&&evt.cur)){evtPill.hidden=false;const l='🧻 '+Math.floor(shop.trail)+'/15 מטר';if(evtPill.textContent!==l)evtPill.textContent=l}
+ else if(shop.on&&shop.phase===0&&!(typeof evt!=='undefined'&&evt.cur)&&!BATH_BLOCK)evtPill.hidden=true;
+ // Mouth item timer
+ if(shop.mouthT>0){shop.mouthT-=dt;if(shop.mouthT<=0)mouthItem.visible=false}
+ // Bag on the head: blind, wobbly walk
+ if(headBag.visible){shop.bagT-=dt;yaw+=Math.sin(performance.now()*.004)*dt*.9;if(shop.bagT<=0||rag.active){headBag.visible=false;bigBag.visible=true;bigBag.position.set(pos.x+Math.sin(yaw)*.9,.3,pos.z+Math.cos(yaw)*.9);thought(milkyB,'😮‍💨',1.4,true)}}
+ if(!shop.on)return;
+ if(shop.phase===0&&dadState!=='away'){setDadState('away');dad.visible=false;dad.position.set(0,0,-70)}
+ const ac=armchairObs();
+ if(jumpY>.4&&grounded&&insidePlatform(ac,pos.x,pos.z,.05)&&lastDogSpeed<.3){shop.chairT+=dt;if(shop.chairT>2.5&&!day.done.has('chairNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 הכורסה של אבא... נוח',2.6,'think',true);dayEvent('chairNap')}}else shop.chairT=0;
+ if(shop.phase>=1){
+  const bg=shopProp('baguette');if(grab&&grab.b.o===bg.g){if(!shop.bagWarn){shop.bagWarn=true;speakDad('הבגט! מילקי, זה לא מקל!')}if(pos.z<-9.4&&!day.done.has('baguette')){dayEvent('baguette');addScore(250,'בגט בחצר');sayDani('הוא קובר את הבגט. כמו עצם.')}}
+  if(bigBag.visible&&!headBag.visible&&jumpY<.4&&Math.hypot(pos.x-bigBag.position.x,pos.z-bigBag.position.z)<.6){bigBag.visible=false;headBag.visible=true;shop.bagT=5;dayEvent('bagHead');addScore(200,'שקית על הראש');sayText(milkyB,'🙈 מי כיבה את האור?!',2.2,'say',true);setTimeout(()=>sayDani('חחחחח אבא תסתכל!'),700)}
+  const cn=shopProp('can');if(cn&&cn.g.visible&&Math.hypot(cn.g.position.x-cn.home.x,cn.g.position.z-cn.home.z)>4&&!day.done.has('canRoll')){dayEvent('canRoll');addActivity('🥫 הקופסה מתגלגלת לה בכל הבית')}
+  if(cn&&cn.g.visible){const sp=Math.hypot(cn.vx,cn.vz);cn.g.children.forEach(m=>{m.rotation.y+=sp*dt*4})}
+ }
+ if(shop.phase===2){
+  shop.smokeT-=dt;if(shop.smokeT<=0){shop.smokeT=.35;emit(STOVE.x+(Math.random()-.5)*.6,1.25,STOVE.z-.1,(Math.random()-.5)*.3,.7,-.25,'smoke',2.2)}
+  if(Math.hypot(pos.x-STOVE.x,pos.z-STOVE.z)<1.9&&lastDogSpeed<.3&&grounded){shop.sniffT+=dt;if(shop.sniffT>2.2&&!day.done.has('sniffChicken')){dayEvent('sniffChicken');sayText(milkyB,'🤤 עוווף...',2.4,'think',true);idleAction='stand';idleClock=0}}else shop.sniffT=0;
+  const legs=chicken.userData.legs.filter(l=>l.visible);
+  if(legs.length&&jumpY>.6&&Math.hypot(pos.x-chicken.position.x,pos.z-chicken.position.z)<1.0){legs[0].visible=false;mouthItem.visible=true;shop.mouthT=8;dayEvent('drumstick');addScore(400,'כרע עוף!');setDani('scold','מילקי!!! זה לארוחת ערב!');speakDad('חחח... טוב, מגיע לו');milkyThought('😋',1.6,true)}
+  const sofa=obstacles.find(o=>o.name==='ספה');if(day.done.has('drumstick')&&jumpY>.8&&grounded&&insidePlatform(sofa,pos.x,pos.z,0)&&lastDogSpeed<.3){shop.sofaT=(shop.sofaT||0)+dt;if(shop.sofaT>2.5&&!day.done.has('sofaNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 עוף... ספה... החיים יפים',2.8,'think',true);dayEvent('sofaNap');speakDad('תראו אותו. כמו מלך.')}}else shop.sofaT=0;
+  if(trainingTime>0&&activeCmd==='שב'&&Math.hypot(pos.x-DTABLE.x,pos.z-DTABLE.z)<2.6&&!day.done.has('beg')){dayEvent('beg');mouthItem.visible=true;shop.mouthT=4;sayDani(pick(['טוב... חתיכה אחת. רק אחת.','איך אפשר להגיד לו לא?']));thought(daniB,'🥹',2,true)}
+ }
+}
+window.SHOP_READY=true;
+loadWeekPhases();renderDay();renderWeek();
 (function mergeAll(){
  scene.updateMatrixWorld(true);
  // 1) Static scenery: merge per area, so whole rooms you cannot see are skipped by the GPU.

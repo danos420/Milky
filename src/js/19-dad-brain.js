@@ -1,4 +1,5 @@
 function updateDadBehavior(dt){
+ if(dadState==='away'){dad.visible=false;return}
  const t=performance.now()*.001;
  dadBarkCooldown=Math.max(0,dadBarkCooldown-dt);
  dadGiftCooldown=Math.max(0,dadGiftCooldown-dt);

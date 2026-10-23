@@ -45,4 +45,5 @@
 44-events.js
 45-week.js
 46-bath.js
+48-shop.js
 47-render-setup.js

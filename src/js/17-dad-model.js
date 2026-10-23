@@ -82,19 +82,23 @@ function extraProp(x,z,kind){const g=new THREE.Group();scene.add(g);g.position.s
  else if(kind==='bin'){cyl(.3,.85,mat(0x2f6e4a),0,.43,0,g);cyl(.32,.05,mat(0x24573a),0,.88,0,g)}
  else if(kind==='soccer'){ball(.3,mat(0xf5f5f5,.5),0,.3,0,g);for(let i=0;i<6;i++){const a=i*1.05;ball(.09,mat(0x1d1d1d),Math.cos(a)*.24,.3+Math.sin(i*2.1)*.15,Math.sin(a)*.24,g)}}
  else if(kind==='trash'){binInner=new THREE.Group();g.add(binInner);cyl(.28,.7,mat(0x5f6f6b),0,.35,0,binInner);cyl(.3,.05,mat(0x46524f),0,.72,0,binInner);box(.16,.04,.06,mat(0x46524f),0,.77,0,binInner)}
+ else if(kind==='tp'){cyl(.13,.22,mat(0xf6f3ec,.9),0,.11,0,g);cyl(.045,.23,mat(0xb89a74),0,.115,0,g)}
+ else if(kind==='baguette'){const m=cyl(.075,.72,mat(0xd9a557,.8),0,.08,0,g);m.rotation.z=Math.PI/2;for(const x of [-.2,0,.2]){const c=box(.02,.02,.1,mat(0xf0d29a),x,.15,0,g);c.rotation.y=.6}}
+ else if(kind==='can'){const m=cyl(.11,.26,mat(0xc0392b,.4),0,.11,0,g);m.rotation.z=Math.PI/2;const l=cyl(.112,.12,mat(0xf2e3c6,.6),0,.11,0,g);l.rotation.z=Math.PI/2}
+ else if(kind==='receipt'){box(.22,.012,.34,mat(0xf7f7f2,.9),0,.01,0,g);for(let i=0;i<4;i++)box(.14,.002,.012,mat(0x777777),0,.017,-.1+i*.06,g)}
  else if(kind==='shampoo'){cyl(.11,.42,mat(0xe85d9a,.5),0,.21,0,g);cyl(.06,.1,mat(0xf5f5f5),0,.47,0,g);box(.13,.03,.03,mat(0xf5f5f5),.06,.53,0,g)}
  else if(kind==='bowl'){cyl(.3,.12,mat(0xb8432f),0,.06,0,g);cyl(.23,.03,mat(0x8a5a35),0,.12,0,g)}
  extras.push({g,home:g.position.clone(),vx:0,vz:0,spin:0,kind,lock:0});}
 extraProp(2.4,4.6,'bottle');extraProp(-2.7,2.5,'book');extraProp(3.7,-2.7,'shoe');extraProp(-1.8,-5.7,'duck');extraProp(2.5,-1.8,'remote');extraProp(-3.2,5.3,'shoe');extraProp(4.5,5.0,'book');extraProp(2.7,14.45,'trash');extraProp(-5.4,10.1,'bowl');
-for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');
+for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');extraProp(-2.9,-3.4,'tp');extraProp(.2,-6.9,'baguette');extraProp(1.7,-7.0,'can');extraProp(1.3,-6.6,'receipt');
 const trashProp=extras.find(p=>p.kind==='trash');
 for(const p of chaosProps){addBody(p.g,p.kind==='cushion'?.34:.27,()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z},v=>{if(p.g.position.y<.05)p.vy=Math.max(p.vy,v)});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
-const extraRadius={shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
+const extraRadius={tp:.16,baguette:.2,can:.16,receipt:.15,shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
 for(const p of extras){addBody(p.g,extraRadius[p.kind],()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
 addBody(toyBall,.32,()=>[toyVelocity.x,toyVelocity.y],(x,z)=>{toyVelocity.x=x;toyVelocity.y=z});bodies[bodies.length-1].isBall=true;bodies[bodies.length-1].kind='ball';
 const training=['שב','ארצה','תן יד','סיבוב','נבח','השתולל'];let trainingIndex=0,trainingTime=0,dadSpeechTime=0,dadLastStage=0,activeCmd="";
 const trainButton=document.querySelector('#trainBtn'),interactButton=document.querySelector('#interactBtn'),dadBubble=document.querySelector('#dadBubble');
-function speakDad(message){addActivity('👨 אבא: '+message);dadSpeechTime=3.5}
+function speakDad(message){if(dadState==='away')return;addActivity('👨 אבא: '+message);dadSpeechTime=3.5}
 function setDadState(s,phrase){if(dadState===s)return;dadState=s;dadAction=0;if(phrase)speakDad(phrase);if(DAD_EMOJI[s])thought(dadB,DAD_EMOJI[s],2.2)}
 function train(){const cmd=training[trainingIndex];trainingIndex=(trainingIndex+1)%training.length;setBtn(trainButton,'🦴',training[trainingIndex]);trainingTime=1.5;activeCmd=cmd;
  if(cmd==='שב'){mood=3;notice('🐶 מילקי יושב... בערך!',1.6)}
@@ -120,9 +124,10 @@ function interact(){
  if(nearFridge()){toggleFridge();return}
  if(nearMangal()){stealKebab();return}
  let closest=null,dist=1.65;
- for(const p of extras){const d=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(d<dist){closest=p;dist=d}}
+ for(const p of extras){if(!p.g.visible)continue;const d=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(d<dist){closest=p;dist=d}}
  if(!closest){addActivity('🐽 מילקי מרחרח... אין משהו קרוב');return}
  const kind=closest.kind;
+ if(window.SHOP_READY&&shopInteract(closest))return;
  const a=Math.atan2(closest.g.position.z-pos.z,closest.g.position.x-pos.x);
  closest.vx+=Math.cos(a)*3.8;closest.vz+=Math.sin(a)*3.8;closest.lock=.5;
  if(kind==='remote'){toggleTelevision();completeChallenge('remote');dayEvent('remote');speakDad('מי שינה לי את הערוץ?!')}
@@ -152,7 +157,7 @@ function updateExtra(dt){trainingTime=Math.max(0,trainingTime-dt);dadSpeechTime=
  for(const p of extras){if(carried.has(p.g))continue;p.lock=Math.max(0,p.lock-dt);const dx=p.g.position.x-pos.x,dz=p.g.position.z-pos.z,d=Math.hypot(dx,dz);
  if(tryEat(p))continue;
  if(d<.76*mutReach()&&!p.lock){const a=Math.atan2(dz,dx);p.vx+=Math.cos(a)*2.6*mutPush();p.vz+=Math.sin(a)*2.6*mutPush();p.lock=.7;addChaos(4);if(p.kind==='trash'&&(keys.ShiftLeft||keys.ShiftRight))tipTrash()}
- p.g.position.x+=p.vx*dt;p.g.position.z+=p.vz*dt;p.g.rotation.y+=(Math.abs(p.vx)+Math.abs(p.vz))*dt*.5;p.vx*=Math.exp(-2.3*dt);p.vz*=Math.exp(-2.3*dt);
+ p.g.position.x+=p.vx*dt;p.g.position.z+=p.vz*dt;p.g.rotation.y+=(Math.abs(p.vx)+Math.abs(p.vz))*dt*.5;{const dmp=p.kind==='can'?.8:2.3;p.vx*=Math.exp(-dmp*dt);p.vz*=Math.exp(-dmp*dt)}
  }
 }
 
