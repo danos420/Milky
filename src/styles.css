@@ -1,0 +1,129 @@
+
+*{box-sizing:border-box}
+:root{--b:46px;--big:66px;--gap:6px;--chip:38px}
+body{margin:0;overflow:hidden;background:#171b22;color:#fff;font-family:system-ui,Arial;-webkit-tap-highlight-color:transparent}
+canvas{display:block}
+button{font-family:inherit}
+/* ---------- Top bar: status on one side, small tool chips on the other. Flex-wrap = never overlaps. ---------- */
+#uiTop{position:fixed;z-index:8;top:calc(env(safe-area-inset-top,0px) + 8px);left:calc(env(safe-area-inset-left,0px) + 8px);right:calc(env(safe-area-inset-right,0px) + 8px);display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
+#uiTop>*{pointer-events:auto}
+#hud{flex:0 1 auto;max-width:min(430px,100%);display:flex;align-items:center;gap:8px;background:#15191fe6;border:1px solid #ffffff2e;border-radius:14px;padding:6px 8px 6px 12px;}
+#hud h1{display:none;margin:0;font-size:15px;white-space:nowrap}
+#status{margin:0;color:#ffdc78;font-weight:700;font-size:13px;line-height:1.35}
+#tips{display:none}
+#toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-inline-start:auto;align-items:center}
+.chip{height:var(--chip);min-width:var(--chip);padding:0 10px;border-radius:12px;border:1px solid #ffffff38;background:#1c2229d6;color:#fff;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;;white-space:nowrap;touch-action:manipulation}
+.chip.active{background:#a5e0b6;color:#182029;border-color:#a5e0b6}
+#hud{display:none!important}
+#hudToggle.active{background:#f7cf64;color:#2a2116;border-color:#f7cf64}
+#reset{background:#f7cf64;color:#2a2116;border:0;flex:none}
+#chaosMeter{background:#27221cdd;border-color:#d6a76a88;color:#ffd58f;cursor:default}
+#combo{font-weight:900;color:#ffe59e;text-shadow:0 2px 5px #0009;pointer-events:none;font-size:13px}
+#combo:empty{display:none}
+#drawers{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;pointer-events:none}
+#drawers>*{pointer-events:auto}
+#activityDrawer,#challengePanel,#dayPanel,#modePanel{width:min(290px,100%);max-height:min(34vh,260px);overflow:auto;border:1px solid #b9915f;background:#241f1bea;color:#fff0d3;border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px #0007;font:13px/1.5 system-ui,Arial}
+#activityDrawer[hidden],#challengePanel[hidden],#dayPanel[hidden],#modePanel[hidden]{display:none!important}
+#activityDrawer h2,#challengePanel h2,#dayPanel h2,#modePanel h2{font-size:14px;margin:0 0 6px;color:#ffd792}
+#activityLog{display:flex;flex-direction:column;gap:5px}#activityLog div{border-bottom:1px solid #ffffff20;padding-bottom:4px}
+#challengePanel .task{padding:4px 0;border-bottom:1px solid #ffffff22}#challengePanel .done{color:#a8e9aa}#challengeSummary{margin:6px 0 0;font-size:12px}
+/* ---------- Bottom controls: one grid, fixed areas, so buttons can never sit on each other ---------- */
+#controls{position:fixed;z-index:7;left:calc(env(safe-area-inset-left,0px) + 8px);right:calc(env(safe-area-inset-right,0px) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);display:grid;gap:8px;align-items:end;pointer-events:none;direction:ltr;grid-template-columns:auto 1fr auto;grid-template-areas:"hint hint hint" "pad icons big"}
+#contextHint.trick{background:#5a3b10ee;border-color:#ffd166;color:#ffe9a8;font-weight:800}
+#contextHint{grid-area:hint;justify-self:center;max-width:100%;background:#2d241ed0;border:1px solid #b98c5b;color:#ffecce;border-radius:10px;padding:4px 10px;font-size:12px;pointer-events:none;direction:rtl;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pad{grid-area:pad;display:grid;grid-template-columns:repeat(3,var(--b));grid-auto-rows:var(--b);gap:var(--gap)}
+#pad .empty{visibility:hidden}
+#icons{grid-area:icons;justify-self:end;display:grid;grid-template-columns:repeat(5,var(--b));grid-auto-rows:var(--b);gap:var(--gap);direction:rtl}
+#big{grid-area:big;display:flex;gap:var(--gap);align-items:end}
+.tb{pointer-events:auto;width:100%;height:100%;min-width:0;padding:0;border-radius:13px;border:1px solid #ffffff45;background:#1c2530c8;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:19px;font-weight:800;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+.tb b{font-weight:800}
+.tb small{font-size:9.5px;font-weight:700;opacity:.92;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tb:active,.tb.down{background:#3a4a5a;transform:scale(.96)}
+.tb.on{background:#b8741f;border-color:#ffd166;box-shadow:0 0 0 2px #ffd16655}
+#big .tb{width:var(--big);height:var(--big);font-size:24px;border-radius:18px}
+#big .tb small{font-size:11px}
+#jumpBtn{background:#24435ad0}
+#turboBtn{background:linear-gradient(135deg,#c84e2dd8,#8e2c3fd8);border-color:#ffd46e}
+#turboBtn:disabled{opacity:.5}
+#slipperBtn{background:#70472dd8;border-color:#d9a36d}
+#dadInteractBtn{background:#584632d8;border-color:#f0c78b}
+/* Phones held upright: icons get their own row above the d-pad / jump row. */
+@media (max-aspect-ratio:1/1){
+ #controls{grid-template-columns:auto 1fr;grid-template-areas:"hint hint" "icons icons" "pad big"}
+ #icons{justify-self:stretch;grid-template-columns:repeat(5,1fr);grid-auto-rows:var(--b)}
+ #big{justify-self:end}
+}
+/* Narrow phones */
+@media (max-width:430px){:root{--b:44px;--big:62px;--gap:5px;--chip:34px}.chip{font-size:12px;padding:0 8px}#status{font-size:12px}#hud{flex-basis:100%;max-width:none}}
+/* Short screens (phones lying sideways) */
+@media (max-height:480px){:root{--b:40px;--big:56px;--gap:5px;--chip:32px}.chip{font-size:12px;padding:0 8px}#status{font-size:12px}#hud{padding:4px 6px 4px 10px}#activityDrawer,#challengePanel,#dayPanel,#modePanel{max-height:max(90px,calc(100vh - 215px))}#contextHint{font-size:11px;padding:3px 8px}}
+/* Large screens with a mouse: show the title, make the touch buttons quieter */
+@media (min-width:900px) and (min-height:560px){#hud{flex-wrap:wrap;padding:8px 10px 8px 14px;row-gap:2px}#hud h1{display:block;flex-basis:100%}#status{flex:1}}
+@media (hover:hover) and (pointer:fine){#controls .tb{opacity:.8}#controls .tb:hover{opacity:1}}
+/* ---------- Overlays ---------- */
+#overlay{position:fixed;inset:0;z-index:20;background:#101820ee;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;overflow:auto}
+#intro{max-width:520px}
+#intro h1{font-size:clamp(24px,6vw,34px);margin:6px 0}
+#intro p{font-size:clamp(14px,3.6vw,17px);line-height:1.55}
+#start{background:#f9d36d;border:0;border-radius:14px;padding:16px 30px;font-size:20px;font-weight:800;cursor:pointer;color:#2a2116}
+#keys{font-size:13px;opacity:.75}
+@media (pointer:coarse){#keys{display:none}}
+#error{display:none;position:fixed;inset:0;background:#171b22;z-index:30;padding:24px;line-height:1.7}
+#playNotice,#dadBubble,#slipperMission{display:none!important}
+/* Touch joystick (replaces the arrow pad on phones and tablets) */
+:root{--stick:128px}
+#stick{grid-area:pad;display:none;position:relative;width:var(--stick);height:var(--stick);border-radius:50%;background:radial-gradient(circle,#2a3644c0 0 55%,#1c2530b0 56%);border:2px solid #ffffff45;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+#knob{position:absolute;left:50%;top:50%;width:44%;height:44%;margin:-22% 0 0 -22%;border-radius:50%;background:#eef2f5e0;box-shadow:0 3px 10px #0007;transition:transform .12s ease-out;pointer-events:none}
+#stick.on #knob{transition:none;background:#fff}
+@media (pointer:coarse){#pad{display:none}#stick{display:block}}
+@media (max-height:480px){:root{--stick:108px}}
+#perfMeter{position:fixed;z-index:9;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 4px);background:#000c;color:#9f9;font:600 11px/1.3 ui-monospace,Menlo,monospace;padding:3px 8px;border-radius:8px;pointer-events:none;direction:ltr;white-space:nowrap}
+#dayPanel h3{font-size:13px;margin:8px 0 2px;color:#ffd792}#dayPanel h3.later{opacity:.5}
+#dayPanel .task{padding:4px 0;border-bottom:1px solid #ffffff22;display:flex;flex-direction:column;gap:1px}#dayPanel .task.done{color:#a8e9aa}#dayPanel .task small{opacity:.75;font-size:11.5px}
+#dayTimer{float:left;font-weight:600;color:#ffe9bf;font-size:12px;font-variant-numeric:tabular-nums}
+#dayChip.active{background:#f7cf64;color:#2a2116;border-color:#f7cf64}
+#dayBanner{position:fixed;z-index:9;top:calc(var(--topbar,90px) + 10px);left:50%;transform:translate(-50%,-10px);background:#2b1f12f0;border:2px solid #ffd166;color:#ffe9a8;font-weight:900;font-size:17px;padding:10px 18px;border-radius:16px;pointer-events:none;opacity:0;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#dayBanner.show{animation:banner 3s ease forwards}
+@keyframes banner{0%{opacity:0;transform:translate(-50%,-10px)}10%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-6px)}}
+.modal{position:fixed;inset:0;z-index:25;background:#0d1218dd;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.modal[hidden]{display:none}
+.modalCard{max-width:440px;width:100%;background:#1d232c;border:1px solid #ffffff2a;border-radius:20px;padding:20px;text-align:center;box-shadow:0 20px 60px #000a}
+.modalCard h1{margin:4px 0 8px;font-size:24px}
+#dayStars{font-size:44px;letter-spacing:6px;margin:4px 0 10px}#dayStars span{display:inline-block;animation:starIn .5s cubic-bezier(.3,1.7,.5,1) both}#dayStars .off{filter:grayscale(1);opacity:.3}
+@keyframes starIn{from{transform:scale(0) rotate(-40deg)}to{transform:scale(1)}}
+#dayStats{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;text-align:right;font-size:14px;margin:6px 0 10px}#dayStats div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #ffffff18;padding:3px 0}#dayStats b{color:#ffd58f;font-variant-numeric:tabular-nums}
+#dayNext{font-size:13px;color:#ffe3a3;margin:6px 0 12px}
+.modalBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.modalBtns button{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:16px;cursor:pointer}#dayNew{background:#f9d36d;color:#2a2116}#dayKeep{background:#33404d;color:#fff}
+.modalBtns button:focus-visible,#start:focus-visible{outline:3px solid #fff}
+@media (max-width:430px){#dayStats{grid-template-columns:1fr}#dayBanner{font-size:14px}}
+@media (max-height:480px){.modalCard{padding:12px}#dayStars{font-size:32px;margin:0 0 4px}.modalCard h1{font-size:19px}#dayBanner{font-size:14px}}
+@media (prefers-reduced-motion:reduce){#dayStars span{animation:none}#dayBanner.show{animation:none;opacity:1;transform:translate(-50%,0)}}
+#saveNote{font-size:14px;color:#ffe3a3;min-height:1em}
+#wipeSave{margin-top:6px;background:#3b2a24;border-color:#b9785b}
+#eventPill{position:fixed;z-index:8;top:calc(var(--topbar,90px) + 8px);left:50%;transform:translateX(-50%);background:#173a4ae8;border:2px solid #7fd3ff;color:#e6f7ff;font:800 14px/1.2 system-ui,Arial;padding:6px 14px;border-radius:999px;box-shadow:0 6px 20px #0006;pointer-events:none;white-space:nowrap;animation:evtPulse 1.6s ease-in-out infinite}
+#eventPill[hidden]{display:none}
+@keyframes evtPulse{50%{box-shadow:0 6px 24px #7fd3ff66}}
+@media (max-height:480px){#eventPill{left:10px;transform:none;font-size:12px;padding:4px 10px}}
+#modePanel{max-height:min(46vh,340px);width:min(400px,100%)!important}#modePanel h2+.modeGrid{margin-bottom:8px}
+.modeGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.modeItem{display:flex;align-items:center;gap:7px;text-align:right;padding:6px 7px;border-radius:11px;border:1px solid #ffffff2e;background:#ffffff0f;color:#fff0d3;font:inherit;cursor:pointer;touch-action:manipulation;position:relative;min-height:46px}
+.modeItem b{font-size:22px;line-height:1}.modeItem span{display:flex;flex-direction:column;min-width:0}.modeItem strong{font-size:12.5px;line-height:1.25}.modeItem small{font-size:11px;opacity:.75;line-height:1.25}
+.modeItem.on{background:#f2b84b33;border-color:#f2b84b;box-shadow:inset 0 0 0 1px #f2b84b88}.modeItem.locked{opacity:.5;cursor:default}
+.modeItem.fresh::after,#modeToggle.fresh::after{content:'';position:absolute;top:4px;left:4px;width:8px;height:8px;border-radius:50%;background:#ff5a4f;box-shadow:0 0 0 2px #241f1b}
+#modeToggle{position:relative}.modeTip{font-size:11px;opacity:.7;margin:4px 0 0}
+@media (max-height:480px){body:has(#drawers aside:not([hidden])) #contextHint{visibility:hidden}
+ #contextHint{position:fixed;top:calc(var(--topbar,50px) + 6px);left:50%;transform:translateX(-50%);max-width:44vw;font-size:11px;padding:3px 9px;opacity:.92}
+ #controls{grid-template-areas:"pad icons big";grid-template-rows:auto}}
+.thought{position:fixed;left:0;top:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .18s;will-change:transform}
+.thought span{display:block;min-width:40px;height:40px;padding:0 6px;border-radius:20px;background:#fffaf0;border:2px solid #3a2e26;font-size:22px;line-height:36px;text-align:center;box-shadow:0 3px 8px #0005;position:relative}
+.thought span::after{content:"";position:absolute;left:50%;bottom:-10px;width:9px;height:9px;margin-left:-4px;background:#fffaf0;border:2px solid #3a2e26;border-radius:50%}
+.thought.pop span{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.3)}to{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.thought.pop span{animation:none}}
+.thought.say span,.thought.think span{min-width:0;height:auto;max-width:min(210px,48vw);padding:7px 12px;font:800 15px/1.35 system-ui,Arial;white-space:normal;text-align:center;direction:rtl;color:#2b211a}
+.thought.say span{border-radius:12px}
+.thought.say span::after{border-radius:2px;transform:rotate(45deg);bottom:-7px;width:10px;height:10px;border-top:0;border-left:0;margin-left:-6px}
+.thought.think span{border-radius:22px;background:#fffdf6}
+.thought.think span::before{content:"";position:absolute;left:36%;bottom:-19px;width:6px;height:6px;background:#fffdf6;border:2px solid #3a2e26;border-radius:50%}
+@media (max-height:480px),(max-width:430px){.thought.say span,.thought.think span{font-size:14px;max-width:52vw;line-height:1.3;padding:6px 10px}}
+@media (max-height:480px),(max-width:430px){.thought span{min-width:32px;height:32px;line-height:28px;font-size:18px}}
