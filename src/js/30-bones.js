@@ -3,7 +3,7 @@ function updateBones(dt){
  const t=performance.now()*.001;
  for(const b of bones){if(b.taken)continue;b.g.rotation.y+=dt*2.5;b.g.position.y=b.y+Math.sin(t*3+b.y)*.08;
   if(Math.hypot(pos.x-b.g.position.x,pos.z-b.g.position.z)<.95&&Math.abs((jumpY+1)-b.g.position.y)<1.1){
-   b.taken=true;b.g.visible=false;bonesFound++;recordProgress();boneChip.textContent='🦴 '+bonesFound+'/'+bones.length;addScore(1000,'עצם זהב '+bonesFound+'/'+bones.length);
+   b.taken=true;b.g.visible=false;bonesFound++;if(window.JUICE_READY){pow('✨ עצם זהב!',b.g.position.x,b.g.position.y+.6,b.g.position.z,true);slowMo(.3)}recordProgress();boneChip.textContent='🦴 '+bonesFound+'/'+bones.length;addScore(1000,'עצם זהב '+bonesFound+'/'+bones.length);
    playToySound(880,.1,'triangle');setTimeout(()=>playToySound(1320,.14,'triangle'),100);milkyThought('🦴',1.6,true);
    if(bonesFound===bones.length){completeChallenge('bones');addActivity('🏆 מילקי מצא את כל עצמות הזהב!')}}}
 }

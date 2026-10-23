@@ -20,7 +20,7 @@ function notice(text,duration=2.2){addActivity(text);sceneTimer=duration}
 function beginDomino(){if(chainPhase)return;chainPhase=1;chainClock=0;addChaos(22);notice('☕ אוי! הכוס עפה מהשולחן!',2.0)}
 function bumpPlant(){if(chainPhase>=3)return;chainPhase=3;chainClock=0;addChaos(22);notice('🪴 בום! העציץ נפל! מילקי לא ראה כלום 😇',3.3);mood=3;tongueTimer=1.2}
 
-function launchMug(){if(sceneTriggered)return;sceneTriggered=true;dayEvent('mug');mugFlying=true;chaos++;
+function launchMug(){if(sceneTriggered)return;sceneTriggered=true;if(window.JUICE_READY){pow('קראש!',mug.position.x,mug.position.y+.6,mug.position.z);punch(3)}dayEvent('mug');mugFlying=true;chaos++;
  mugVel.set(-1.8,3.4,1.1);mugSpin=0;sceneTimer=2.7;
  mood=3;tongueTimer=.8;
  beginDomino();

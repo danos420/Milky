@@ -19,7 +19,7 @@ function showBurst(x,z){
 }
 function triggerTurbo(){
  if(!started||turboCooldown>0)return;
- turboCooldown=8;burstTime=1.3;chaosShake=.32;
+ turboCooldown=8;burstTime=1.3;chaosShake=.32;if(window.JUICE_READY){hitStop(.05);punch(7);pow('בלאגן!!',pos.x,2.2,pos.z,true)}
  mood=1;tongueTimer=1.7;
  showBurst(pos.x,pos.z);
  notice('🌪️ מילקי הפעיל טורבו! אבאאאא!',2.6);

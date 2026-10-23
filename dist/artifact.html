@@ -135,6 +135,26 @@ button{font-family:inherit}
 .thought.think span::before{content:"";position:absolute;left:36%;bottom:-19px;width:6px;height:6px;background:#fffdf6;border:2px solid #3a2e26;border-radius:50%}
 @media (max-height:480px),(max-width:430px){.thought.say span,.thought.think span{font-size:14px;max-width:52vw;line-height:1.3;padding:6px 10px}}
 @media (max-height:480px),(max-width:430px){.thought span{min-width:32px;height:32px;line-height:28px;font-size:18px}}
+
+/* ---------- Level-up pack ---------- */
+#vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 58%,rgba(40,20,5,.34) 100%)}
+#powLayer{position:fixed;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.pow{position:absolute;left:0;top:0;opacity:0;font:900 28px/1 system-ui,Arial;white-space:nowrap;-webkit-text-stroke:2px #2b1a0c;paint-order:stroke fill;text-shadow:0 3px 0 #2b1a0c,0 6px 14px #0007;transform:translate(-50%,-100%) rotate(var(--r,0deg));direction:rtl}
+.pow.go{animation:powPop .95s ease-out forwards}
+@keyframes powPop{0%{opacity:1;transform:translate(-50%,-100%) rotate(var(--r)) scale(.2)}18%{transform:translate(-50%,-100%) rotate(var(--r)) scale(1.25)}30%{transform:translate(-50%,-100%) rotate(var(--r)) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%) rotate(var(--r)) scale(1.05)}}
+#guideArrow{position:fixed;left:0;top:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:0;filter:drop-shadow(0 2px 4px #0008)}
+#guideArrow[hidden]{display:none}
+#guideArrow b{display:block;color:#ffc83d;font-size:30px;line-height:1;-webkit-text-stroke:1.5px #3a2508}
+#guideArrow small{font:800 11px system-ui;color:#fff3cf;background:#2b1f12d0;border-radius:8px;padding:0 5px;margin-top:2px}
+#photoFlash{position:fixed;inset:0;z-index:40;pointer-events:none;background:#fff;opacity:0}
+#photoFlash.go{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:.85}100%{opacity:0}}
+body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.photoMode #eventPill,body.photoMode #dayBanner,body.photoMode .thought,body.photoMode #dadBubble,body.photoMode #perfMeter{visibility:hidden!important}
+#photoBar{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;background:#15191fd9;border:1px solid #ffffff30;border-radius:22px;padding:8px 12px;direction:rtl}
+#photoBar[hidden]{display:none}
+#photoBar button{width:48px;height:48px;border-radius:50%;border:1px solid #ffffff40;background:#2a3038;color:#fff;font-size:20px;cursor:pointer;touch-action:manipulation}
+#photoBar #photoSnap{width:64px;height:64px;font-size:28px;background:#f2b84b;border-color:#fff}
+#photoBar p{flex-basis:100%;margin:0;text-align:center;font:600 11px system-ui;color:#fff9;}
 </style>
 <div id="uiTop">
  <div id="hud"><h1>🐶 מילקי: ברדק אחולמניוקי</h1><p id="status">המשימה: גנוב את הכפכף של אבא והחבא אותו במיטה 🩴</p><button id="reset" class="chip" title="התחלה מחדש" aria-label="התחלה מחדש">↻</button></div>
@@ -145,6 +165,7 @@ button{font-family:inherit}
   <button id="activityToggle" class="chip" type="button" aria-controls="activityDrawer" aria-expanded="false" title="יומן אירועים">📜</button>
   <button id="challengeToggle" class="chip" type="button" aria-expanded="false" title="אתגרים">🏆 <span id="challengeCount">0/14</span></button>
   <button id="modeToggle" class="chip" type="button" aria-expanded="false" title="מצבים מטורפים ופרסים (M)">🎭 <span id="modeCount"></span></button>
+  <button id="photoToggle" class="chip" type="button" title="מצב צילום (C)">📸</button>
   <button id="viewMode" class="chip" type="button" title="החלפת זווית מצלמה (V)">🎥 <span>מאחור</span></button>
   <button id="bodyFollow" class="chip" type="button" hidden style="display:none" aria-pressed="false" title="סיבוב גוף לפי המצלמה (G)">🐕 <span>כבוי</span></button>
   <div id="chaosMeter" class="chip">💥 0/5</div>
@@ -155,7 +176,7 @@ button{font-family:inherit}
  <div id="drawers">
   <aside id="dayPanel" hidden><h2>🗓️ <span id="weekTitle">היום של מילקי</span> <span id="dayTimer">⏱️ 00:00</span></h2><div id="weekBar"></div><div id="dayList"></div></aside>
   <aside id="activityDrawer" hidden><h2>🐾 מה קורה בסלון?</h2><div id="activityLog" aria-live="polite"><div>🩴 גנוב את הכפכף והחבא אותו במיטה!</div></div></aside>
-  <aside id="challengePanel" hidden><h2>🐶 משימות ברדק</h2><div id="challengeList"></div><p id="challengeSummary"></p><p id="bestLine"></p><button id="perfBtn" class="chip" type="button">📊 מד ביצועים</button> <button id="qualityBtn" class="chip" type="button">⚙️ גרפיקה: אוטומטי</button> <button id="wipeSave" class="chip" type="button">🗑️ מחק התקדמות</button></aside>
+  <aside id="challengePanel" hidden><h2>🐶 משימות ברדק</h2><div id="challengeList"></div><p id="challengeSummary"></p><p id="bestLine"></p><button id="perfBtn" class="chip" type="button">📊 מד ביצועים</button> <button id="qualityBtn" class="chip" type="button">⚙️ גרפיקה: אוטומטי</button> <button id="guideBtn" class="chip" type="button">🧭 מורה דרך</button> <button id="wipeSave" class="chip" type="button">🗑️ מחק התקדמות</button></aside>
   <aside id="modePanel" hidden><h2>🎭 מצבים מטורפים</h2><div id="modeList" class="modeGrid"></div><h2>👕 המלתחה של מילקי</h2><div id="wearList" class="modeGrid"></div><p class="modeTip">אפשר להדליק כמה מצבים ביחד. עוד פרסים נפתחים עם עצמות זהב, אתגרים וכוכבים.</p></aside>
  </div>
 </div>
@@ -182,6 +203,9 @@ button{font-family:inherit}
 <div id="eventPill" hidden aria-live="polite"></div>
 <div id="dayEnd" class="modal" hidden><div class="modalCard"><div style="font-size:54px">🌙</div><h1>סוף היום של מילקי</h1><div id="dayStars"></div><div id="dayStats"></div><p id="dayNext"></p><div class="modalBtns"><button id="dayNextBtn" type="button" hidden></button><button id="dayNew" type="button">🔁 יום חדש</button><button id="dayKeep" type="button">🐾 להמשיך להשתולל</button></div></div></div>
 <div id="overlay"><div id="intro"><div style="font-size:64px">🐶</div><h1>מילקי: ברדק אחולמניוקי</h1><p>אבא בסלון. הכפכף שלו מחכה על הרצפה. מילקי עומד לבצע פשע קטן ומצחיק.</p><p>תפסו את הכפכף 🩴, ברחו מאבא והחביאו אותו במיטה של מילקי ליד המרפסת. בדרך מותר לקפוץ על הספה והשולחן, לגנוב חטיף ולהפוך את הסלון.</p><p>מאחורי הכורסה של אבא יש פתח למטבח. שם מחכים דני, המקרר והפח. דני ינסה לסדר כל מה שמילקי מפיל. בהצלחה לו.</p><p>🗓️ כל משחק הוא יום: בוקר, צהריים וערב, ובכל אחד 4 משימות. תלחצו על הכפתור של היום בשורה העליונה כדי לראות מה צריך לעשות. בסוף היום מקבלים עד 3 כוכבים.</p><p>דלת המרפסת פתוחה: בחוץ יש חצר עם טרמפולינה, בריכה, שכנים, חתול ו־12 עצמות זהב. 👅 תופס חפצים בפה, 🤸 עושה נפילה, ובאוויר לוחצים קפיצה בשביל סלטה.</p><p id="keys">WASD / חצים — תנועה · Shift — ריצה · רווח — קפיצה · E — חטיף / לגעת בחפץ · P — כפכף · H — אבא · Q — טורבו · R — אילוף · T — לתפוס בפה · X — נפילה · רווח באוויר — סלטה · F — הבעה · V — זווית · G — סיבוב גוף · גרירה — מצלמה</p><p id="saveNote"></p><button id="start">יאללה, תן למילקי להשתולל 🐾</button></div></div><div id="error">לא הצלחנו לטעון את Three.js. נסו לפתוח בדפדפן רגיל עם חיבור אינטרנט ולרענן את הדף.</div>
+
+<div id="vignette"></div><div id="powLayer"></div><div id="guideArrow" hidden><b>➤</b><small></small></div><div id="photoFlash"></div>
+<div id="photoBar" hidden><button id="photoExit" type="button" aria-label="יציאה">✖</button><button id="photoOut" type="button" aria-label="התרחק">➖</button><button id="photoSnap" type="button" aria-label="צלם">📸</button><button id="photoIn" type="button" aria-label="התקרב">➕</button><button id="photoMood" type="button" aria-label="הבעה">😄</button><p>גרור כדי לסובב · ➕➖ זום</p></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script>window.THREE||document.write('<script src="https://unpkg.com/three@0.149.0/build/three.min.js"><\/script>')</script>
 <script>
@@ -596,7 +620,7 @@ function notice(text,duration=2.2){addActivity(text);sceneTimer=duration}
 function beginDomino(){if(chainPhase)return;chainPhase=1;chainClock=0;addChaos(22);notice('☕ אוי! הכוס עפה מהשולחן!',2.0)}
 function bumpPlant(){if(chainPhase>=3)return;chainPhase=3;chainClock=0;addChaos(22);notice('🪴 בום! העציץ נפל! מילקי לא ראה כלום 😇',3.3);mood=3;tongueTimer=1.2}
 
-function launchMug(){if(sceneTriggered)return;sceneTriggered=true;dayEvent('mug');mugFlying=true;chaos++;
+function launchMug(){if(sceneTriggered)return;sceneTriggered=true;if(window.JUICE_READY){pow('קראש!',mug.position.x,mug.position.y+.6,mug.position.z);punch(3)}dayEvent('mug');mugFlying=true;chaos++;
  mugVel.set(-1.8,3.4,1.1);mugSpin=0;sceneTimer=2.7;
  mood=3;tongueTimer=.8;
  beginDomino();
@@ -694,7 +718,7 @@ function showBurst(x,z){
 }
 function triggerTurbo(){
  if(!started||turboCooldown>0)return;
- turboCooldown=8;burstTime=1.3;chaosShake=.32;
+ turboCooldown=8;burstTime=1.3;chaosShake=.32;if(window.JUICE_READY){hitStop(.05);punch(7);pow('בלאגן!!',pos.x,2.2,pos.z,true)}
  mood=1;tongueTimer=1.7;
  showBurst(pos.x,pos.z);
  notice('🌪️ מילקי הפעיל טורבו! אבאאאא!',2.6);
@@ -1215,7 +1239,7 @@ let trashTipped=false;
 const garbage=[];
 for(const [c,sz] of [[0x8a7f6b,.18],[0xe9e4d8,.14],[0x6b8f3c,.12],[0xd9a441,.13]]){const g=box(sz,.05,sz*1.3,mat(c),0,.03,0);g.visible=false;garbage.push(g)}
 function tipTrash(){
- if(trashTipped)return;trashTipped=true;dayEvent('trash');
+ if(trashTipped)return;trashTipped=true;dayEvent('trash');if(window.JUICE_READY){pow('טראח!',trashProp.g.position.x,1.2,trashProp.g.position.z);punch(3)}
  const p=trashProp,dir=Math.atan2(p.g.position.z-pos.z,p.g.position.x-pos.x);
  binInner.rotation.z=Math.PI/2;binInner.position.y=.28;p.g.rotation.y=-dir+Math.PI;
  garbage.forEach((g,i)=>{const a=dir+(i-1.5)*.45,r=.7+i*.18;g.position.set(p.g.position.x+Math.cos(a)*r,.03,p.g.position.z+Math.sin(a)*r);g.rotation.y=i;g.visible=true});
@@ -1425,7 +1449,7 @@ const rag={active:false,t:0,vx:0,vy:0,vz:0,wx:0,wy:0,wz:0,rx:0,ry:0,rz:0,y:0};
 let lastDogSpeed=0;
 function startRagdoll(){
  if(rag.active||!started)return;
- rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();if(window.SICK_READY)sickRoll();
+ rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();if(window.JUICE_READY){hitStop(.06);pow(pick(['אאוץ׳!','אופס!','בונק!','אוי!']))}if(window.SICK_READY)sickRoll();
  rag.vx=Math.sin(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vz=Math.cos(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vy=Math.max(velocityY,0)+4;rag.y=jumpY;
  rag.wx=(Math.random()-.5)*14;rag.wy=(Math.random()-.5)*8;rag.wz=(Math.random()-.5)*14;rag.rx=rag.ry=rag.rz=0;
  if(slipperState==='carried')dropSlipper();if(kebabState==='carried')kebabBack('drop');releaseGrab(false);flip.active=false;
@@ -1525,7 +1549,7 @@ function updateBones(dt){
  const t=performance.now()*.001;
  for(const b of bones){if(b.taken)continue;b.g.rotation.y+=dt*2.5;b.g.position.y=b.y+Math.sin(t*3+b.y)*.08;
   if(Math.hypot(pos.x-b.g.position.x,pos.z-b.g.position.z)<.95&&Math.abs((jumpY+1)-b.g.position.y)<1.1){
-   b.taken=true;b.g.visible=false;bonesFound++;recordProgress();boneChip.textContent='🦴 '+bonesFound+'/'+bones.length;addScore(1000,'עצם זהב '+bonesFound+'/'+bones.length);
+   b.taken=true;b.g.visible=false;bonesFound++;if(window.JUICE_READY){pow('✨ עצם זהב!',b.g.position.x,b.g.position.y+.6,b.g.position.z,true);slowMo(.3)}recordProgress();boneChip.textContent='🦴 '+bonesFound+'/'+bones.length;addScore(1000,'עצם זהב '+bonesFound+'/'+bones.length);
    playToySound(880,.1,'triangle');setTimeout(()=>playToySound(1320,.14,'triangle'),100);milkyThought('🦴',1.6,true);
    if(bonesFound===bones.length){completeChallenge('bones');addActivity('🏆 מילקי מצא את כל עצמות הזהב!')}}}
 }
@@ -1982,7 +2006,7 @@ function updateContextHint(){
 }
 dad.position.set(4.1,0,5.7);const clock=new THREE.Clock();const look=new THREE.Vector3();let lastFrameDt=1/60;
 let lastTs=0,smoothDt=1/60;
-function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started)gameStep(dt);renderFrame();perfMeterTick(t0)}
+function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started&&!window.PHOTO_ON)gameStep(dt*(window.JUICE_READY?juiceTick(dt):1));if(window.JUICE_READY&&started)levelupFrame(dt);renderFrame();perfMeterTick(t0)}
 function gameStep(dt){{const free=!rag.active&&!(dizzy.active&&dizzy.t<1.15),forward=free&&!!(keys.KeyW||keys.ArrowUp),back=free&&!!(keys.KeyS||keys.ArrowDown),left=free&&!!(keys.KeyA||keys.ArrowLeft),right=free&&!!(keys.KeyD||keys.ArrowRight);
 let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1);
 if(free&&stick.active&&stick.mag>.12){
@@ -2028,10 +2052,10 @@ if(!grounded&&velocityY<=0 && crossed>0){
 }
 // Floor is always a valid landing surface.
 if(jumpY<=0){jumpY=0;velocityY=0;grounded=true}
-if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);
+if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);if(window.JUICE_READY&&squash>.62&&!flip.active&&flipsThisAir===0){pow(MS>1.2?'בוווום!':'בום!');punch(MS>1.2?7:3.5)}
  const air=airTime;airTime=0;
  if(flip.active){flip.active=false;flipsThisAir=0;startRagdoll();addScore(100,'נחיתה על הפרצוף')}
- else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.SICK_READY)sickFlip()}
+ else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.JUICE_READY){if(n>=2){slowMo(.55);punch(6);pow(n===2?'וואו!!':'אגדי!!!',pos.x,2*MS,pos.z,true)}else pow('סלטה!')}if(window.SICK_READY)sickFlip()}
  else if(fallV<-14.5){startRagdoll();addScore(200,'נחיתה אומנותית')}
  else if(air>1.3)addScore(Math.round(air*80),'זמן אוויר '+air.toFixed(1)+' שנ׳');
 }
@@ -2548,7 +2572,7 @@ function bathCatch(){
  milkyThought('😤',1.8,true);setDadState('rest');bath.pause=6;
 }
 function tipTub(){
- if(bath.tipped)return;bath.tipped=true;SFX.splash();chaosShake=Math.max(chaosShake,.25);addChaos(14);dayEvent('spillTub');addScore(200,'גיגית התהפכה!');
+ if(bath.tipped)return;bath.tipped=true;if(window.JUICE_READY){slowMo(.45);punch(5);pow('שפלאש!',TUB.x,1.2,TUB.z,true)}SFX.splash();chaosShake=Math.max(chaosShake,.25);addChaos(14);dayEvent('spillTub');addScore(200,'גיגית התהפכה!');
  for(let i=0;i<30;i++)emit(TUB.x+(Math.random()-.5),.4,TUB.z+(Math.random()-.5)*.6,(Math.random()-.5)*3,1.5+Math.random()*2,-1-Math.random()*3,'water',.8);
  tubFoam.visible=false;tubWater.visible=false;puddle.visible=true;
  if(bath.on)speakDad(pick(['המים!!! חיממתי אותם חצי שעה!','מילקי!! עכשיו אני צריך למלא מחדש!']));
@@ -2723,6 +2747,7 @@ DAY_HOOKS.sick=(phase,fresh)=>{
  if(phase===2){setDadState('rest');dadPetCooldown=0;speakDad('אני מרגיש קצת יותר טוב... בזכות מילקי. ודני. בעיקר מילקי.')}
 };
 function sneeze(){
+ if(window.JUICE_READY){hitStop(.08);punch(5)}
  sayText(dadB,pick(['אפצ\'ייייי!!!','אאאפצ\'י!!','אפ... אפ... אפצ\'י!!!']),1.8,'say',true);chaosShake=Math.max(chaosShake,.18);
  const fx=Math.sin(dad.rotation.y),fz=Math.cos(dad.rotation.y);
  for(let i=0;i<14;i++)emit(dad.position.x+fx*.4,2.3+dad.position.y,dad.position.z+fz*.4,fx*4+(Math.random()-.5)*2,(Math.random()-.2)*1.5,fz*4+(Math.random()-.5)*2,'foam',.7);
@@ -2753,6 +2778,111 @@ function updateSick(dt){
 }
 window.SICK_READY=true;
 loadWeekPhases();renderDay();renderWeek();
+// ===== Level-up pack: task guide, game juice (slow-mo, comic words, camera punch), blob shadow, photo mode =====
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(_){return null}};
+// ---------- Task guide ----------
+const extraPos=k=>{const p=extras.find(e=>e.kind===k);return p&&p.g.visible?p.g.position:null};
+const V=(x,y,z)=>({x,y,z});
+const atDad=()=>V(dad.position.x,dad.position.y+2.4,dad.position.z);
+const carryOr=(k,dest)=>{const p=extras.find(e=>e.kind===k);if(!p||!p.g.visible)return null;return grab&&grab.b.o===p.g?dest:p.g.position};
+const TARGETS={
+ snack:()=>V(.5,1.0,.3),mug:()=>mug.position,remote:()=>extraPos('remote'),bowl:()=>extraPos('bowl'),
+ slipper:()=>slipperState==='carried'?V(3.5,.4,-6.4):slipper.position,sausage:()=>V(5.55,1,14.6),trash:()=>trashProp.g.position,
+ armchair:()=>V(ARMCHAIR.x,.8,ARMCHAIR.z),kebab:()=>kebabState==='carried'?null:V(2,1,-33.2),cat:()=>cat.position,wet:()=>V(poolC.x,0,poolC.z),shed:()=>V(16.5,2.6,-26),
+ escape:()=>null,hideShampoo:()=>carryOr('shampoo',V(BED.x,.4,BED.z)),spillTub:()=>bath.tipped?null:V(TUB.x,.5,TUB.z),puppyEyes:atDad,
+ shakeSofa:()=>V(-4.8,1.1,1.3),shakeDad:atDad,rugRoll:()=>V(1.9,0,3),grassRoll:()=>V(4,0,-15),bedSleep:()=>V(BED.x,.4,BED.z),
+ chairNap:()=>V(ARMCHAIR.x,.8,ARMCHAIR.z),tpTrail:()=>grab&&grab.b.kind==='tp'?null:extraPos('tp'),baguette:()=>carryOr('baguette',V(-1.2,0,-10.5)),
+ bagHead:()=>bigBag.visible?bigBag.position:null,canRoll:()=>extraPos('can'),receipt:()=>extraPos('receipt'),
+ sniffChicken:()=>V(STOVE.x,1,14.6),drumstick:()=>chicken.position,beg:()=>V(DTABLE.x,0,DTABLE.z+1.4),sofaNap:()=>V(-4.8,1.1,1.3),
+ bringSlipper:()=>slipperState==='carried'?atDad():slipper.position,tissue:()=>carryOr('tissues',atDad()),warmFeet:atDad,sneezed:atDad,
+ soupSteal:()=>stovePot.position,thermo:()=>carryOr('thermo',V(BED.x,.4,BED.z)),showFlip:atDad,
+ shareBowl:()=>carryOr('bowl',atDad()),petDad:atDad,laugh:atDad,sofaWatch:()=>tvOn?V(-4.8,1.1,1.3):extraPos('remote')
+};
+let guideOn=LS('milky-guide')!=='off';
+const guide=new THREE.Group();scene.add(guide);guide.visible=false;
+{const gold=new THREE.MeshBasicMaterial({color:0xffb400,toneMapped:false,fog:false}),glow=new THREE.MeshBasicMaterial({color:0xffe27a,transparent:true,opacity:.7,depthWrite:false,toneMapped:false,fog:false});
+ const c=new THREE.Mesh(new THREE.ConeGeometry(.3,.6,4),gold);c.rotation.x=Math.PI;c.position.y=.28;guide.add(c);
+ const r=new THREE.Mesh(new THREE.TorusGeometry(.3,.035,6,20),glow);r.rotation.x=Math.PI/2;r.position.y=.7;r.scale.setScalar(1.25);guide.add(r)}
+const guideArrow=document.getElementById('guideArrow');
+const _gv=new THREE.Vector3(),guideBox={top:80,bottom:400};let guideBoxT=-9;
+function currentTarget(){if(!guideOn||day.finished)return null;const ph=DAY[day.phase];if(!ph)return null;
+ for(const t of ph.tasks){if(day.done.has(t.id))continue;const f=TARGETS[t.id];let p=null;try{p=f&&f()}catch(_){p=null}if(p)return p}return null}
+function updateGuide(rdt,t){
+ const p=PHOTO.on?null:currentTarget();
+ if(!p){guide.visible=false;guideArrow.hidden=true;return}
+ const dist=Math.hypot(p.x-pos.x,p.z-pos.z);
+ guide.visible=dist>1.7;guide.position.set(p.x,(p.y||0)+.95+Math.sin(t*3)*.12,p.z);guide.rotation.y=t*1.6;
+ _gv.set(p.x,(p.y||0)+1,p.z).project(camera);
+ const off=_gv.z>1||Math.abs(_gv.x)>.92||Math.abs(_gv.y)>.85;
+ if(!off||dist<1.7){guideArrow.hidden=true;return}
+ let x=_gv.x,y=_gv.y;if(_gv.z>1){x=-x;y=-y}
+ const a=Math.atan2(y,x),k=1/Math.max(Math.abs(Math.cos(a))/.86,Math.abs(Math.sin(a))/.72);
+ const sx=(Math.cos(a)*k*.5+.5)*innerWidth,sy=(-Math.sin(a)*k*.5+.5)*innerHeight;
+ if(t-guideBoxT>1.5){guideBoxT=t;const tb=document.getElementById('toolbar'),ct=document.getElementById('controls');guideBox.top=(tb?tb.getBoundingClientRect().bottom:60)+34;guideBox.bottom=(ct?ct.getBoundingClientRect().top:innerHeight)-28}
+ const cy=Math.max(guideBox.top,Math.min(guideBox.bottom,sy)),cx=Math.max(26,Math.min(innerWidth-26,sx));
+ guideArrow.hidden=false;guideArrow.style.transform='translate('+cx.toFixed(0)+'px,'+cy.toFixed(0)+'px) translate(-50%,-50%)';
+ guideArrow.firstChild.style.transform='rotate('+(-a).toFixed(2)+'rad)';const lbl=Math.round(dist)+'מ׳';if(guideArrow.lastChild.textContent!==lbl)guideArrow.lastChild.textContent=lbl;
+}
+{const b=document.getElementById('guideBtn');const lab=()=>b.textContent='🧭 מורה דרך: '+(guideOn?'פעיל':'כבוי');lab();b.addEventListener('click',()=>{guideOn=!guideOn;LS('milky-guide',guideOn?'on':'off');lab()})}
+// ---------- Juice ----------
+let tScale=1,hitT=0,slowT=0,fovKick=0,fovNow=65;
+function hitStop(d=.07){hitT=Math.max(hitT,d)}
+function slowMo(d=.6){slowT=Math.max(slowT,d)}
+function punch(k=4){fovKick=Math.max(fovKick,k)}
+function juiceTick(rdt){if(hitT>0){hitT-=rdt;return .04}if(slowT>0){slowT-=rdt;tScale=.33}else tScale+=(1-tScale)*Math.min(1,rdt*5);return tScale}
+const POWS=[];const powLayer=document.getElementById('powLayer');
+for(let i=0;i<6;i++){const el=document.createElement('div');el.className='pow';powLayer.appendChild(el);POWS.push({el,p:new THREE.Vector3(),t:0})}
+let powI=0,powCool=0;
+const POW_COLORS=['#ffd23f','#ff7b54','#7fd3ff','#b8f27c','#ff9ad5'];
+function pow(text,x=pos.x,y=2*MS+jumpY,z=pos.z,big){
+ if(PHOTO.on)return;const P=POWS[powI++%POWS.length];P.p.set(x,y,z);P.t=.95;P.el.textContent=text;
+ P.el.style.color=POW_COLORS[Math.floor(Math.random()*POW_COLORS.length)];P.el.style.fontSize=(big?40:28)+'px';
+ P.el.style.setProperty('--r',((Math.random()-.5)*16).toFixed(1)+'deg');P.el.style.opacity='';P.el.classList.remove('go');void P.el.offsetWidth;P.el.classList.add('go');
+}
+function updateJuice(rdt,t){
+ powCool=Math.max(0,powCool-rdt);
+ fovKick*=Math.exp(-rdt*6);const f=65-fovKick;if(Math.abs(f-fovNow)>.02){fovNow=f;camera.fov=f;camera.updateProjectionMatrix()}
+ for(const P of POWS){if(P.t<=0)continue;P.t-=rdt;if(P.t<=0){P.el.style.opacity=0;continue}
+  _gv.copy(P.p);_gv.y+=(.95-P.t)*.6;_gv.project(camera);if(_gv.z>1){P.el.style.opacity=0;continue}
+  P.el.style.left=((_gv.x*.5+.5)*innerWidth).toFixed(0)+'px';P.el.style.top=((-_gv.y*.5+.5)*innerHeight).toFixed(0)+'px'}
+ // blob shadow under Milky: shows exactly where he will land
+ const sup=surfaceAt(pos.x,pos.z,jumpY+.02),h=Math.max(0,(rag.active?rag.y:jumpY)-sup),k=1/(1+h*.45);
+ blob.position.set(pos.x,sup+.018,pos.z);blob.scale.setScalar(MS*(.8+.2*k));blob.material.opacity=.3*k;blob.visible=!PHOTO.on||true;
+}
+const blob=new THREE.Mesh(new THREE.CircleGeometry(.62,24),new THREE.MeshBasicMaterial({color:0x2a1a0c,transparent:true,opacity:.3,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4}));
+blob.rotation.x=-Math.PI/2;blob.scale.z=1;blob.renderOrder=1;scene.add(blob);
+// ---------- Photo mode ----------
+const PHOTO={on:false,saved:null};window.PHOTO_ON=false;
+const photoBar=document.getElementById('photoBar');
+function photoMode(on){
+ if(on===PHOTO.on)return;PHOTO.on=on;window.PHOTO_ON=on;document.body.classList.toggle('photoMode',on);photoBar.hidden=!on;
+ if(on){PHOTO.saved={cameraDistance,orbitHeight,orbitAngle};for(const k in keys)keys[k]=false;guide.visible=false;guideArrow.hidden=true;for(const P of POWS){P.t=0;P.el.style.opacity=0}}
+ else if(PHOTO.saved){cameraDistance=PHOTO.saved.cameraDistance;orbitHeight=PHOTO.saved.orbitHeight;orbitAngle=PHOTO.saved.orbitAngle}
+}
+document.getElementById('photoToggle').addEventListener('click',()=>photoMode(true));
+document.getElementById('photoExit').addEventListener('click',()=>photoMode(false));
+document.getElementById('photoMood').addEventListener('click',()=>{nextMood();tongueTimer=mood===1?3:0;renderFrame()});
+document.getElementById('photoIn').addEventListener('click',()=>{cameraDistance=Math.max(1.6,cameraDistance-.6)});
+document.getElementById('photoOut').addEventListener('click',()=>{cameraDistance=Math.min(9,cameraDistance+.6)});
+renderer.domElement.addEventListener('wheel',e=>{if(PHOTO.on){e.preventDefault();cameraDistance=Math.min(9,Math.max(1.6,cameraDistance+e.deltaY*.004))}},{passive:false});
+window.addEventListener('keydown',e=>{if(e.repeat)return;if(e.code==='KeyC'&&started)photoMode(!PHOTO.on);if(e.code==='Escape'&&PHOTO.on)photoMode(false)});
+function snapCanvas(){
+ renderFrame();const src=renderer.domElement,W=src.width,H=src.height,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.drawImage(src,0,0);
+ const v=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);v.addColorStop(0,'rgba(40,20,5,0)');v.addColorStop(1,'rgba(40,20,5,.38)');g.fillStyle=v;g.fillRect(0,0,W,H);
+ const fs=Math.round(Math.min(W,H)*.045);g.font='800 '+fs+'px system-ui,Arial';g.textAlign='right';g.direction='rtl';g.fillStyle='rgba(255,246,225,.92)';g.shadowColor='rgba(0,0,0,.55)';g.shadowBlur=fs*.35;
+ g.fillText('🐶 מילקי: ברדק אחולמניוקי',W-fs*.8,H-fs*.8);return c}
+function dataURLtoFile(u,name){const b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new File([a],name,{type:'image/jpeg'})}
+document.getElementById('photoSnap').addEventListener('click',()=>{
+ const c=snapCanvas(),url=c.toDataURL('image/jpeg',.9),name='milky-'+new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')+'.jpg';
+ const fl=document.getElementById('photoFlash');fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go');try{playToySound(1400,.05,'square');setTimeout(()=>playToySound(900,.06,'square'),60)}catch(_){}
+ const file=dataURLtoFile(url,name);
+ if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'מילקי: ברדק אחולמניוקי'}).catch(()=>{})}
+ else{const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+ addActivity('📸 צילום נשמר!');
+});
+// ---------- per frame (real time, also in photo mode) ----------
+function levelupFrame(rdt){const t=performance.now()/1000;updateGuide(rdt,t);updateJuice(rdt,t)}
+window.JUICE_READY=true;
 (function mergeAll(){
  scene.updateMatrixWorld(true);
  // 1) Static scenery: merge per area, so whole rooms you cannot see are skipped by the GPU.

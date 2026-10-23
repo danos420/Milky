@@ -3,7 +3,7 @@ const rag={active:false,t:0,vx:0,vy:0,vz:0,wx:0,wy:0,wz:0,rx:0,ry:0,rz:0,y:0};
 let lastDogSpeed=0;
 function startRagdoll(){
  if(rag.active||!started)return;
- rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();if(window.SICK_READY)sickRoll();
+ rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();if(window.JUICE_READY){hitStop(.06);pow(pick(['אאוץ׳!','אופס!','בונק!','אוי!']))}if(window.SICK_READY)sickRoll();
  rag.vx=Math.sin(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vz=Math.cos(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vy=Math.max(velocityY,0)+4;rag.y=jumpY;
  rag.wx=(Math.random()-.5)*14;rag.wy=(Math.random()-.5)*8;rag.wz=(Math.random()-.5)*14;rag.rx=rag.ry=rag.rz=0;
  if(slipperState==='carried')dropSlipper();if(kebabState==='carried')kebabBack('drop');releaseGrab(false);flip.active=false;

@@ -40,6 +40,7 @@ DAY_HOOKS.sick=(phase,fresh)=>{
  if(phase===2){setDadState('rest');dadPetCooldown=0;speakDad('אני מרגיש קצת יותר טוב... בזכות מילקי. ודני. בעיקר מילקי.')}
 };
 function sneeze(){
+ if(window.JUICE_READY){hitStop(.08);punch(5)}
  sayText(dadB,pick(['אפצ\'ייייי!!!','אאאפצ\'י!!','אפ... אפ... אפצ\'י!!!']),1.8,'say',true);chaosShake=Math.max(chaosShake,.18);
  const fx=Math.sin(dad.rotation.y),fz=Math.cos(dad.rotation.y);
  for(let i=0;i<14;i++)emit(dad.position.x+fx*.4,2.3+dad.position.y,dad.position.z+fz*.4,fx*4+(Math.random()-.5)*2,(Math.random()-.2)*1.5,fz*4+(Math.random()-.5)*2,'foam',.7);

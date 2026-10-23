@@ -63,7 +63,7 @@ function bathCatch(){
  milkyThought('😤',1.8,true);setDadState('rest');bath.pause=6;
 }
 function tipTub(){
- if(bath.tipped)return;bath.tipped=true;SFX.splash();chaosShake=Math.max(chaosShake,.25);addChaos(14);dayEvent('spillTub');addScore(200,'גיגית התהפכה!');
+ if(bath.tipped)return;bath.tipped=true;if(window.JUICE_READY){slowMo(.45);punch(5);pow('שפלאש!',TUB.x,1.2,TUB.z,true)}SFX.splash();chaosShake=Math.max(chaosShake,.25);addChaos(14);dayEvent('spillTub');addScore(200,'גיגית התהפכה!');
  for(let i=0;i<30;i++)emit(TUB.x+(Math.random()-.5),.4,TUB.z+(Math.random()-.5)*.6,(Math.random()-.5)*3,1.5+Math.random()*2,-1-Math.random()*3,'water',.8);
  tubFoam.visible=false;tubWater.visible=false;puddle.visible=true;
  if(bath.on)speakDad(pick(['המים!!! חיממתי אותם חצי שעה!','מילקי!! עכשיו אני צריך למלא מחדש!']));

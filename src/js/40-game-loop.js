@@ -1,4 +1,4 @@
-function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started)gameStep(dt);renderFrame();perfMeterTick(t0)}
+function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started&&!window.PHOTO_ON)gameStep(dt*(window.JUICE_READY?juiceTick(dt):1));if(window.JUICE_READY&&started)levelupFrame(dt);renderFrame();perfMeterTick(t0)}
 function gameStep(dt){{const free=!rag.active&&!(dizzy.active&&dizzy.t<1.15),forward=free&&!!(keys.KeyW||keys.ArrowUp),back=free&&!!(keys.KeyS||keys.ArrowDown),left=free&&!!(keys.KeyA||keys.ArrowLeft),right=free&&!!(keys.KeyD||keys.ArrowRight);
 let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1);
 if(free&&stick.active&&stick.mag>.12){
@@ -44,10 +44,10 @@ if(!grounded&&velocityY<=0 && crossed>0){
 }
 // Floor is always a valid landing surface.
 if(jumpY<=0){jumpY=0;velocityY=0;grounded=true}
-if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);
+if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);if(window.JUICE_READY&&squash>.62&&!flip.active&&flipsThisAir===0){pow(MS>1.2?'בוווום!':'בום!');punch(MS>1.2?7:3.5)}
  const air=airTime;airTime=0;
  if(flip.active){flip.active=false;flipsThisAir=0;startRagdoll();addScore(100,'נחיתה על הפרצוף')}
- else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.SICK_READY)sickFlip()}
+ else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.JUICE_READY){if(n>=2){slowMo(.55);punch(6);pow(n===2?'וואו!!':'אגדי!!!',pos.x,2*MS,pos.z,true)}else pow('סלטה!')}if(window.SICK_READY)sickFlip()}
  else if(fallV<-14.5){startRagdoll();addScore(200,'נחיתה אומנותית')}
  else if(air>1.3)addScore(Math.round(air*80),'זמן אוויר '+air.toFixed(1)+' שנ׳');
 }

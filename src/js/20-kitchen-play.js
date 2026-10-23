@@ -23,7 +23,7 @@ let trashTipped=false;
 const garbage=[];
 for(const [c,sz] of [[0x8a7f6b,.18],[0xe9e4d8,.14],[0x6b8f3c,.12],[0xd9a441,.13]]){const g=box(sz,.05,sz*1.3,mat(c),0,.03,0);g.visible=false;garbage.push(g)}
 function tipTrash(){
- if(trashTipped)return;trashTipped=true;dayEvent('trash');
+ if(trashTipped)return;trashTipped=true;dayEvent('trash');if(window.JUICE_READY){pow('טראח!',trashProp.g.position.x,1.2,trashProp.g.position.z);punch(3)}
  const p=trashProp,dir=Math.atan2(p.g.position.z-pos.z,p.g.position.x-pos.x);
  binInner.rotation.z=Math.PI/2;binInner.position.y=.28;p.g.rotation.y=-dir+Math.PI;
  garbage.forEach((g,i)=>{const a=dir+(i-1.5)*.45,r=.7+i*.18;g.position.set(p.g.position.x+Math.cos(a)*r,.03,p.g.position.z+Math.sin(a)*r);g.rotation.y=i;g.visible=true});
