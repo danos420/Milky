@@ -5,7 +5,7 @@ box(40,.1,31,lawnMat,0,-.05,-24.5);
 for(const [x,z] of [[3,-17],[3.6,-18.8],[4.4,-20.6],[5.2,-22.4],[6.2,-24.2],[-3,-17],[-4,-18.6],[-5.2,-20],[-6.6,-21.2]]){const st=cyl(.38,.04,mat(0xbdb5a6),x,.02,z);st.castShadow=false}
 // House facade continues on both sides of the living room, fences around the yard
 box(13.6,4,.3,facade,-13.2,2,-9.15);box(13.6,4,.3,facade,13.2,2,-9.15);
-box(40.6,2.1,.3,stucco,0,1.05,-40.15);box(.3,2.1,31,stucco,-20.15,1.05,-24.5);box(.3,2.1,31,stucco,20.15,1.05,-24.5);
+box(18.8,2.1,.3,stucco,-10.9,1.05,-40.15);box(18.8,2.1,.3,stucco,10.9,1.05,-40.15);box(.3,2.1,31,stucco,-20.15,1.05,-24.5);box(.3,2.1,31,stucco,20.15,1.05,-24.5);
 // The view: hills and apartment blocks far away
 for(const [x,z,s,c] of [[-30,-85,26,0x8f9f86],[10,-95,34,0x8a9a84],[45,-88,24,0x95a38c],[-55,-95,30,0x8c9b88]]){const h=ball(1,mat(c),x,-s*.55,z);h.scale.set(s*1.4,s,s*.6);h.castShadow=false}
 for(let i=0;i<7;i++){const b=box(5,7+i%3*3,5,mat(i%2?0xd9d4c8:0xcfc8ba),-24+i*8,4+i%3*1.5,-62-i%2*6);b.castShadow=false}

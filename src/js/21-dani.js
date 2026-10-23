@@ -81,6 +81,7 @@ function updateDani(dt){
  let tx=DANI_HOME.x,tz=DANI_HOME.z,speed=0,stop=.3,faceX=null,faceZ=null;
  switch(daniState){
   case 'cook':speed=2.3;faceX=dani.position.x;faceZ=16;break;
+  case 'park':{const o=parkDani(dt);faceX=o.fx;faceZ=o.fz;tx=dani.position.x;tz=dani.position.z;break}
   case 'tidy':{const p=daniTarget;if(!p){setDani('cook');break}
    if(!daniCarry){tx=p.g.position.x;tz=p.g.position.z;stop=.6;speed=2.7;
     if(Math.hypot(tx-dani.position.x,tz-dani.position.z)<.78){daniCarry=p;carried.add(p.g);p.vx=p.vz=0}}
@@ -110,11 +111,11 @@ function updateDani(dt){
   case 'party':if(daniAction>3.4){setDani('cook','רגע... אני אמור לסדר פה 😅','😅');daniDecide=0}break;
  }
  const r=navStep(dani,daniNav,DANI_R,tx,tz,speed,stop,dt,[{x:pos.x,z:pos.z,r:dogRadius,skip:jumpY>=1.2},{x:dad.position.x,z:dad.position.z,r:DAD_R}]);
- const step=r.step;
+ const step=daniState==='park'?park.daniStep:r.step;
  if(r.giveUp&&daniState!=='cook'){daniDrop(false);daniTarget=null;setDani('cook')}
  // Facing
  if(daniState==='party')dani.rotation.y+=dt*9;
- else if(step>.001&&daniNav.path[0])faceToward(dani,daniNav.path[0][0],daniNav.path[0][1],dt,7);
+ else if(daniState!=='park'&&step>.001&&daniNav.path[0])faceToward(dani,daniNav.path[0][0],daniNav.path[0][1],dt,7);
  else if(faceX!==null)faceToward(dani,faceX,faceZ,dt,6);
  // Animation: bouncy, big arm swings, stirring, dancing, finger wagging
  daniWalk+=step*9;const walking=step>.001;

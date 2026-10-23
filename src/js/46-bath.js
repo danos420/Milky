@@ -70,7 +70,7 @@ function tipTub(){
 }
 function updateBath(dt){
  const td=Math.hypot(pos.x-TUB.x,pos.z-TUB.z);
- if(!bath.tipped&&td<1.05&&jumpY<.6&&!rag.active){if(lastDogSpeed>4||jumpY>.15&&velocityY<-2)tipTub();else if(jumpY<.5){wet=1;if(Math.random()<.3)emit(pos.x,.4,pos.z,(Math.random()-.5)*2,2,(Math.random()-.5)*2,'water',.6);dayEvent('wet')}}
+ if(!bath.tipped&&td<1.05&&jumpY<.6&&!rag.active){if(lastDogSpeed>4||jumpY>.15&&velocityY<-2)tipTub();else if(jumpY<.5){wet=1;MUDDY=false;if(Math.random()<.3)emit(pos.x,.4,pos.z,(Math.random()-.5)*2,2,(Math.random()-.5)*2,'water',.6);dayEvent('wet')}}
  if(bath.tipped&&bath.tip<1){bath.tip=Math.min(1,bath.tip+dt*3);tub.rotation.x=-1.45*bath.tip*bath.tip;tub.position.y=.25*bath.tip}
  if(bath.foam>0&&shakeT<=0)wet=1;
  if(bath.foam>0&&Math.random()<dt*2.5)emit(pos.x+(Math.random()-.5)*.4,1.4*MS,pos.z+(Math.random()-.5)*.4,(Math.random()-.5)*.4,.8,(Math.random()-.5)*.4,'foam',1.4);

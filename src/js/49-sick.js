@@ -6,7 +6,7 @@ PHASE_SETS.sick=[
   {id:'tissue',label:'🤧 להביא לאבא טישו',tip:'קופסת הטישו במטבח. תפוס בפה (T)'},
   {id:'warmFeet',label:'🦶 לחמם לאבא את הרגליים',tip:'שכב ליד הכורסה בלי לזוז'},
   {id:'sneezed',label:'💨 לחטוף עיטוש של אבא',tip:'תעמוד מול אבא ותחכה...'}]},
- {name:'צהריים',icon:'🍲',banner:'🍲 דני מכינה מרק עוף לאבא',tasks:[
+ {name:'צהריים',icon:'🍲',banner:'🍲 דני מכין מרק עוף לאבא',tasks:[
   {id:'soupSteal',label:'🍗 לגנוב עוף מהסיר',tip:'קפוץ על השיש ליד הסיר'},
   {id:'thermo',label:'🌡️ לגנוב את המדחום למיטה',tip:'המדחום על הרצפה ליד הכורסה'},
   {id:'remote',label:'📺 להדליק לאבא טלוויזיה',tip:'משעמם לו. השלט ליד השולחן'},
@@ -36,7 +36,7 @@ DAY_HOOKS.sick=(phase,fresh)=>{
  sick.on=true;sick.phase=phase;sickLook.visible=true;sickLook.userData.ice.visible=phase<2;
  if(phase===0){for(const k of SICK_PROPS)hideProp(shopProp(k),false);sick.sneezeT=8;setDadState('sick');
   if(started)setTimeout(()=>{if(sick.on){speakDad('אחח... אני גוסס. מילקי, תביא לי משהו...');setTimeout(()=>sayDani('אבא, יש לך 37.4. אתה בסדר.'),1800)}},1200)}
- if(phase===1){setDadState('sick');sayDani('אני מכינה לך מרק עוף, אבא. מילקי, אפילו אל תסתכל על הסיר.')}
+ if(phase===1){setDadState('sick');sayDani('אני מכין לך מרק עוף, אבא. מילקי, אפילו אל תסתכל על הסיר.')}
  if(phase===2){setDadState('rest');dadPetCooldown=0;speakDad('אני מרגיש קצת יותר טוב... בזכות מילקי. ודני. בעיקר מילקי.')}
 };
 function sneeze(){

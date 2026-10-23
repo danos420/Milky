@@ -11,7 +11,7 @@ rain.frustumCulled=false;rain.visible=false;rain.castShadow=false;scene.add(rain
 const evt={cur:null,t:0,cool:50,last:'',jumps:0,touched:false,noise0:0,prevGround:true,label:''};
 const outside=()=>pos.z<-9.1;
 const EVENTS={
- fetch:{ok:()=>true,limit:30,banner:'🎾 דני זורק כדור! תביא לו אותו',
+ fetch:{ok:()=>daniState!=='park',limit:30,banner:'🎾 דני זורק כדור! תביא לו אותו',
   start(){let a=Math.random()*Math.PI*2;for(let i=0;i<12;i++){const b=Math.random()*Math.PI*2;if(lineFree(dani.position.x,dani.position.z,dani.position.x+Math.sin(b)*5,dani.position.z+Math.cos(b)*5,.35)){a=b;break}}evt.far=false;toyBall.position.set(dani.position.x+Math.sin(a)*.7,.34,dani.position.z+Math.cos(a)*.7);toyVelocity.set(Math.sin(a)*10,Math.cos(a)*10);evt.touched=false;daniPlayCool=60;setDani('cheer');sayDani('מילקי! תביא!')},
   pill:()=>evt.touched?'🎾 עכשיו תחזיר לדני':'🎾 תביא את הכדור',
   update(){const bd0=Math.hypot(dani.position.x-toyBall.position.x,dani.position.z-toyBall.position.z);if(bd0>3)evt.far=true;if(evt.far&&Math.hypot(toyBall.position.x-pos.x,toyBall.position.z-pos.z)<1.1*MS)evt.touched=true;
@@ -20,7 +20,7 @@ const EVENTS={
   win(){addScore(700,'הבאת את הכדור!');sayDani(pick(['כלב טוב!!','איזה כלב גאון!','עוד פעם! עוד פעם!']));setDani('cheer')},
   fail(){sayDani('טוב... אני אביא לבד')}},
  pizza:{ok:()=>true,limit:38,banner:'🍕 השליח השאיר פיצה על השולחן בחצר!',
-  start(){pizza.visible=true;pizza.scale.setScalar(1);sayDani('מישהו הזמין פיצה? אני כבר באה!')},
+  start(){pizza.visible=true;pizza.scale.setScalar(1);sayDani('מישהו הזמין פיצה? אני כבר בא!')},
   pill:()=>'🍕 לקפוץ על השולחן בחצר לפני דני',
   update(){if(Math.hypot(pos.x-pizza.position.x,pos.z-pizza.position.z)<.95&&jumpY>.5)return 'win'},
   win(){addScore(900,'גנבת פיצה!');sayText(milkyB,'🍕 מממממ',2,'say',true);setTimeout(()=>sayDani('מילקייי! זאת הייתה הפיצה שלי!'),900);pizza.visible=false},
