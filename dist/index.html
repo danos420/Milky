@@ -891,6 +891,8 @@ function extraProp(x,z,kind){const g=new THREE.Group();scene.add(g);g.position.s
  else if(kind==='bin'){cyl(.3,.85,mat(0x2f6e4a),0,.43,0,g);cyl(.32,.05,mat(0x24573a),0,.88,0,g)}
  else if(kind==='soccer'){ball(.3,mat(0xf5f5f5,.5),0,.3,0,g);for(let i=0;i<6;i++){const a=i*1.05;ball(.09,mat(0x1d1d1d),Math.cos(a)*.24,.3+Math.sin(i*2.1)*.15,Math.sin(a)*.24,g)}}
  else if(kind==='trash'){binInner=new THREE.Group();g.add(binInner);cyl(.28,.7,mat(0x5f6f6b),0,.35,0,binInner);cyl(.3,.05,mat(0x46524f),0,.72,0,binInner);box(.16,.04,.06,mat(0x46524f),0,.77,0,binInner)}
+ else if(kind==='tissues'){box(.34,.2,.22,mat(0x7fb3d5,.7),0,.1,0,g);const t=box(.12,.12,.06,mat(0xffffff,.9),0,.25,0,g);t.rotation.y=.3}
+ else if(kind==='thermo'){const m=cyl(.022,.3,mat(0xf5f5f5,.4),0,.03,0,g);m.rotation.z=Math.PI/2;const tip=ball(.03,mat(0xd63a2f,.4),-.16,.03,0,g)}
  else if(kind==='tp'){cyl(.13,.22,mat(0xf6f3ec,.9),0,.11,0,g);cyl(.045,.23,mat(0xb89a74),0,.115,0,g)}
  else if(kind==='baguette'){const m=cyl(.075,.72,mat(0xd9a557,.8),0,.08,0,g);m.rotation.z=Math.PI/2;for(const x of [-.2,0,.2]){const c=box(.02,.02,.1,mat(0xf0d29a),x,.15,0,g);c.rotation.y=.6}}
  else if(kind==='can'){const m=cyl(.11,.26,mat(0xc0392b,.4),0,.11,0,g);m.rotation.z=Math.PI/2;const l=cyl(.112,.12,mat(0xf2e3c6,.6),0,.11,0,g);l.rotation.z=Math.PI/2}
@@ -899,10 +901,10 @@ function extraProp(x,z,kind){const g=new THREE.Group();scene.add(g);g.position.s
  else if(kind==='bowl'){cyl(.3,.12,mat(0xb8432f),0,.06,0,g);cyl(.23,.03,mat(0x8a5a35),0,.12,0,g)}
  extras.push({g,home:g.position.clone(),vx:0,vz:0,spin:0,kind,lock:0});}
 extraProp(2.4,4.6,'bottle');extraProp(-2.7,2.5,'book');extraProp(3.7,-2.7,'shoe');extraProp(-1.8,-5.7,'duck');extraProp(2.5,-1.8,'remote');extraProp(-3.2,5.3,'shoe');extraProp(4.5,5.0,'book');extraProp(2.7,14.45,'trash');extraProp(-5.4,10.1,'bowl');
-for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');extraProp(-2.9,-3.4,'tp');extraProp(.2,-6.9,'baguette');extraProp(1.7,-7.0,'can');extraProp(1.3,-6.6,'receipt');
+for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');extraProp(-2.9,-3.4,'tp');extraProp(.2,-6.9,'baguette');extraProp(1.7,-7.0,'can');extraProp(1.3,-6.6,'receipt');extraProp(-.8,11.0,'tissues');extraProp(5.3,6.9,'thermo');
 const trashProp=extras.find(p=>p.kind==='trash');
 for(const p of chaosProps){addBody(p.g,p.kind==='cushion'?.34:.27,()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z},v=>{if(p.g.position.y<.05)p.vy=Math.max(p.vy,v)});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
-const extraRadius={tp:.16,baguette:.2,can:.16,receipt:.15,shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
+const extraRadius={tissues:.2,thermo:.14,tp:.16,baguette:.2,can:.16,receipt:.15,shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
 for(const p of extras){addBody(p.g,extraRadius[p.kind],()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
 addBody(toyBall,.32,()=>[toyVelocity.x,toyVelocity.y],(x,z)=>{toyVelocity.x=x;toyVelocity.y=z});bodies[bodies.length-1].isBall=true;bodies[bodies.length-1].kind='ball';
 const training=['שב','ארצה','תן יד','סיבוב','נבח','השתולל'];let trainingIndex=0,trainingTime=0,dadSpeechTime=0,dadLastStage=0,activeCmd="";
@@ -1081,7 +1083,7 @@ function updateDadBehavior(dt){
  dadRoutine-=dt;dadAction+=dt;
  const dogDist=Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z);
  const calm=['rest','wander','sit','watch'];
- if(slipperState==='carried' && dadState!=='chase' && dadState!=='search'){
+ if(slipperState==='carried' && dadState!=='chase' && dadState!=='search' && dadState!=='sick'){
   setDadState('search','רגע... מילקי, מה יש לך בפה?!');dadAlert=1.6;
  }
  if(chaosStage>=3 && slipperState!=='carried' && slipperState!=='dad' && calm.includes(dadState) && dadReactCooldown===0){
@@ -1099,7 +1101,7 @@ function updateDadBehavior(dt){
  }
  // Armchair: dad sits to watch TV, unless Milky stole the seat.
  const chairTaken=jumpY>.4&&insidePlatform(armchairObs(),pos.x,pos.z,.1);if(chairTaken)dayEvent('armchair');
- const wantsSeat=(dadState==='rest'||dadState==='watch');
+ const wantsSeat=(dadState==='rest'||dadState==='watch'||dadState==='sick');
  if(dadSeated&&(!wantsSeat||chairTaken))unseatDad();
  let targetX=dad.position.x,targetZ=dad.position.z,speed=0,stopDistance=.3;
  if(wantsSeat&&!dadSeated){targetX=SEAT_APPROACH.x;targetZ=SEAT_APPROACH.z;speed=1.25;stopDistance=.12;
@@ -1167,7 +1169,7 @@ function updateDadBehavior(dt){
  dadMouth.scale.x=dadState==='chase'?1.9:dadState==='pet'?1.5:dadChairGrumble>6?1.7:1;
  dadMouth.scale.y=dadState==='chase'||dadChairGrumble>6?2.2:1;
  {const nap=dadSeated&&!tvOn&&typeof day!=='undefined'&&(day.phase===1||evtNap);
-  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='bath')dm='laugh';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
+  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='bath')dm='laugh';else if(dadState==='sick')dm=dadLaughT>0?'laugh':'sad';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
   updateFace(dadFace,dm,dt);dadLaughT=Math.max(0,dadLaughT-dt);
   if(dadSeated&&!tvOn&&Math.random()<dt*(nap?.12:.03))sayText(dadB,nap?pick(DAD_NAP):'💤',2.6,'think');}
  if(dadSeated&&tvOn&&Math.random()<dt*.12){sayText(dadB,pick(DAD_TV),2.6);dadLaughT=2}
@@ -1421,7 +1423,7 @@ const rag={active:false,t:0,vx:0,vy:0,vz:0,wx:0,wy:0,wz:0,rx:0,ry:0,rz:0,y:0};
 let lastDogSpeed=0;
 function startRagdoll(){
  if(rag.active||!started)return;
- rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();
+ rag.active=true;rag.t=0;const sp=lastDogSpeed;if(window.BATH_READY)bathRoll();if(window.SICK_READY)sickRoll();
  rag.vx=Math.sin(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vz=Math.cos(yaw)*sp*1.1+(Math.random()-.5)*2;rag.vy=Math.max(velocityY,0)+4;rag.y=jumpY;
  rag.wx=(Math.random()-.5)*14;rag.wy=(Math.random()-.5)*8;rag.wz=(Math.random()-.5)*14;rag.rx=rag.ry=rag.rz=0;
  if(slipperState==='carried')dropSlipper();if(kebabState==='carried')kebabBack('drop');releaseGrab(false);flip.active=false;
@@ -1973,7 +1975,7 @@ function updateContextHint(){
  if(nearFridge()){return setHint(fridgeOpen?'🧊 סגור את המקרר (E)':'🧊 פתח את המקרר (E)')}
  let near=null,d=1.65;
  for(const p of extras){if(!p.g.visible)continue;const q=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(q<d){near=p;d=q}}
- const names={tp:'🧻 נייר טואלט',baguette:'🥖 בגט',can:'🥫 קופסת שימורים',receipt:'🧾 קבלה',shampoo:'🧴 שמפו של אבא',remote:'📺 לחץ על השלט',duck:'🦆 צפצף עם הברווז',bottle:'🧴 גלגל בקבוק',shoe:'👟 העף נעל',book:'📚 פזר ספרים',trash:'🗑️ הפוך את הפח',bowl:'🥣 תאכל מהקערה',chair:'🪑 הפל כיסא',cone:'🔺 בעט בקונוס',cooler:'🧊 דחוף צידנית',bin:'🗑️ הפל פח',soccer:'⚽ כדורגל'};
+ const names={tissues:'🤧 טישו',thermo:'🌡️ מדחום',tp:'🧻 נייר טואלט',baguette:'🥖 בגט',can:'🥫 קופסת שימורים',receipt:'🧾 קבלה',shampoo:'🧴 שמפו של אבא',remote:'📺 לחץ על השלט',duck:'🦆 צפצף עם הברווז',bottle:'🧴 גלגל בקבוק',shoe:'👟 העף נעל',book:'📚 פזר ספרים',trash:'🗑️ הפוך את הפח',bowl:'🥣 תאכל מהקערה',chair:'🪑 הפל כיסא',cone:'🔺 בעט בקונוס',cooler:'🧊 דחוף צידנית',bin:'🗑️ הפל פח',soccer:'⚽ כדורגל'};
  return setHint(near?names[near.kind]+' · E · T לתפוס':nextTaskHint());
 }
 dad.position.set(4.1,0,5.7);const clock=new THREE.Clock();const look=new THREE.Vector3();let lastFrameDt=1/60;
@@ -2027,7 +2029,7 @@ if(jumpY<=0){jumpY=0;velocityY=0;grounded=true}
 if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);
  const air=airTime;airTime=0;
  if(flip.active){flip.active=false;flipsThisAir=0;startRagdoll();addScore(100,'נחיתה על הפרצוף')}
- else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip')}
+ else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.SICK_READY)sickFlip()}
  else if(fallV<-14.5){startRagdoll();addScore(200,'נחיתה אומנותית')}
  else if(air>1.3)addScore(Math.round(air*80),'זמן אוויר '+air.toFixed(1)+' שנ׳');
 }
@@ -2055,7 +2057,7 @@ for(const c of roundBlockers()){
 }
 landingCooldown=Math.max(0,landingCooldown-dt);
 // Paws planted on the floor: stride rate matches ground speed (longer strides in a gallop), so the legs never treadmill.
-steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
+steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);if(window.SICK_READY)updateSick(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
 const moving=Math.abs(speed)>0.01;
 runBlend+=(THREE.MathUtils.smoothstep(Math.abs(speed),3.3,5.4)-runBlend)*Math.min(1,dt*6);
 const running=moving&&runBlend>.5;
@@ -2676,6 +2678,78 @@ function updateShop(dt){
  }
 }
 window.SHOP_READY=true;
+loadWeekPhases();renderDay();renderWeek();
+// ===== Sick day: dad stuck in the armchair with a cold, Milky is the (very unqualified) nurse =====
+WEEK[3].soon=false;WEEK[3].short='אבא חולה';WEEK[3].intro='🤒 יום רביעי: אבא חולה. מילקי האחות הראשית';
+PHASE_SETS.sick=[
+ {name:'בוקר',icon:'🤒',banner:'🤒 אבא חולה בכורסה. מילקי, תטפל בו!',tasks:[
+  {id:'bringSlipper',label:'🩴 להביא לאבא את הכפכף',tip:'תפוס עם P, תשחרר ליד אבא'},
+  {id:'tissue',label:'🤧 להביא לאבא טישו',tip:'קופסת הטישו במטבח. תפוס בפה (T)'},
+  {id:'warmFeet',label:'🦶 לחמם לאבא את הרגליים',tip:'שכב ליד הכורסה בלי לזוז'},
+  {id:'sneezed',label:'💨 לחטוף עיטוש של אבא',tip:'תעמוד מול אבא ותחכה...'}]},
+ {name:'צהריים',icon:'🍲',banner:'🍲 דני מכינה מרק עוף לאבא',tasks:[
+  {id:'soupSteal',label:'🍗 לגנוב עוף מהסיר',tip:'קפוץ על השיש ליד הסיר'},
+  {id:'thermo',label:'🌡️ לגנוב את המדחום למיטה',tip:'המדחום על הרצפה ליד הכורסה'},
+  {id:'remote',label:'📺 להדליק לאבא טלוויזיה',tip:'משעמם לו. השלט ליד השולחן'},
+  {id:'showFlip',label:'🤸 לעשות לאבא הופעה: סלטה',tip:'קפיצה כפולה ליד הכורסה'}]},
+ {name:'ערב',icon:'🌙',banner:'🌙 אבא מרגיש קצת יותר טוב',tasks:[
+  {id:'shareBowl',label:'🥣 להביא לאבא את הקערה שלך',tip:'הקערה במטבח. תפוס בפה ותביא'},
+  {id:'petDad',label:'❤️ לקבל ליטוף מאבא',tip:'תתקרב אליו'},
+  {id:'laugh',label:'😂 להצחיק את אבא: נפילה מולו',tip:'נפילה (X) ליד הכורסה'},
+  {id:'sofaWatch',label:'📺 לראות טלוויזיה מהספה',tip:'טלוויזיה דולקת + מילקי על הספה'}]}
+];
+// Sick look: scarf, red nose, ice pack, blanket on the lap
+const sickLook=new THREE.Group();dad.add(sickLook);sickLook.visible=false;
+{const red=mat(0xc0392b,.8),plaid=mat(0x7b4b8a,.9),ice=mat(0x8fd3ff,.4);
+ const sc=mesh(new THREE.TorusGeometry(.27,.08,8,18),red,0,2.15,.02,sickLook);sc.rotation.x=Math.PI/2;box(.14,.4,.06,red,.14,1.95,.27,sickLook);
+ ball(.075,mat(0xe0584a,.5),0,2.45,.37,sickLook);
+ sickLook.userData.ice=box(.44,.08,.32,ice,0,2.93,.02,sickLook);
+ sickLook.userData.blanket=new THREE.Group();sickLook.add(sickLook.userData.blanket);
+ box(1.1,.12,.8,plaid,0,1.3,.32,sickLook.userData.blanket);box(1.1,.8,.08,plaid,0,.92,.72,sickLook.userData.blanket);
+ for(const x of [-.35,0,.35])box(.06,.81,.085,mat(0xe9c46a),x,.92,.72,sickLook.userData.blanket)}
+const sick={on:false,phase:-1,sneezeT:10,warmT:0,sofaT:0,mouthT:0};
+const SICK_PROPS=['tissues','thermo'];
+function sickResetProps(){sick.on=false;sick.phase=-1;sickLook.visible=false;
+ for(const k of SICK_PROPS){const p=shopProp(k);if(p){p.g.position.copy(p.home);p.g.rotation.set(0,0,0);hideProp(p,true)}}
+ if(dadState==='sick')setDadState('rest')}
+const _origReset2=bathResetProps;bathResetProps=function(){_origReset2();sickResetProps()};
+DAY_HOOKS.sick=(phase,fresh)=>{
+ sick.on=true;sick.phase=phase;sickLook.visible=true;sickLook.userData.ice.visible=phase<2;
+ if(phase===0){for(const k of SICK_PROPS)hideProp(shopProp(k),false);sick.sneezeT=8;setDadState('sick');
+  if(started)setTimeout(()=>{if(sick.on){speakDad('אחח... אני גוסס. מילקי, תביא לי משהו...');setTimeout(()=>sayDani('אבא, יש לך 37.4. אתה בסדר.'),1800)}},1200)}
+ if(phase===1){setDadState('sick');sayDani('אני מכינה לך מרק עוף, אבא. מילקי, אפילו אל תסתכל על הסיר.')}
+ if(phase===2){setDadState('rest');dadPetCooldown=0;speakDad('אני מרגיש קצת יותר טוב... בזכות מילקי. ודני. בעיקר מילקי.')}
+};
+function sneeze(){
+ sayText(dadB,pick(['אפצ\'ייייי!!!','אאאפצ\'י!!','אפ... אפ... אפצ\'י!!!']),1.8,'say',true);chaosShake=Math.max(chaosShake,.18);
+ const fx=Math.sin(dad.rotation.y),fz=Math.cos(dad.rotation.y);
+ for(let i=0;i<14;i++)emit(dad.position.x+fx*.4,2.3+dad.position.y,dad.position.z+fz*.4,fx*4+(Math.random()-.5)*2,(Math.random()-.2)*1.5,fz*4+(Math.random()-.5)*2,'foam',.7);
+ const dx=pos.x-dad.position.x,dz=pos.z-dad.position.z,d=Math.hypot(dx,dz);
+ if(d<3&&jumpY<1.2&&!rag.active){startRagdoll();rag.vx=dx/(d||1)*7;rag.vz=dz/(d||1)*7;rag.vy=5;dayEvent('sneezed');addScore(200,'עף מעיטוש');setTimeout(()=>sayDani('לבריאות! ...מילקי, אתה בסדר?'),900)}
+}
+function sickInteract(p){return false}
+function sickFlip(){if(sick.on&&Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z)<4.5){dayEvent('showFlip');dadLaughT=2.5;speakDad(pick(['חחח! אחח... הראש...','בראבו! ...אל תעשה את זה שוב, אני מסתחרר']))}}
+function sickRoll(){if(sick.on&&sick.phase===2&&Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z)<3.6){dayEvent('laugh');dadLaughT=3;speakDad('חחחחח! הכלב הזה... חחח')}}
+function updateSick(dt){
+ if(!sick.on)return;
+ const dd=Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z);
+ if(sick.phase<2){dadPetCooldown=Math.max(dadPetCooldown,5);if(['rest','watch','wander','investigate','sit'].includes(dadState))setDadState('sick');
+  sick.sneezeT-=dt;if(sick.sneezeT<=0&&dadSeated){sick.sneezeT=9+Math.random()*6;sneeze()}}
+ if(sick.mouthT>0){sick.mouthT-=dt;if(sick.mouthT<=0)mouthItem.visible=false}
+ // deliveries to dad
+ if(slipperState==='floor'&&Math.hypot(slipper.position.x-dad.position.x,slipper.position.z-dad.position.z)<1.8&&Math.hypot(slipper.position.x-slipperHome.x,slipper.position.z-slipperHome.z)>.5&&!day.done.has('bringSlipper')){
+  dayEvent('bringSlipper');speakDad('תודה מילקי... איפה השנייה?');thought(dadB,'🥹',2,true);slipper.position.copy(slipperHome);slipper.rotation.set(0,0,0)}
+ const ts=shopProp('tissues');if(ts&&ts.g.visible&&!carried.has(ts.g)&&Math.hypot(ts.g.position.x-dad.position.x,ts.g.position.z-dad.position.z)<1.9){hideProp(ts,true);dayEvent('tissue');addScore(150,'טישו לאבא');speakDad('תודה... *מקנח באף בקול של משאית*');emit(dad.position.x,2.4,dad.position.z,0,1,0,'foam',.6)}
+ if(sick.phase===0&&dadSeated&&dd<1.9&&grounded&&jumpY<.2&&lastDogSpeed<.3){sick.warmT+=dt;if(sick.warmT>3&&!day.done.has('warmFeet')){idleAction='lie';idleClock=0;dayEvent('warmFeet');speakDad('אהה... כמו בקבוק חם עם פרווה');thought(dadB,'😌',2.4,true)}}else sick.warmT=0;
+ if(sick.phase===1&&jumpY>.8&&Math.hypot(pos.x-stovePot.position.x,pos.z-stovePot.position.z)<1.1&&!day.done.has('soupSteal')){dayEvent('soupSteal');mouthItem.visible=true;sick.mouthT=6;addScore(300,'עוף מהמרק');setDani('scold','מילקי!!! זה המרק של אבא!');speakDad('חחח... תן לו, הוא צריך כוח לטפל בי')}
+ const th=shopProp('thermo');if(th&&th.g.visible&&!carried.has(th.g)&&Math.hypot(th.g.position.x-BED.x,th.g.position.z-BED.z)<1.7&&!day.done.has('thermo')){dayEvent('thermo');speakDad('המדחום! מילקי, אני צריך לדעת אם יש לי 38!');milkyThought('😏',1.6,true)}
+ if(sick.phase===2){
+  const bw=extras.find(p=>p.kind==='bowl');if(bw&&Math.hypot(bw.g.position.x-dad.position.x,bw.g.position.z-dad.position.z)<1.9&&!day.done.has('shareBowl')){dayEvent('shareBowl');speakDad('אתה משתף אותי באוכל שלך? זאת אהבה אמיתית.');thought(dadB,'🥹',2.4,true)}
+  if(dadState==='pet'&&dd<1.8)dayEvent('petDad');
+  const sofa=obstacles.find(o=>o.name==='ספה');if(tvOn&&jumpY>.8&&grounded&&insidePlatform(sofa,pos.x,pos.z,0)&&lastDogSpeed<.3){sick.sofaT+=dt;if(sick.sofaT>2.5&&!day.done.has('sofaWatch')){dayEvent('sofaWatch');idleAction='lie';idleClock=0;sayText(milkyB,'📺 הפרק הכי טוב',2.4,'think',true)}}else sick.sofaT=0;
+ }
+}
+window.SICK_READY=true;
 loadWeekPhases();renderDay();renderWeek();
 (function mergeAll(){
  scene.updateMatrixWorld(true);
