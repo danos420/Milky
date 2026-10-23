@@ -43,3 +43,6 @@
 42-performance.js
 43-modes.js
 44-events.js
+45-week.js
+46-bath.js
+47-render-setup.js

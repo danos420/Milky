@@ -100,6 +100,11 @@ button{font-family:inherit}
 @media (prefers-reduced-motion:reduce){#dayStars span{animation:none}#dayBanner.show{animation:none;opacity:1;transform:translate(-50%,0)}}
 #saveNote{font-size:14px;color:#ffe3a3;min-height:1em}
 #wipeSave{margin-top:6px;background:#3b2a24;border-color:#b9785b}
+#weekBar{display:flex;gap:4px;margin:2px 0 8px;direction:rtl}
+.weekDay{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0;border-radius:9px;border:1px solid #ffffff26;background:#ffffff0d;color:#fff0d3;font:inherit;cursor:pointer;touch-action:manipulation}
+.weekDay b{font-size:17px;line-height:1.1}.weekDay small{font-size:9.5px;opacity:.8;white-space:nowrap}
+.weekDay.cur{background:#f2b84b33;border-color:#f2b84b}.weekDay.locked{opacity:.4;cursor:default}.weekDay:disabled{cursor:default}
+#dayNextBtn{background:#f2b84b;color:#2b1f12}#dayNextBtn:disabled{opacity:.55}
 #eventPill{position:fixed;z-index:8;top:calc(var(--topbar,90px) + 8px);left:50%;transform:translateX(-50%);background:#173a4ae8;border:2px solid #7fd3ff;color:#e6f7ff;font:800 14px/1.2 system-ui,Arial;padding:6px 14px;border-radius:999px;box-shadow:0 6px 20px #0006;pointer-events:none;white-space:nowrap;animation:evtPulse 1.6s ease-in-out infinite}
 #eventPill[hidden]{display:none}
 @keyframes evtPulse{50%{box-shadow:0 6px 24px #7fd3ff66}}

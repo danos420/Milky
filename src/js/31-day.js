@@ -28,7 +28,7 @@ function fmtTime(sec){sec=Math.floor(sec);return String(Math.floor(sec/60)).padS
 function phaseDone(i){return DAY[i].tasks.every(t=>day.done.has(t.id))}
 function renderDay(){
  const ph=DAY[Math.min(day.phase,2)],n=ph.tasks.filter(t=>day.done.has(t.id)).length;
- dayChip.textContent=day.finished?'🌙 סוף היום':ph.icon+' '+ph.name+' '+n+'/4';
+ dayChip.textContent=day.finished?'🌙 סוף היום':((window.WEEK_READY&&weekIcon())||ph.icon)+' '+ph.name+' '+n+'/4';
  dayList.innerHTML='';
  DAY.forEach((p,i)=>{const h=document.createElement('h3');h.textContent=p.icon+' '+p.name+(i<day.phase||day.finished?' ✓':i===day.phase?' · עכשיו':'');if(i>day.phase&&!day.finished)h.className='later';dayList.appendChild(h);
   if(i>day.phase&&!day.finished)return;
@@ -50,7 +50,7 @@ function advancePhase(){
  addScore(500,DAY[day.phase].name+' הושלם!');
  while(day.phase<3&&phaseDone(day.phase))day.phase++;
  if(day.phase>=3){finishDay();return}
- day.light=day.phase;showBanner(DAY[day.phase].banner);thought(milkyB,DAY[day.phase].icon,2,true);
+ day.light=day.phase;showBanner(DAY[day.phase].banner);if(window.WEEK_READY)weekPhaseStart(day.phase);thought(milkyB,DAY[day.phase].icon,2,true);
  SFX.fanfare(true);renderDay();
 }
 function finishDay(){
@@ -58,7 +58,7 @@ function finishDay(){
  const stars=1+(score>=5000?1:0)+(score>=10000?1:0),time=day.t;
  const prev=save.day||{completed:0,bestStars:0,bestTime:0,bestScore:0};
  const rec={completed:prev.completed+1,bestStars:Math.max(prev.bestStars,stars),bestTime:prev.bestTime?Math.min(prev.bestTime,time):time,bestScore:Math.max(prev.bestScore,score)};
- save.day=rec;recordProgress();
+ save.day=rec;if(window.WEEK_READY)weekFinished(stars);recordProgress();
  setTimeout(()=>{
   const el=document.getElementById('dayEnd');
   document.getElementById('dayStars').innerHTML=[0,1,2].map(i=>'<span class="'+(i<stars?'on':'off')+'" style="animation-delay:'+(i*.35)+'s">⭐</span>').join('');
@@ -81,7 +81,7 @@ function updateDay(dt){
  day.lightK+=(L.k-day.lightK)*k;ambient.intensity=(tier==='high'?.54:tier==='medium'?.62:.66)*day.lightK;
 }
 function nextTaskHint(){if(day.finished)return '🌙 היום נגמר. להמשיך להשתולל או יום חדש';const p=DAY[day.phase];const t=p.tasks.find(t=>!day.done.has(t.id));return t?'🗓️ '+t.label:'🐽 התקרב לחפץ כדי לשחק'}
-function resetDay(){if(window.EVENTS_READY)resetEvents();clearTimeout(bannerTimer);dayBanner.classList.remove('show');day.phase=0;day.done.clear();day.t=0;day.finished=false;day.light=0;{const L=LIGHT[0];scene.background.setHex(L.sky);scene.fog.color.setHex(L.sky);ambient.color.setHex(L.hemi);ambient.groundColor.setHex(L.ground);sun.color.setHex(L.sun);sun.intensity=L.sunI;day.lightK=L.k}document.getElementById('dayEnd').hidden=true;renderDay()}
+function resetDay(){if(window.WEEK_READY)loadWeekPhases();if(window.EVENTS_READY)resetEvents();clearTimeout(bannerTimer);dayBanner.classList.remove('show');day.phase=0;day.done.clear();day.t=0;day.finished=false;day.light=0;{const L=LIGHT[0];scene.background.setHex(L.sky);scene.fog.color.setHex(L.sky);ambient.color.setHex(L.hemi);ambient.groundColor.setHex(L.ground);sun.color.setHex(L.sun);sun.intensity=L.sunI;day.lightK=L.k}document.getElementById('dayEnd').hidden=true;renderDay();if(window.WEEK_READY)weekPhaseStart(0,true)}
 dayChip.addEventListener('click',()=>{const open=dayPanel.hidden;if(open){if(!activityDrawer.hidden)activityToggle.click();if(!challengePanel.hidden)challengeToggle.onclick()}dayPanel.hidden=!open;dayChip.classList.toggle('active',open);renderDay()});
 document.getElementById('dayNew').addEventListener('click',()=>{reset()});
 document.getElementById('dayKeep').addEventListener('click',()=>{document.getElementById('dayEnd').hidden=true});

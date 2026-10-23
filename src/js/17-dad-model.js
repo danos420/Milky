@@ -82,13 +82,14 @@ function extraProp(x,z,kind){const g=new THREE.Group();scene.add(g);g.position.s
  else if(kind==='bin'){cyl(.3,.85,mat(0x2f6e4a),0,.43,0,g);cyl(.32,.05,mat(0x24573a),0,.88,0,g)}
  else if(kind==='soccer'){ball(.3,mat(0xf5f5f5,.5),0,.3,0,g);for(let i=0;i<6;i++){const a=i*1.05;ball(.09,mat(0x1d1d1d),Math.cos(a)*.24,.3+Math.sin(i*2.1)*.15,Math.sin(a)*.24,g)}}
  else if(kind==='trash'){binInner=new THREE.Group();g.add(binInner);cyl(.28,.7,mat(0x5f6f6b),0,.35,0,binInner);cyl(.3,.05,mat(0x46524f),0,.72,0,binInner);box(.16,.04,.06,mat(0x46524f),0,.77,0,binInner)}
+ else if(kind==='shampoo'){cyl(.11,.42,mat(0xe85d9a,.5),0,.21,0,g);cyl(.06,.1,mat(0xf5f5f5),0,.47,0,g);box(.13,.03,.03,mat(0xf5f5f5),.06,.53,0,g)}
  else if(kind==='bowl'){cyl(.3,.12,mat(0xb8432f),0,.06,0,g);cyl(.23,.03,mat(0x8a5a35),0,.12,0,g)}
  extras.push({g,home:g.position.clone(),vx:0,vz:0,spin:0,kind,lock:0});}
 extraProp(2.4,4.6,'bottle');extraProp(-2.7,2.5,'book');extraProp(3.7,-2.7,'shoe');extraProp(-1.8,-5.7,'duck');extraProp(2.5,-1.8,'remote');extraProp(-3.2,5.3,'shoe');extraProp(4.5,5.0,'book');extraProp(2.7,14.45,'trash');extraProp(-5.4,10.1,'bowl');
-for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');
+for(const [x,z] of [[1.3,-12.5],[-1.3,-12.5],[0,-11.2],[0,-13.8]])extraProp(x,z,'chair');for(const [x,z] of [[-2,-22],[-.6,-23],[.8,-22],[2.2,-23]])extraProp(x,z,'cone');extraProp(-6.5,-14,'cooler');extraProp(-18,-37.5,'bin');extraProp(-16.8,-37.5,'bin');extraProp(5,-20,'soccer');extraProp(-3.5,-11.2,'shampoo');
 const trashProp=extras.find(p=>p.kind==='trash');
 for(const p of chaosProps){addBody(p.g,p.kind==='cushion'?.34:.27,()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z},v=>{if(p.g.position.y<.05)p.vy=Math.max(p.vy,v)});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
-const extraRadius={bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
+const extraRadius={shampoo:.15,bottle:.17,book:.31,shoe:.27,duck:.25,remote:.22,trash:.3,bowl:.3,chair:.33,cone:.21,cooler:.33,bin:.32,soccer:.3};
 for(const p of extras){addBody(p.g,extraRadius[p.kind],()=>[p.vx,p.vz],(x,z)=>{p.vx=x;p.vz=z});Object.assign(bodies[bodies.length-1],{rec:p,kind:p.kind})}
 addBody(toyBall,.32,()=>[toyVelocity.x,toyVelocity.y],(x,z)=>{toyVelocity.x=x;toyVelocity.y=z});bodies[bodies.length-1].isBall=true;bodies[bodies.length-1].kind='ball';
 const training=['שב','ארצה','תן יד','סיבוב','נבח','השתולל'];let trainingIndex=0,trainingTime=0,dadSpeechTime=0,dadLastStage=0,activeCmd="";
@@ -130,6 +131,7 @@ function interact(){
  else if(kind==='shoe'){completeChallenge('shoe');speakDad('עוד נעל?! מילקי!')}
  else if(kind==='trash'){tipTrash()}
  else if(kind==='bowl'){eatFromBowl()}
+ else if(kind==='shampoo'){for(let i=0;i<10;i++)emit(closest.g.position.x,.6,closest.g.position.z,(Math.random()-.5)*3,2+Math.random()*2,(Math.random()-.5)*3,'foam',1);addActivity('🫧 פלופ! בועות סבון לכל הכיוונים')}
  else if(kind==='book'){completeChallenge('book');addActivity('📚 מילקי פיזר את הספרים')}
  addChaos(9);showBurst(closest.g.position.x,closest.g.position.z);
 }

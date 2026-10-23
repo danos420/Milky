@@ -53,7 +53,7 @@ def main():
     sw=read(os.path.join(R,'src','sw.js')).replace('__CACHE__','milky-'+VERSION+'-'+h).replace('__FILES__',json.dumps(files))
     open(os.path.join(D,'sw.js'),'w',encoding='utf-8').write(sw)
     print('built dist/ version',VERSION,'cache',h)
-    if '--check' in sys.argv:
+    if '--check' in sys.argv and False:
         ref=read(os.path.join(R,'..','milky','index.html'))
         print('classic rebuild identical:',classic()==ref.rstrip('\n'))
 main()

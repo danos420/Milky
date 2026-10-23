@@ -47,6 +47,7 @@ function updateDadBehavior(dt){
  if(dadState==='return'){targetX=slipperHome.x;targetZ=slipperHome.z;speed=1.4;stopDistance=.45;
   if(Math.hypot(targetX-dad.position.x,targetZ-dad.position.z)<.7)dadPutSlipperBack();}
  if(dadState==='pet'){targetX=pos.x;targetZ=pos.z;speed=2.05;stopDistance=1.2;if(dadAction>9){setDadState('rest');dadRoutine=2;}}
+ if(dadState==='bath'){targetX=pos.x;targetZ=pos.z;speed=2.7;stopDistance=.8;}
  if(dadState==='celebrate'){speed=0;if(dadAction>4){setDadState('rest');dadRoutine=3;}}
 
  let step=0;
@@ -65,7 +66,7 @@ function updateDadBehavior(dt){
  dadSitBlend+=((dadSeated?1:0)-dadSitBlend)*Math.min(1,dt*6);
  dadSnack.visible=dadSitBlend>.6; // snack bag while watching TV
  // Facing
- const faceDog=dadState==='chase'||dadState==='search'&&slipperState==='carried'||dadState==='pet'||dadState==='investigate'||dadChairGrumble>6;
+ const faceDog=dadState==='chase'||dadState==='bath'||dadState==='search'&&slipperState==='carried'||dadState==='pet'||dadState==='investigate'||dadChairGrumble>6;
  if(dadSeated)faceToward(dad,6.3,1.2,dt,4);
  else if(faceDog)faceToward(dad,pos.x,pos.z,dt);
  else faceToward(dad,dadNav.path[0]?dadNav.path[0][0]:targetX,dadNav.path[0]?dadNav.path[0][1]:targetZ,dt);
@@ -93,7 +94,7 @@ function updateDadBehavior(dt){
  dadMouth.scale.x=dadState==='chase'?1.9:dadState==='pet'?1.5:dadChairGrumble>6?1.7:1;
  dadMouth.scale.y=dadState==='chase'||dadChairGrumble>6?2.2:1;
  {const nap=dadSeated&&!tvOn&&typeof day!=='undefined'&&(day.phase===1||evtNap);
-  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
+  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='bath')dm='laugh';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
   updateFace(dadFace,dm,dt);dadLaughT=Math.max(0,dadLaughT-dt);
   if(dadSeated&&!tvOn&&Math.random()<dt*(nap?.12:.03))sayText(dadB,nap?pick(DAD_NAP):'💤',2.6,'think');}
  if(dadSeated&&tvOn&&Math.random()<dt*.12){sayText(dadB,pick(DAD_TV),2.6);dadLaughT=2}
