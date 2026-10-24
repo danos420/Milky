@@ -58,4 +58,5 @@
 58-openworld.js
 59-pizza-salon.js
 60-zombies.js
+61-human.js
 47-render-setup.js

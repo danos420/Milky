@@ -15,7 +15,7 @@ if(!idleAction&&idleTime>3.2){
 if(idleAction){idleClock+=dt;if(idleClock>IDLE_LEN[idleAction])idleAction=null}
 const poi=pointOfInterest();
 if(poi&&poi.food&&!moving&&poi.d<2.6)think('food',2.4);
-const pose=trainingTime>0&&(activeCmd==='שב'||activeCmd==='ארצה')?activeCmd:idleAction==='scratch'?'שב':idleAction==='lie'?'ארצה':idleAction==='stand'?'stand':null;
+const pose=(window.HUMAN_READY&&HUMAN&&!rag.active)?'stand':trainingTime>0&&(activeCmd==='שב'||activeCmd==='ארצה')?activeCmd:idleAction==='scratch'?'שב':idleAction==='lie'?'ארצה':idleAction==='stand'?'stand':null;
 // ---- Body: bounce, squash on landing, stretch in the air, lean into turns ----
 // Walk: the body dips at the ends of each stride so planted paws stay on the floor (no floating feet).
 const bounce=moving&&grounded?THREE.MathUtils.lerp(-(1-Math.cos(.5*Math.sin(steps)))*.85*MS,(.5-.5*Math.cos(steps*2.3))*.085,runBlend)*gait:0;
@@ -50,6 +50,7 @@ legs.forEach(({pivot,knee,front,s})=>{
  knee.rotation.x+=(kneeX-knee.rotation.x)*legK;
  pivot.rotation.z=sw*.045*gait;
 });
+if(window.HUMAN_READY&&HUMAN&&!rag.active&&grounded)humanLegs(moving,dt);
 // ---- Head: curious, looks at interesting things, sniffs, tilts ----
 let lookYaw=THREE.MathUtils.clamp((orbitAngle+Math.atan2(Math.sin(camYaw-yaw),Math.cos(camYaw-yaw)))*.58,-.72,.72),lookPitch=0;
 if(poi&&!running){const a=Math.atan2(poi.x-pos.x,poi.z-pos.z),rel=Math.atan2(Math.sin(a-yaw),Math.cos(a-yaw));
@@ -116,7 +117,7 @@ function renderFrame(){
 // Keep the follow camera INSIDE the room and on Milky's side of any wall.
 // The room is axis-aligned; a ray from Milky toward the desired camera location
 // is shortened before it reaches the wall plane (with a safety margin).
-const camK=MS<1?.45+.5*MS:1+(MS-1)*.8;look.set(pos.x,1.35*MS+jumpY*.45,pos.z);
+const hum=window.HUMAN_READY&&HUMAN?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.8*hum,pos.z);
 const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK,orbitHeight*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK);
 let safeFraction=1;
 // Walk along the camera arm and stop before it leaves the walkable rooms (walls between rooms included).
