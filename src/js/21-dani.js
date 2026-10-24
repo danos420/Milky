@@ -81,6 +81,8 @@ function updateDani(dt){
  let tx=DANI_HOME.x,tz=DANI_HOME.z,speed=0,stop=.3,faceX=null,faceZ=null;
  switch(daniState){
   case 'cook':speed=2.3;faceX=dani.position.x;faceZ=16;break;
+  case 'bday':tx=bd.hugT>0?pos.x-1.2:BDAY_DANI.x;tz=bd.hugT>0?pos.z:BDAY_DANI.z;stop=.3;speed=2.2;faceX=pos.x;faceZ=pos.z;break;
+  case 'dinner':tx=DANI_DINNER.x;tz=DANI_DINNER.z;stop=.2;speed=2.2;faceX=DTABLE.x;faceZ=DTABLE.z;break;
   case 'park':{const o=parkDani(dt);faceX=o.fx;faceZ=o.fz;tx=dani.position.x;tz=dani.position.z;break}
   case 'tidy':{const p=daniTarget;if(!p){setDani('cook');break}
    if(!daniCarry){tx=p.g.position.x;tz=p.g.position.z;stop=.6;speed=2.7;

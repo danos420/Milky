@@ -528,7 +528,7 @@ let tongueTimer=0,mood=0,blinkTimer=0;const moodNames=["רגיל","שמח","סק
 function stickTongue(){tongueTimer=2.4}
 function nextMood(){mood=(mood+1)%4;setBtn('moodBtn',["😄","😍","🤨","🥺"][mood],["הבעה","שמח","סקרן","תמים"][mood])}
 document.querySelector("#tongueBtn").addEventListener("click",()=>toggleGrab());document.querySelector("#ragdollBtn").addEventListener("click",()=>startRagdoll());document.querySelector("#moodBtn").addEventListener("click",nextMood);
-window.addEventListener("keydown",e=>{if(e.repeat)return;if(e.code==="KeyT")toggleGrab();if(e.code==="KeyX")startRagdoll();if(e.code==="KeyF")nextMood()});
+window.addEventListener("keydown",e=>{if(e.repeat)return;if(e.code==="KeyT"){const h=window.CTRL_READY&&ctxHook("grab");h?h.fn():toggleGrab()};if(e.code==="KeyX")startRagdoll();if(e.code==="KeyF")nextMood()});
 const ears=[];
 // Rose ears: tan, sticking out sideways like little wings, tips folded over.
 for(const s of [-1,1]){
@@ -996,6 +996,7 @@ trainButton.addEventListener('click',train);interactButton.addEventListener('cli
 window.addEventListener('keydown',e=>{if(e.repeat)return;if(e.code==='KeyR')train()});
 // E is contextual: snack when standing on the table, otherwise touch the nearest thing.
 function smartAction(){
+ if(window.CTRL_READY){const h=ctxHook('act');if(h){h.fn();return}}
  if(!won&&jumpY>=.78&&Math.hypot(pos.x-.5,pos.z-.3)<1.9){trySnack();return}
  const nearThing=nearMangal()||nearSausage()||nearFridge()||slipperState==='carried'||(slipperState==='floor'&&Math.hypot(pos.x-slipper.position.x,pos.z-slipper.position.z)<1.45)||extras.some(p=>Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z)<1.65);
  if(nearThing)interact();else trySnack();
@@ -1162,6 +1163,9 @@ function updateDadBehavior(dt){
  if(dadState==='return'){targetX=slipperHome.x;targetZ=slipperHome.z;speed=1.4;stopDistance=.45;
   if(Math.hypot(targetX-dad.position.x,targetZ-dad.position.z)<.7)dadPutSlipperBack();}
  if(dadState==='pet'){targetX=pos.x;targetZ=pos.z;speed=2.05;stopDistance=1.2;if(dadAction>9){setDadState('rest');dadRoutine=2;}}
+ if(dadState==='sweep'){targetX=dadTarget.x;targetZ=dadTarget.z;speed=.9;if(Math.hypot(targetX-dad.position.x,targetZ-dad.position.z)<.5){const [wx,wz]=randomFreeSpot();dadTarget.set(wx,0,wz)}}
+ if(dadState==='bday'){targetX=BDAY_DAD.x;targetZ=BDAY_DAD.z;speed=1.3;stopDistance=.3;if(bd.phase===2&&bd.hugT>0){targetX=pos.x+1.2;targetZ=pos.z}}
+ if(dadState==='dinner'){targetX=DAD_DINNER.x;targetZ=DAD_DINNER.z;speed=1.3;stopDistance=.2;}
  if(dadState==='bath'){targetX=pos.x;targetZ=pos.z;speed=2.7;stopDistance=.8;}
  if(dadState==='celebrate'){speed=0;if(dadAction>4){setDadState('rest');dadRoutine=3;}}
 
@@ -1173,7 +1177,7 @@ function updateDadBehavior(dt){
   const r=navStep(dad,dadNav,DAD_R,targetX,targetZ,speed,stopDistance,dt,[{x:pos.x,z:pos.z,r:dogRadius,skip:jumpY>=1.2},{x:dani.position.x,z:dani.position.z,r:DANI_R}]);
   step=r.step;dadWalk+=step*8;
   if(r.giveUp){
-   if(dadState==='wander'){const [rx,rz]=randomFreeSpot();dadTarget.set(rx,0,rz)}
+   if(dadState==='wander'||dadState==='sweep'){const [rx,rz]=randomFreeSpot();dadTarget.set(rx,0,rz)}
    else if(dadState==='return')dadPutSlipperBack();
    else if(wantsSeat){setDadState('wander');const [rx,rz]=randomFreeSpot();dadTarget.set(rx,0,rz)}
   }
@@ -1209,7 +1213,7 @@ function updateDadBehavior(dt){
  dadMouth.scale.x=dadState==='chase'?1.9:dadState==='pet'?1.5:dadChairGrumble>6?1.7:1;
  dadMouth.scale.y=dadState==='chase'||dadChairGrumble>6?2.2:1;
  {const nap=dadSeated&&!tvOn&&typeof day!=='undefined'&&(day.phase===1||evtNap);
-  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='bath')dm='laugh';else if(dadState==='sick')dm=dadLaughT>0?'laugh':'sad';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
+  let dm='smile';if(dadState==='chase')dm='shout';else if(dadState==='bath')dm='laugh';else if(dadState==='dinner')dm='smile';else if(dadState==='bday')dm='laugh';else if(dadState==='sick')dm=dadLaughT>0?'laugh':'sad';else if(dadState==='search')dm='confused';else if(dadState==='investigate')dm=dadAction<1.2?'shock':'angry';else if(dadState==='pet')dm='love';else if(dadState==='celebrate')dm='sad';else if(dadState==='return')dm='smug';else if(dadChairGrumble>6)dm='angry';else if(nap)dm='sleep';else if(dadLaughT>0)dm='laugh';else if(dadState==='wander')dm='neutral';
   updateFace(dadFace,dm,dt);dadLaughT=Math.max(0,dadLaughT-dt);
   if(dadSeated&&!tvOn&&Math.random()<dt*(nap?.12:.03))sayText(dadB,nap?pick(DAD_NAP):'💤',2.6,'think');}
  if(dadSeated&&tvOn&&Math.random()<dt*.12){sayText(dadB,pick(DAD_TV),2.6);dadLaughT=2}
@@ -1355,6 +1359,8 @@ function updateDani(dt){
  let tx=DANI_HOME.x,tz=DANI_HOME.z,speed=0,stop=.3,faceX=null,faceZ=null;
  switch(daniState){
   case 'cook':speed=2.3;faceX=dani.position.x;faceZ=16;break;
+  case 'bday':tx=bd.hugT>0?pos.x-1.2:BDAY_DANI.x;tz=bd.hugT>0?pos.z:BDAY_DANI.z;stop=.3;speed=2.2;faceX=pos.x;faceZ=pos.z;break;
+  case 'dinner':tx=DANI_DINNER.x;tz=DANI_DINNER.z;stop=.2;speed=2.2;faceX=DTABLE.x;faceZ=DTABLE.z;break;
   case 'park':{const o=parkDani(dt);faceX=o.fx;faceZ=o.fz;tx=dani.position.x;tz=dani.position.z;break}
   case 'tidy':{const p=daniTarget;if(!p){setDani('cook');break}
    if(!daniCarry){tx=p.g.position.x;tz=p.g.position.z;stop=.6;speed=2.7;
@@ -1652,7 +1658,7 @@ function finishDay(){
  day.finished=true;day.light=3;renderDay();showBanner('🌙 לילה. מילקי עשה את זה!');
  const stars=1+(score>=5000?1:0)+(score>=10000?1:0),time=day.t;
  const prev=save.day||{completed:0,bestStars:0,bestTime:0,bestScore:0};
- const rec={completed:prev.completed+1,bestStars:Math.max(prev.bestStars,stars),bestTime:prev.bestTime?Math.min(prev.bestTime,time):time,bestScore:Math.max(prev.bestScore,score)};
+ const rec={completed:(+prev.completed||0)+1,bestStars:Math.max(+prev.bestStars||0,stars),bestTime:+prev.bestTime?Math.min(prev.bestTime,time):time,bestScore:Math.max(+prev.bestScore||0,score)};
  save.day=rec;if(window.WEEK_READY)weekFinished(stars);recordProgress();
  setTimeout(()=>{
   const el=document.getElementById('dayEnd');
@@ -2070,7 +2076,7 @@ if(jumpY<=0){jumpY=0;velocityY=0;grounded=true}
 if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);if(window.JUICE_READY&&squash>.62&&!flip.active&&flipsThisAir===0){pow(MS>1.2?'בוווום!':'בום!');punch(MS>1.2?7:3.5)}
  const air=airTime;airTime=0;
  if(flip.active){flip.active=false;flipsThisAir=0;startRagdoll();addScore(100,'נחיתה על הפרצוף')}
- else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.JUICE_READY){if(n>=2){slowMo(.55);punch(6);pow(n===2?'וואו!!':'אגדי!!!',pos.x,2*MS,pos.z,true)}else pow('סלטה!')}if(window.SICK_READY)sickFlip()}
+ else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.JUICE_READY){if(n>=2){slowMo(.55);punch(6);pow(n===2?'וואו!!':'אגדי!!!',pos.x,2*MS,pos.z,true)}else pow('סלטה!')}if(window.SICK_READY)sickFlip();if(window.FAMILY_READY)familyFlip()}
  else if(fallV<-14.5){startRagdoll();addScore(200,'נחיתה אומנותית')}
  else if(air>1.3)addScore(Math.round(air*80),'זמן אוויר '+air.toFixed(1)+' שנ׳');
 }
@@ -2098,7 +2104,7 @@ for(const c of roundBlockers()){
 }
 landingCooldown=Math.max(0,landingCooldown-dt);
 // Paws planted on the floor: stride rate matches ground speed (longer strides in a gallop), so the legs never treadmill.
-steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);if(window.SICK_READY)updateSick(dt);if(window.PARK_READY)updatePark(dt);if(window.CTRL_READY)updateCtxButtons(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
+steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);if(window.SICK_READY)updateSick(dt);if(window.PARK_READY)updatePark(dt);if(window.FAMILY_READY)updateFamily(dt);if(window.BDAY_READY)updateBirthday(dt);if(window.CTRL_READY)updateCtxButtons(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
 const moving=Math.abs(speed)>0.01;
 runBlend+=(THREE.MathUtils.smoothstep(Math.abs(speed),3.3,5.4)-runBlend)*Math.min(1,dt*6);
 const running=moving&&runBlend>.5;
@@ -2289,7 +2295,7 @@ const WEAR_DEFS=[
  {id:'party',icon:'🥳',name:'כובע מסיבה',need:s=>[s.chal,3,'אתגרים']},
  {id:'gold',icon:'📿',name:'קולר זהב',need:s=>[s.days,1,'לסיים יום שלם']},
  {id:'cape',icon:'🦸',name:'גלימת גיבור',need:s=>[s.chal,9,'אתגרים']},
- {id:'crown',icon:'👑',name:'כתר המלך',need:s=>[s.bones,12,'עצמות זהב']}
+ {id:'crown',icon:'👑',name:'כתר המלך',need:s=>[save.mods&&save.mods.bday?12:s.bones,12,'עצמות זהב']}
 ];
 function progressStats(){const d=save.day||{};return {bones:save.bones.length,chal:save.challenges.length,days:d.completed||0,stars:d.bestStars||0,best:save.best||0}}
 function isUnlocked(def,s){const [have,need]=def.need(s||progressStats());return have>=need}
@@ -2978,8 +2984,9 @@ const DOGS=[makeDog({name:'רקס',color:0x2b2622,color2:0x3a332e,size:1.05,spee
  makeDog({name:'צ\'ופי',color:0xd9a35f,color2:0xc28a4a,size:.42,speed:4.4,bigEars:true,x:14,z:-50})];
 const [REX,BONBON,CHUPI]=DOGS;
 const DOG_LINES={'רקס':['וואף. (קול עמוק)','אתה חדש פה?','הכדור הזה שלי. אחי.'],'בונבון':['אני הכי יפה פה 💅','אל תתקרב לתסרוקת','היי חמוד 😳'],'צ\'ופי':['יפ! יפ! יפ!','אני ענק בפנים!','תופסת!!! אתה תופס!']};
-function parkFree(x,z){return x>-19.3&&x<19.3&&z>PZ1+.7&&z<PZ0-1}
-function pickSpot(d){for(let i=0;i<20;i++){const x=-18+Math.random()*36,z=PZ1+1.5+Math.random()*(PZ0-PZ1-3);if(!obstacles.some(o=>insidePlatform(o,x,z,.8))){d.tx=x;d.tz=z;return}}d.tx=d.home.x;d.tz=d.home.z}
+var PARTY_DOGS=false;
+function parkFree(x,z,d){if(d&&d.zone==='home')return x>-5.9&&x<5.9&&z>-8.3&&z<8.3;return x>-19.3&&x<19.3&&z>PZ1+.7&&z<PZ0-1}
+function pickSpot(d){for(let i=0;i<20;i++){const home=d.zone==='home',x=home?-5+Math.random()*10:-18+Math.random()*36,z=home?-7.5+Math.random()*15:PZ1+1.5+Math.random()*(PZ0-PZ1-3);if(!obstacles.some(o=>insidePlatform(o,x,z,.8))){d.tx=x;d.tz=z;return}}d.tx=d.home.x;d.tz=d.home.z}
 DOGS.forEach(pickSpot);
 // park ball thrown by Dani
 const pBall=ball(.16,mat(0xc8e04a,.5),0,.16,-44,scene);pBall.visible=false;const pBallV=new THREE.Vector2();
@@ -3018,7 +3025,7 @@ function updateParkBall(dt){
  if(Math.hypot(pBall.position.x-pos.x,pBall.position.z-pos.z)<.9*MS&&pBall.position.y<1.2+jumpY){park.ballHeld=true;milkyThought('😼',1.2,true)}
 }
 function updateDogs(dt,t){
- const inPark=pos.z<PZ0;
+ const inPark=PARTY_DOGS?(pos.z>-8.9&&pos.z<8.9):pos.z<PZ0;
  for(const d of DOGS){
   d.t+=dt;const p=d.g.position,dm=Math.hypot(pos.x-p.x,pos.z-p.z);let sp=d.speed*.45,tx=d.tx,tz=d.tz;
   if(d===CHUPI&&park.tagOn){tx=pos.x;tz=pos.z;sp=4.6;if(dm<.9&&jumpY<.6){park.tagOn=false;sayText(d.b,'תפסתי!!! 😝',1.8,'say',true);d.state='wander';d.t=0;addActivity('🐕 צ\'ופי תפס את מילקי! תיגע בו שוב')}}
@@ -3027,7 +3034,7 @@ function updateDogs(dt,t){
   else if(inPark&&d===REX&&pBall.visible&&!park.ballHeld&&park.on){tx=pBall.position.x;tz=pBall.position.z;sp=3.2;if(Math.hypot(tx-p.x,tz-p.z)<.7){pBallV.set((Math.random()-.5)*8,(Math.random()-.5)*8);park.ballVY=3;sayText(d.b,pick(DOG_LINES['רקס']),1.6,'say')}}
   if(Math.hypot(tx-p.x,tz-p.z)<.5&&sp>0&&tx===d.tx){pickSpot(d)}
   const dx=tx-p.x,dz=tz-p.z,dd=Math.hypot(dx,dz);let step=0;
-  if(dd>.3&&sp>0){step=Math.min(dd,sp*dt);let nx=p.x+dx/dd*step,nz=p.z+dz/dd*step;if(parkFree(nx,nz)&&!obstacles.some(o=>o.name!=='ספסל'&&insidePlatform(o,nx,nz,.15))){p.x=nx;p.z=nz}else pickSpot(d);
+  if(dd>.3&&sp>0){step=Math.min(dd,sp*dt);let nx=p.x+dx/dd*step,nz=p.z+dz/dd*step;if(parkFree(nx,nz,d)&&!obstacles.some(o=>o.name!=='ספסל'&&insidePlatform(o,nx,nz,.15))){p.x=nx;p.z=nz}else pickSpot(d);
    const a=Math.atan2(dx,dz);d.g.rotation.y+=Math.atan2(Math.sin(a-d.g.rotation.y),Math.cos(a-d.g.rotation.y))*Math.min(1,dt*8)}
   else if(dm<3){const a=Math.atan2(pos.x-p.x,pos.z-p.z);d.g.rotation.y+=Math.atan2(Math.sin(a-d.g.rotation.y),Math.cos(a-d.g.rotation.y))*Math.min(1,dt*4)}
   // keep out of Milky
@@ -3046,7 +3053,7 @@ function updatePark(dt){
  // gate swing
  const go=PARK_OPEN?1.4:0;gateL.rotation.y+=(go-gateL.rotation.y)*Math.min(1,dt*3);gateR.rotation.y+=(-go-gateR.rotation.y)*Math.min(1,dt*3);
  if(MUDDY&&Math.random()<dt*2)emit(pos.x,.2,pos.z,(Math.random()-.5),.3,(Math.random()-.5),'dust',.6);
- if(!PARK_OPEN&&!park.on)return;
+ if(!PARK_OPEN&&!park.on&&!PARTY_DOGS)return;
  updateDogs(dt,t);updateParkBall(dt);
  if(!park.on)return;
  if(!day.done.has('home')&&daniState!=='park'&&dani.position.z<-40.2)daniState='park';
@@ -3085,7 +3092,9 @@ const KIND_ICON={tp:'🧻',shampoo:'🧴',baguette:'🥖',tissues:'🤧',thermo:
 const KIND_NAME={tp:'נייר',shampoo:'שמפו',baguette:'בגט',tissues:'טישו',thermo:'מדחום',bowl:'קערה',can:'קופסה',receipt:'קבלה',bottle:'בקבוק',book:'ספר',shoe:'נעל',duck:'ברווז',remote:'שלט',trash:'פח',chair:'כיסא',cone:'קונוס',cooler:'צידנית',bin:'פח',soccer:'כדור',cushion:'כרית',box:'ארגז',ball:'כדור'};
 const ACT_LABEL={remote:'שלט',duck:'צפצף',bottle:'גלגל',shoe:'העף נעל',book:'פזר',trash:'הפוך פח',bowl:'לאכול',chair:'הפל',cone:'בעט',cooler:'דחוף',bin:'הפל',soccer:'בעט',tp:'גלגל',shampoo:'בועות',baguette:'דחוף',can:'בעט',receipt:'אכול קבלה',tissues:'דחוף',thermo:'דחוף'};
 function grabCandidate(){const m=mouthPos();let best=null,bd=1.45;for(const b of bodies){if(carried.has(b.o)||!b.o.visible)continue;const d=Math.hypot(b.o.position.x-m.x,b.o.position.z-m.z)-b.r;if(d<bd){bd=d;best=b}}return best}
+const CTX_HOOKS={act:[],grab:[]};function ctxHook(k){for(const f of CTX_HOOKS[k]){const r=f();if(r)return r}return null}
 function grabInfo(){
+ const hk=ctxHook('grab');if(hk)return hk;
  if(grab)return {i:'⬇️',l:'שחרר',on:2,fn:toggleGrab};
  if(slipperState==='carried')return {i:'⬇️',l:'שחרר כפכף',on:2,fn:dropSlipper};
  if(kebabState==='carried')return {i:'🍢',l:'ברח!',on:0,fn:()=>{}};
@@ -3096,6 +3105,7 @@ function grabInfo(){
  return {i:'👅',l:'לשון',on:0,fn:toggleGrab};
 }
 function actInfo(){
+ const hk=ctxHook('act');if(hk)return hk;
  if(!won&&jumpY>=.78&&Math.hypot(pos.x-.5,pos.z-.3)<1.9&&snack.visible)return {i:'🍪',l:'חטיף!',on:1,fn:trySnack};
  if(slipperState==='carried')return {i:'⬇️',l:'שחרר',on:2,fn:dropSlipper};
  if(nearSausage())return {i:'🌭',l:'נקניקייה',on:1,fn:interact};
@@ -3128,6 +3138,226 @@ document.querySelectorAll('#controls .tb:not([data-key])').forEach(b=>{
  b.addEventListener('contextmenu',e=>e.preventDefault());
 });
 window.CTRL_READY=true;
+// ===== Family: the two older brothers and their kids visit (Friday dinner, Saturday party) =====
+WEEK[5].soon=false;WEEK[5].short='ארוחת שישי';WEEK[5].intro='🍗 יום שישי: האחים והילדים באים לארוחה!';
+PHASE_SETS.friday=[
+ {name:'בוקר',icon:'🧹',banner:'🧹 מתכוננים לאורחים! אבא מנקה, דני מבשל',tasks:[
+  {id:'broom',label:'🧹 לתקוף את המטאטא של אבא',tip:'תתקרב לאבא כשהוא מטאטא'},
+  {id:'tablecloth',label:'🧺 למשוך את המפה מהשולחן',tip:'שולחן האוכל במטבח. כפתור פעולה ליד השולחן'},
+  {id:'sausage',label:'🌭 לגנוב נקניקייה מהמקרר',tip:'פתח את המקרר'},
+  {id:'waitDoor',label:'🚪 לחכות לאורחים ליד דלת המרפסת',tip:'תעמוד ליד הדלת לחצר'}]},
+ {name:'צהריים',icon:'👨‍👩‍👧‍👦',banner:'👨‍👩‍👧‍👦 האורחים הגיעו! הילדים רוצים את מילקי',tasks:[
+  {id:'escapeKids',label:'🧒 לברוח מהילדים 20 שניות',tip:'הם מהירים! רוץ'},
+  {id:'kidHug',label:'🤗 לתת לילדים לחבק',tip:'תן לילד לתפוס אותך ותעמוד רגע'},
+  {id:'slipperBro',label:'🩴 להביא לאח הגדול את הכפכף של אבא',tip:'תפוס כפכף ותשחרר ליד האח עם החולצה הכחולה'},
+  {id:'showOff',label:'😂 סלטה מול כולם',tip:'קפיצה כפולה ליד האורחים'}]},
+ {name:'ערב',icon:'🍗',banner:'🍗 ארוחת שישי! כולם סביב השולחן',tasks:[
+  {id:'underTable',label:'🪑 לחכות מתחת לשולחן',tip:'תעמוד ליד שולחן האוכל. משהו ייפול'},
+  {id:'tableSteal',label:'🍗 לגנוב משהו מהשולחן',tip:'קפוץ על השולחן'},
+  {id:'begAll',label:'🥺 "שב" יפה מול שלושה אנשים',tip:'כפתור 🦴 על "שב" ליד כל אחד'},
+  {id:'sleepDad',label:'😴 להירדם ליד אבא',tip:'תעמוד ליד אבא בשקט'}]}
+];
+// ----- guests -----
+const darkHair=c=>h=>{const d=ball(.34,mat(c),0,.1,-.04,h);d.scale.set(1,.62,1.02);ball(.14,mat(c),.25,.02,-.08,h).scale.set(.6,.9,.9);ball(.14,mat(c),-.25,.02,-.08,h).scale.set(.6,.9,.9)};
+const BRO1=makePerson({skin:0xc68a62,shirt:0x2f5a8f,pants:0x2f2f33,shoes:0xeeeeee,hair:h=>{darkHair(0x2a2420)(h);const b=ball(.3,mat(0x2a2420),0,-.14,.06,h);b.scale.set(1.05,.55,.95)}});
+const BRO2=makePerson({skin:0xc99067,shirt:0x9b3b3b,pants:0x3e5f8a,shoes:0x333333,belly:true,hair:darkHair(0x1f1a17)});
+const KID1=makePerson({skin:0xd9a07a,shirt:0xf2c14e,shorts:0x3e5f8a,bareArms:true,shoes:0xe74c3c,hair:darkHair(0x3a2a20)});
+const KID2=makePerson({skin:0xd49b75,shirt:0xe98ab0,dress:0xe98ab0,pants:0xd49b75,shoes:0xffffff,hair:h=>{darkHair(0x4a3020)(h);ball(.12,mat(0x4a3020),0,.05,-.32,h)}});
+KID1.g.scale.setScalar(.58);KID2.g.scale.setScalar(.54);
+const GUESTS=[{P:BRO1,r:.38,name:'האח הגדול',kid:false,b:null},{P:BRO2,r:.4,name:'האח',kid:false,b:null},{P:KID1,r:.26,name:'הילד',kid:true,b:null},{P:KID2,r:.26,name:'הילדה',kid:true,b:null}];
+GUESTS.forEach(g=>{g.b=makeBubble(g.P.g,g.kid?1.8:3.05);g.P.g.visible=false;g.P.g.position.set(0,0,-80);g.tx=0;g.tz=0;g.mood='smile';g.hugT=0});
+const KID_LINES=['מילקייי! בוא!!','אני אתפוס אותך!','הוא כזה רך!!','אפשר לקחת אותו הביתה?','חחחח הוא מלקק לי!'];
+const BRO_LINES=['מה קורה מילקי, אח שלי','אבא, הכלב הזה השמין?','דני, מה בישלת?','הכלב הזה יותר מפונק ממני'];
+const fam={on:false,day:'',phase:-1,kidChase:false,escape:0,hugT:0,waitT:0,underT:0,sleepT:0,begged:new Set(),cloth:true,clothT:0,dropT:0,talkT:5};
+const DINNER_SPOTS=[[2,0,10.6],[2,0,13.0],[.6,0,10.7],[3.4,0,13.0]],DAD_DINNER={x:3.5,z:10.7},DANI_DINNER={x:.5,z:13.0};
+function guestsShow(on){GUESTS.forEach((g,i)=>{g.P.g.visible=on;if(on){g.P.g.position.set(-1.6+i*.8,0,-11.2);g.P.nav.path=[];g.tx=g.P.g.position.x;g.tz=-6}else g.P.g.position.set(0,0,-80)})}
+// table dressing for dinner + the tablecloth Milky pulls
+const cloth=new THREE.Group();cloth.position.set(DTABLE.x,.805,DTABLE.z);scene.add(cloth);
+{box(2.1,.015,1.4,mat(0xf3efe4,.9),0,0,0,cloth);box(2.1,.4,.015,mat(0xf3efe4,.9),0,-.2,.7,cloth);box(2.1,.4,.015,mat(0xf3efe4,.9),0,-.2,-.7,cloth);
+ for(const [x,z] of [[-.6,-.35],[.6,-.35],[-.6,.35],[.6,.35]]){cyl(.18,.02,mat(0xffffff,.4),x,.02,z,cloth)}cloth.visible=false}
+const dinner=new THREE.Group();dinner.position.set(DTABLE.x,.82,DTABLE.z);scene.add(dinner);
+{const ch=ball(.2,mat(0xc77d36,.6),-.2,.12,0,dinner);ch.scale.set(1.3,.8,1);cyl(.34,.03,mat(0xf2efe8,.4),-.2,0,0,dinner);
+ const challah=ball(.13,mat(0xd9a557,.7),.45,.08,-.15,dinner);challah.scale.set(2,.9,1);cyl(.2,.1,mat(0x7fb069,.7),.45,.05,.28,dinner);
+ for(const [x,z] of [[-.75,-.45],[.75,-.45],[-.75,.45],[.75,.45]])cyl(.17,.02,mat(0xffffff,.4),x,0,z,dinner);dinner.visible=false}
+const broom=new THREE.Group();broom.position.set(0,-.78,.1);dad.add(broom);
+{cyl(.025,1.5,mat(0xb07a45),0,-.3,.15,broom).rotation.x=.5;const h=box(.4,.12,.18,mat(0xd9b65a),0,-.95,.5,broom);broom.visible=false}
+dadArms[1].add(broom);
+function familyResetProps(){fam.on=false;fam.phase=-1;fam.kidChase=false;guestsShow(false);cloth.visible=false;cloth.position.set(DTABLE.x,.805,DTABLE.z);cloth.rotation.set(0,0,0);dinner.visible=false;broom.visible=false;
+ if(dadState==='dinner'||dadState==='sweep')setDadState('rest');if(daniState==='dinner'){daniState='cook'}}
+const _origReset4=bathResetProps;bathResetProps=function(){_origReset4();familyResetProps()};
+DAY_HOOKS.friday=(phase,fresh)=>{
+ fam.on=true;fam.day='friday';fam.phase=phase;
+ if(phase===0){cloth.visible=true;fam.cloth=true;broom.visible=true;fam.escape=0;fam.begged.clear();if(dadSeated)unseatDad();setDadState('sweep');
+  if(started)setTimeout(()=>{if(fam.on&&fam.phase===0){speakDad('האחים שלך מגיעים! מילקי, תתנהג יפה... מה אני אומר, אתה אף פעם לא מתנהג יפה');setTimeout(()=>sayDani('אני עושה את השניצל של סבתא!'),1800)}},1200)}
+ if(phase===1){broom.visible=false;setDadState('rest');guestsShow(true);fam.kidChase=true;
+  setTimeout(()=>{if(!fam.on)return;sayText(GUESTS[2].b,'מילקייייי!!!',2,'say',true);sayText(GUESTS[0].b,'שבת שלום! איפה האוכל?',2.2,'say',true)},600)}
+ if(phase===2){fam.kidChase=false;dinner.visible=true;setDadState('dinner');daniState='dinner';daniAction=0;GUESTS.forEach((g,i)=>{g.tx=DINNER_SPOTS[i][0];g.tz=DINNER_SPOTS[i][2];g.P.nav.path=[]});
+  sayDani('ארוחה מוכנה!! כולם לשולחן!');setTimeout(()=>sayText(GUESTS[1].b,'וואו דני, אתה תותח',2,'say',true),1500)}
+};
+function pullCloth(){if(!fam.cloth)return;fam.cloth=false;fam.clothT=1;dayEvent('tablecloth');addScore(300,'מפה עפה!');SFX.crash&&SFX.crash();chaosShake=Math.max(chaosShake,.3);
+ if(window.JUICE_READY){pow('קראש!!',DTABLE.x,1.6,DTABLE.z,true);slowMo(.4)}for(let i=0;i<14;i++)emit(DTABLE.x+(Math.random()-.5)*1.6,1,DTABLE.z+(Math.random()-.5),(Math.random()-.5)*3,2+Math.random()*2,(Math.random()-.5)*3,'foam',.7);
+ sayDani('המפה החגיגית!!! מילקי!!!');setTimeout(()=>speakDad('חחח... טוב, ממילא היה צריך לכבס'),1200)}
+function guestNear(maxD){let best=null,bd=maxD;for(const g of GUESTS){if(!g.P.g.visible)continue;const d=Math.hypot(pos.x-g.P.g.position.x,pos.z-g.P.g.position.z);if(d<bd){bd=d;best=g}}return best}
+function familyFlip(){if(fam.on&&fam.phase>=1&&guestNear(5.5)){dayEvent('showOff');GUESTS.forEach(g=>{if(g.P.g.visible)thought(g.b,'👏',1.6,true)});sayText(GUESTS[3].b,'עוד פעם!!! עוד פעם!!!',2,'say',true)}}
+function updateGuests(dt){
+ const t=performance.now()/1000;fam.talkT-=dt;
+ for(const g of GUESTS){
+  if(!g.P.g.visible)continue;const P=g.P,o=P.g.position;let tx=g.tx,tz=g.tz,sp=fam.phase===2?2.3:1.8,stop=.35;
+  const dm=Math.hypot(pos.x-o.x,pos.z-o.z);
+  if(g.kid&&fam.kidChase){if(g.hugT>0){g.hugT-=dt;tx=o.x;tz=o.z;sp=0}else{tx=pos.x;tz=pos.z;sp=2.9;stop=.7;
+   if(dm<.95&&jumpY<.6){g.hugT=2.5;fam.hugT=0;sayText(g.b,pick(['תפסתי!!! 🤗','חיבוק!!!','אני לא עוזב אותך!']),2,'say',true);milkyThought('😳',1.2,true);fam.escape=Math.max(0,fam.escape-4)}}}
+  else if(!g.kid&&fam.phase===1&&dm<2.4){tx=o.x;tz=o.z;sp=0}
+  else if(fam.day==='friday'&&fam.phase===1&&Math.hypot(tx-o.x,tz-o.z)<.6&&Math.random()<dt*.15){const [rx,rz]=randomFreeSpot(-7,7);g.tx=rx;g.tz=rz}
+  const r=navStep(P.g,P.nav,g.r*(g.kid?1:1),tx,tz,sp,stop,dt,[]);
+  if(r.step>.001&&P.nav.path[0])faceToward(P.g,P.nav.path[0][0],P.nav.path[0][1],dt,7);else if(fam.phase===2&&fam.day==='friday')faceToward(P.g,DTABLE.x,DTABLE.z,dt,4);else if(dm<4)faceToward(P.g,pos.x,pos.z,dt,5);
+  animatePerson(P,r.step,dt,{arm:i=>g.hugT>0?-1.4:(!r.step&&dm<2.2&&!g.kid&&i===0?-.6+Math.sin(t*6)*.15:0)});
+  updateFace(P.face,g.hugT>0?'love':g.kid?'laugh':dm<2.5?'smile':'neutral',dt);
+  if(fam.talkT<=0&&dm<7&&Math.random()<.3){fam.talkT=4+Math.random()*4;sayText(g.b,pick(g.kid?KID_LINES:BRO_LINES),2.2,'say')}
+ }
+}
+function updateFamily(dt){
+ if(cloth.visible&&!fam.cloth&&fam.clothT>0){fam.clothT=Math.max(0,fam.clothT-dt*1.6);const k=1-fam.clothT;cloth.position.set(DTABLE.x+k*1.4,.805-.8*k*k,DTABLE.z);cloth.rotation.z=-k*1.2;if(fam.clothT===0)cloth.position.y=.02}
+ if(!fam.on)return;
+ updateGuests(dt);
+ const dd=dad.visible?Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z):99;
+ if(fam.day==='friday'){
+  if(fam.phase===0){
+   if(['rest','watch','wander','sit'].includes(dadState)){if(dadSeated)unseatDad();setDadState('sweep')}
+   if(dadState==='sweep'&&dd<1.4&&!day.done.has('broom')){dayEvent('broom');speakDad('זה מטאטא! לא צעצוע! ...טוב, תשחק');thought(dadB,'😂',2,true);if(window.JUICE_READY)pow('גררר!')}
+   if(Math.hypot(pos.x+1.2,pos.z+8.1)<1.6&&lastDogSpeed<.3&&grounded&&jumpY<.2){fam.waitT+=dt;if(fam.waitT>2.5&&!day.done.has('waitDoor')){dayEvent('waitDoor');sayText(milkyB,'🚗 שומע מכונית!!',2.2,'say',true)}}else fam.waitT=0;
+  }
+  if(fam.phase===1){
+   if(fam.kidChase&&!day.done.has('escapeKids')){const anyHug=GUESTS.some(g=>g.kid&&g.hugT>0);if(!anyHug)fam.escape+=dt;if(fam.escape>=20){dayEvent('escapeKids');sayText(GUESTS[2].b,'אי אפשר לתפוס אותו!!',2,'say',true)}
+    evtPill.hidden=false;const l='🧒 בורח מהילדים '+Math.floor(fam.escape)+'/20';if(evtPill.textContent!==l)evtPill.textContent=l}
+   else if(!(typeof evt!=='undefined'&&evt.cur))evtPill.hidden=true;
+   if(GUESTS.some(g=>g.kid&&g.hugT>0&&Math.hypot(pos.x-g.P.g.position.x,pos.z-g.P.g.position.z)<1.4)&&lastDogSpeed<.4){fam.hugT+=dt;if(fam.hugT>1.6&&!day.done.has('kidHug')){dayEvent('kidHug');thought(milkyB,'❤️',2,true);sayText(GUESTS[3].b,'הוא אוהב אותי!!',2,'say',true)}}
+   if(slipperState==='floor'&&Math.hypot(slipper.position.x-BRO1.g.position.x,slipper.position.z-BRO1.g.position.z)<1.9&&Math.hypot(slipper.position.x-slipperHome.x,slipper.position.z-slipperHome.z)>.5&&!day.done.has('slipperBro')){
+    dayEvent('slipperBro');sayText(GUESTS[0].b,'חחחח אבא! הכלב שלך גונב לך כפכפים?',2.4,'say',true);setTimeout(()=>speakDad('כל יום!!! כל יום!!!'),1200);slipper.position.copy(slipperHome)}
+  }
+  if(fam.phase===2){
+   if(daniState==='cook')daniState='dinner';
+   const dt2=Math.hypot(pos.x-DTABLE.x,pos.z-DTABLE.z);
+   if(dt2<1.9&&jumpY<.2&&lastDogSpeed<.3){fam.underT+=dt;if(fam.underT>3&&!day.done.has('underTable')){dayEvent('underTable');sayText(milkyB,'😋 מישהו הפיל שניצל!',2.2,'say',true);sayText(GUESTS[2].b,'אופס... 😇',1.8,'say',true)}}else fam.underT=0;
+   if(jumpY>.7&&dt2<1.1&&!day.done.has('tableSteal')){dayEvent('tableSteal');mouthItem.visible=true;shop.mouthT=6;addScore(400,'גניבה מהשולחן!');sayDani('מילקי!!! רד מהשולחן!!');sayText(GUESTS[1].b,'חחחחח אגדה',1.8,'say',true)}
+   if(trainingTime>0&&activeCmd==='שב'){for(const [k,o] of [['bro1',BRO1.g.position],['bro2',BRO2.g.position],['dad',dad.position]])if(!fam.begged.has(k)&&Math.hypot(pos.x-o.x,pos.z-o.z)<2.2){fam.begged.add(k);addActivity('🥺 '+({bro1:'האח הגדול',bro2:'האח',dad:'אבא'})[k]+' נשבר ('+fam.begged.size+'/3)');if(fam.begged.size>=3)dayEvent('begAll')}}
+   if(dd<1.7&&lastDogSpeed<.3&&grounded){fam.sleepT+=dt;if(fam.sleepT>3&&!day.done.has('sleepDad')){dayEvent('sleepDad');idleAction='lie';idleClock=0;sayText(milkyB,'💤 בטן מלאה... משפחה...',2.6,'think',true);speakDad('שבת שלום, מילקי שלי')}}else fam.sleepT=0;
+  }
+ }
+}
+CTX_HOOKS.act.push(()=>cloth.visible&&fam.cloth&&Math.hypot(pos.x-DTABLE.x,pos.z-DTABLE.z)<1.9&&jumpY<.55?{i:'🧺',l:'משוך מפה!',on:1,fn:pullCloth}:null);
+window.FAMILY_READY=true;
+loadWeekPhases();renderDay();renderWeek();
+// ===== Saturday: Milky's birthday. Everyone "forgot"... then a surprise party, cake and a group hug =====
+WEEK[6].soon=false;WEEK[6].short='יום הולדת';WEEK[6].intro='🎂 שבת: היום יום ההולדת של מילקי! ...אבל נראה שכולם שכחו';
+PHASE_SETS.party=[
+ {name:'בוקר',icon:'🎂',banner:'🎂 יום הולדת למילקי! ...ואף אחד לא אומר כלום?!',tasks:[
+  {id:'sadFace',label:'🥺 פרצוף עצוב לאבא',tip:'כפתור הבעה עד 🥺, ליד אבא'},
+  {id:'balloons3',label:'🎈 למצוא 3 בלונים מוחבאים',tip:'אחד על המיטה, אחד במטבח, אחד גבוה מעל הטרמפולינה'},
+  {id:'spy',label:'🕵️ לרגל אחרי דני במטבח',tip:'תעמוד לידו רגע. הוא מסתיר משהו'},
+  {id:'gift',label:'🎁 למצוא קופסה מסתורית בחצר',tip:'מאחורי המחסן'}]},
+ {name:'צהריים',icon:'🎉',banner:'🎉 הפתעה!!! כולם מחכים בסלון!',tasks:[
+  {id:'surprise',label:'🎉 להיכנס למסיבה בסלון',tip:'כולם בסלון'},
+  {id:'pop5',label:'🎈 לפוצץ 5 בלונים',tip:'קפוץ לתוך הבלונים המרחפים'},
+  {id:'tricks',label:'🦴 3 טריקים שונים מול כולם',tip:'כפתור 🦴 שלוש פעמים'},
+  {id:'dogFriends',label:'🐕 לשחק עם החברים מהגינה',tip:'רקס, בונבון וצ\'ופי באו למסיבה!'}]},
+ {name:'ערב',icon:'🕯️',banner:'🕯️ העוגה! כולם שרים',tasks:[
+  {id:'candles',label:'🕯️ לכבות את הנרות',tip:'קפוץ על שולחן הסלון, כפתור פעולה ליד העוגה'},
+  {id:'cakeFace',label:'🎂 לטרוף את העוגה עם הפרצוף',tip:'אחרי הנרות. כפתור פעולה'},
+  {id:'unwrap',label:'🎁 לפתוח את המתנה',tip:'המתנה ליד הספה. כפתור תפיסה'},
+  {id:'groupHug',label:'❤️ חיבוק קבוצתי',tip:'אחרי העוגה: תעמוד באמצע הסלון'}]}
+];
+const bd={on:false,phase:-1,found:new Set(),spyT:0,popped:0,tricks:new Set(),dogs:new Set(),lit:true,eaten:false,opened:false,hugT:0,creamT:0};
+// hidden balloons (morning)
+const HID=[{x:3.5,y:1.2,z:-6.4},{x:5.3,y:1.0,z:10.3},{x:14,y:3.4,z:-17}];
+const balloonMats=[0xe74c3c,0xf2c14e,0x3a7bd5,0x7fb069,0xe98ab0,0x9b59b6].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:.35}));
+function makeBalloon(i,s=1){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.SphereGeometry(.28*s,16,12),balloonMats[i%6]);b.scale.y=1.18;g.add(b);
+ const k=new THREE.Mesh(new THREE.ConeGeometry(.05*s,.08*s,8),balloonMats[i%6]);k.position.y=-.34*s;k.rotation.x=Math.PI;g.add(k);
+ const str=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.8*s,4),new THREE.MeshBasicMaterial({color:0xffffff}));str.position.y=-.78*s;g.add(str);scene.add(g);return g}
+const hidB=HID.map((h,i)=>{const g=makeBalloon(i);g.position.set(h.x,h.y,h.z);g.visible=false;return g});
+// mysterious gift box
+const giftBox=new THREE.Group();scene.add(giftBox);
+{box(.7,.55,.7,mat(0x3a7bd5,.6),0,.28,0,giftBox);box(.74,.06,.16,mat(0xf2c14e),0,.57,0,giftBox);box(.16,.06,.74,mat(0xf2c14e),0,.57,0,giftBox);
+ const lid=new THREE.Group();lid.position.y=.58;giftBox.add(lid);box(.76,.12,.76,mat(0x3a7bd5,.6),0,.06,0,lid);ball(.12,mat(0xf2c14e),0,.17,0,lid).scale.set(1.5,.7,.7);giftBox.userData.lid=lid;
+ const gb=ball(.2,new THREE.MeshStandardMaterial({color:0xffd34d,emissive:0x7a5200,roughness:.25,metalness:.6}),0,.3,0,giftBox);gb.visible=false;giftBox.userData.ball=gb}
+giftBox.visible=false;const GIFT_YARD={x:16.5,z:-29.2},GIFT_HOME={x:-3,z:5.4};
+// party decorations
+const partyDeco=new THREE.Group();scene.add(partyDeco);partyDeco.visible=false;
+{const cv=document.createElement('canvas');cv.width=1024;cv.height=160;const g=cv.getContext('2d');
+ const cols=['#e74c3c','#f2c14e','#3a7bd5','#7fb069','#e98ab0','#9b59b6'];for(let i=0;i<16;i++){g.fillStyle=cols[i%6];g.beginPath();g.moveTo(i*64,0);g.lineTo(i*64+64,0);g.lineTo(i*64+32,52);g.fill()}
+ g.fillStyle='#fff6dc';g.strokeStyle='#5a3a12';g.lineWidth=10;g.font='bold 72px system-ui,Arial';g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.strokeText('🎉 יום הולדת שמח מילקי! 🎉',512,108);g.fillText('🎉 יום הולדת שמח מילקי! 🎉',512,108);
+ const tx=new THREE.CanvasTexture(cv);const p=new THREE.Mesh(new THREE.PlaneGeometry(7,1.1),new THREE.MeshBasicMaterial({map:tx,transparent:true,toneMapped:false}));p.position.set(0,3.1,8.82);p.rotation.y=Math.PI;partyDeco.add(p)}
+for(const [x,z,n] of [[-5.6,-7.8,3],[5.5,-7.6,3],[-5.6,7.6,2],[5.2,4.6,3]])for(let i=0;i<n;i++){const b=makeBalloon(i+n,1);scene.remove(b);b.position.set(x+(i-1)*.35,2.2+(i%2)*.3,z);partyDeco.add(b)}
+const popB=[];for(let i=0;i<6;i++){const g=makeBalloon(i,1.15);g.visible=false;popB.push({g,x:-3.5+i*1.4,z:-4+(i%2)*3.2,y:1.55+(i%3)*.35,popped:false})}
+// cake
+const cake=new THREE.Group();cake.position.set(.2,.92,.6);scene.add(cake);cake.visible=false;
+{cyl(.42,.04,mat(0xffffff,.4),0,.02,0,cake);const l1=cyl(.36,.24,mat(0x6b3a1e,.7),0,.16,0,cake);const top=new THREE.Group();cake.add(top);cyl(.37,.06,mat(0xfff1e0,.6),0,.31,0,top);const l2=cyl(.24,.2,mat(0x6b3a1e,.7),0,.44,0,top);cyl(.25,.05,mat(0xfff1e0,.6),0,.56,0,top);
+ for(let i=0;i<8;i++){const a=i/8*Math.PI*2;ball(.04,mat(0xe74c3c,.4),Math.cos(a)*.3,.35,Math.sin(a)*.3,top)}
+ const flames=[];for(let i=0;i<5;i++){const a=i/5*Math.PI*2;cyl(.015,.14,mat(i%2?0x3a7bd5:0xe98ab0),Math.cos(a)*.14,.65,Math.sin(a)*.14,top);const f=new THREE.Mesh(new THREE.ConeGeometry(.028,.08,8),new THREE.MeshBasicMaterial({color:0xffb020,toneMapped:false}));f.position.set(Math.cos(a)*.14,.76,Math.sin(a)*.14);top.add(f);flames.push(f)}
+ cake.userData={top,flames}}
+const creamFace=ball(.13,mat(0xfff6ea,.6),0,-.02,.66,headPivot);creamFace.scale.set(1.3,.9,.8);creamFace.visible=false;
+const BDAY_SPOTS=[[-2.2,0,-2.6],[2.2,0,-2.8],[-1.4,0,-4.6],[1.2,0,-4.8]],BDAY_DAD={x:2.8,z:-1.2},BDAY_DANI={x:-2.6,z:-1};
+function bdayResetProps(){bd.on=false;bd.phase=-1;bd.found.clear();bd.popped=0;bd.tricks.clear();bd.dogs.clear();bd.lit=true;bd.eaten=false;bd.opened=false;bd.creamT=0;
+ hidB.forEach(b=>b.visible=false);giftBox.visible=false;giftBox.userData.lid.position.set(0,.58,0);giftBox.userData.lid.rotation.set(0,0,0);giftBox.userData.ball.visible=false;partyDeco.visible=false;popB.forEach(p=>{p.g.visible=false;p.popped=false});
+ cake.visible=false;cake.userData.top.visible=true;cake.userData.flames.forEach(f=>f.visible=true);creamFace.visible=false;
+ if(PARTY_DOGS){PARTY_DOGS=false;DOGS.forEach(d=>{d.zone='park';d.g.position.copy(d.home);pickSpot(d)})}
+ if(dadState==='bday')setDadState('rest');if(daniState==='bday')daniState='cook';if(typeof applyModes==='function')applyModes(true)}
+const _origReset5=bathResetProps;bathResetProps=function(){_origReset5();bdayResetProps()};
+DAY_HOOKS.party=(phase,fresh)=>{
+ bd.on=true;bd.phase=phase;fam.on=true;fam.day='party';fam.phase=phase;
+ if(phase===0){hidB.forEach(b=>b.visible=true);giftBox.visible=true;giftBox.position.set(GIFT_YARD.x,0,GIFT_YARD.z);
+  if(started)setTimeout(()=>{if(bd.on&&bd.phase===0){speakDad('בוקר טוב מילקי. סתם יום רגיל היום. שום דבר מיוחד. בכלל.');setTimeout(()=>sayDani('כן... יום רגיל לגמרי... 😅'),1600)}},1200)}
+ if(phase===1){partyDeco.visible=true;popB.forEach(p=>{p.g.visible=true;p.g.position.set(p.x,p.y,p.z)});hidB.forEach(b=>b.visible=false);giftBox.visible=false;
+  guestsShow(true);GUESTS.forEach((g,i)=>{g.P.g.position.set(BDAY_SPOTS[i][0],0,BDAY_SPOTS[i][2]);g.tx=BDAY_SPOTS[i][0];g.tz=BDAY_SPOTS[i][2];g.P.nav.path=[]});
+  PARTY_DOGS=true;DOGS.forEach((d,i)=>{d.zone='home';d.g.position.set(-3+i*3,0,2.5);pickSpot(d)});
+  if(dadSeated)unseatDad();dad.position.set(BDAY_DAD.x,0,BDAY_DAD.z);setDadState('bday');daniState='bday';dani.position.set(BDAY_DANI.x,0,BDAY_DANI.z);daniNav.path=[];
+  WEAR.party.visible=true;sayDani('מילקי!!! בוא לסלון! מהר!')}
+ if(phase===2){cake.visible=true;giftBox.visible=true;giftBox.position.set(GIFT_HOME.x,0,GIFT_HOME.z);
+  GUESTS.forEach(g=>{g.tx=(Math.random()-.5)*3;g.tz=-1.4+(Math.random()-.5)*2});
+  setTimeout(()=>{if(!bd.on)return;['🎶 יום הולדת שמח!','🎶 יום הולדת לך!','🎶 מילקי מילקי!','🎶 הייי!'].forEach((l,i)=>setTimeout(()=>sayText(GUESTS[i].b,l,2,'say',true),i*350));speakDad('🎶 יום הולדת שמח, מילקי שלי!')},500)}
+};
+function confetti(x,z,n=1){for(let i=0;i<n;i++)setTimeout(()=>showBurst(x+(Math.random()-.5)*2,z+(Math.random()-.5)*2),i*180)}
+function blowCandles(){if(!bd.lit)return;bd.lit=false;cake.userData.flames.forEach(f=>f.visible=false);dayEvent('candles');addScore(500,'משאלה!');confetti(cake.position.x,cake.position.z,3);
+ if(window.JUICE_READY){slowMo(.6);punch(6);pow('פוווו!',cake.position.x,1.8,cake.position.z,true)}
+ for(let i=0;i<8;i++)emit(cake.position.x,1.7,cake.position.z,(Math.random()-.5)*.6,.8,(Math.random()-.5)*.6,'smoke',1.6);
+ GUESTS.forEach(g=>{if(g.P.g.visible){thought(g.b,'👏',1.8,true)}});thought(dadB,'🥹',2,true);sayDani('איזו משאלה ביקשת, מילקי? ...נקניקייה, נכון?')}
+function eatCake(){if(bd.lit||bd.eaten)return;bd.eaten=true;cake.userData.top.visible=false;creamFace.visible=true;bd.creamT=18;dayEvent('cakeFace');addScore(400,'פרצוף עוגה!');
+ if(window.JUICE_READY)pow('נום נום!',cake.position.x,1.6,cake.position.z,true);sayText(GUESTS[2].b,'חחחחח הוא אכל הכל!!',2,'say',true);speakDad('חחחח! מילקי! זה היה גם בשבילנו!')}
+function openGift(){if(bd.opened)return;bd.opened=true;dayEvent('unwrap');addScore(500,'מתנה!');confetti(giftBox.position.x,giftBox.position.z,3);
+ giftBox.userData.ball.visible=true;bd.lidT=1;if(window.JUICE_READY){slowMo(.5);pow('🎁 וואו!!',giftBox.position.x,1.6,giftBox.position.z,true)}
+ save.mods.bday=true;writeSave();if(typeof checkUnlocks==='function')checkUnlocks();
+ sayDani('כדור זהב! ...וגם כתר. אתה מלך, מילקי 👑');addActivity('👑 מתנת יום הולדת: כתר המלך נפתח! (בתפריט 🎭)')}
+CTX_HOOKS.act.push(()=>{if(!bd.on||bd.phase<2||!cake.visible)return null;const onT=jumpY>.85&&insidePlatform(obstacles.find(o=>o.name==='שולחן'),pos.x,pos.z,.05),d=Math.hypot(pos.x-cake.position.x,pos.z-cake.position.z);
+ if(d<1.4&&(onT||d<1.0)){if(bd.lit)return {i:'🕯️',l:'נשוף!',on:1,fn:blowCandles};if(!bd.eaten)return {i:'🎂',l:'לטרוף!',on:1,fn:eatCake}}return null});
+CTX_HOOKS.grab.push(()=>bd.on&&bd.phase===2&&!bd.opened&&giftBox.visible&&Math.hypot(pos.x-giftBox.position.x,pos.z-giftBox.position.z)<1.5?{i:'🎁',l:'פתח מתנה!',on:1,fn:openGift}:null);
+const _origFinished=weekFinished;weekFinished=function(stars){_origFinished(stars);if(week.cur===6){setTimeout(()=>{const n=document.getElementById('dayNext');n.textContent='🏆 השבוע של מילקי הושלם! תודה שהיית חלק מהבלגן ❤️ — מילקי, אבא ודני';showBanner('🏆 השבוע הושלם! מילקי הכלב הכי אהוב בעולם');confetti(pos.x,pos.z,4)},2100)}};
+function updateBirthday(dt){
+ const t=performance.now()/1000;
+ if(bd.creamT>0){bd.creamT-=dt;if(bd.creamT<=0)creamFace.visible=false}
+ if(bd.lidT>0){bd.lidT=Math.max(0,bd.lidT-dt*1.5);const k=1-bd.lidT,L=giftBox.userData.lid;L.position.set(k*.8,.58+Math.sin(k*Math.PI)*1.2,0);L.rotation.z=-k*2.5;giftBox.userData.ball.position.y=.3+k*.5}
+ if(!bd.on)return;
+ const dd=Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z);
+ if(bd.phase===0){
+  hidB.forEach((b,i)=>{if(!b.visible)return;b.position.y=HID[i].y+Math.sin(t*2+i)*.1;if(Math.hypot(pos.x-b.position.x,pos.z-b.position.z)<1.0&&Math.abs(jumpY+1.1*MS-b.position.y)<1.1){b.visible=false;bd.found.add(i);addScore(200,'בלון '+bd.found.size+'/3');if(window.JUICE_READY)pow('🎈 '+bd.found.size+'/3');milkyThought('🎈',1.4,true);if(bd.found.size>=3){dayEvent('balloons3');sayText(milkyB,'🤔 בלונים... מישהו מתכנן משהו',2.4,'think',true)}}});
+  if(mood===3&&dd<2.8&&!day.done.has('sadFace')){dayEvent('sadFace');speakDad(pick(['מה? היום? לא... לא קורה כלום היום. בכלל. ...למה אתה מסתכל עליי ככה?','אל תעשה לי את הפרצוף הזה... אני לא אגלה!']));thought(dadB,'😅',2,true)}
+  if(Math.hypot(pos.x-dani.position.x,pos.z-dani.position.z)<2.3&&lastDogSpeed<.5){bd.spyT+=dt;if(bd.spyT>3&&!day.done.has('spy')){dayEvent('spy');sayDani('מה? אני? סתם מבשל! אין פה שום עוגה! ...לך מפה!');thought(daniB,'😳',2,true)}}else bd.spyT=0;
+  if(giftBox.visible&&Math.hypot(pos.x-GIFT_YARD.x,pos.z-GIFT_YARD.z)<1.3&&!day.done.has('gift')){dayEvent('gift');speakDad('לא!!! זה... זה של השכן! אל תיגע!');milkyThought('🤨',1.8,true);sayText(nbB,'מה? זה לא שלי',1.8,'say')}
+ }
+ if(bd.phase===1){
+  if(Math.abs(pos.x)<6.3&&pos.z>-8.8&&pos.z<8.8&&!day.done.has('surprise')){dayEvent('surprise');confetti(pos.x,pos.z,4);if(window.JUICE_READY){slowMo(.7);punch(7);pow('הפתעה!!!',pos.x,2.4,pos.z,true)}
+   GUESTS.forEach(g=>sayText(g.b,'הפתעה!!! 🎉',2,'say',true));speakDad('הפתעה!!! חשבת ששכחנו?!');sayDani('יום הולדת שמח, מילקי!!! 🎂');DOGS.forEach(d=>thought(d.b,'🎉',1.8,true))}
+  popB.forEach(p=>{if(p.popped)return;p.g.position.y=p.y+Math.sin(t*1.8+p.x)*.15;const hy=jumpY+1.5*MS;if(Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z)<.85&&Math.abs(hy-p.g.position.y)<.7){p.popped=true;p.g.visible=false;bd.popped++;
+   if(window.JUICE_READY){pow('פאק!',p.g.position.x,p.g.position.y+.4,p.g.position.z);hitStop(.04)}playToySound(900,.05,'square');showBurst(p.g.position.x,p.g.position.z);addScore(100,'בלון '+bd.popped);if(bd.popped>=5)dayEvent('pop5')}});
+  if(trainingTime>1.45&&activeCmd&&!bd.tricks.has(activeCmd)){bd.tricks.add(activeCmd);addActivity('🦴 טריק: '+activeCmd+' ('+bd.tricks.size+'/3)');GUESTS.forEach(g=>{if(g.P.g.visible&&Math.random()<.6)thought(g.b,'👏',1.4,true)});if(bd.tricks.size>=3)dayEvent('tricks')}
+  DOGS.forEach(d=>{if(!bd.dogs.has(d.name)&&Math.hypot(pos.x-d.g.position.x,pos.z-d.g.position.z)<1.9){bd.dogs.add(d.name);thought(d.b,'🎉',1.6,true);addActivity('🐕 '+d.name+' שמח לראות אותך ('+bd.dogs.size+'/3)');if(bd.dogs.size>=3)dayEvent('dogFriends')}});
+ }
+ if(bd.phase===2&&!bd.lit&&!day.done.has('groupHug')){
+  if(Math.abs(pos.x)<3&&pos.z>-5&&pos.z<5&&jumpY<.2&&lastDogSpeed<.3){bd.hugT+=dt;GUESTS.forEach(g=>{g.tx=pos.x+Math.sin(g.r*20)*1.3;g.tz=pos.z+Math.cos(g.r*20)*1.3});
+   if(bd.hugT>3){dayEvent('groupHug');confetti(pos.x,pos.z,5);for(let i=0;i<4;i++)setTimeout(()=>{milkyThought('❤️',1.5,true);GUESTS.forEach(g=>thought(g.b,'❤️',1.5,true));thought(dadB,'❤️',1.5,true);thought(daniB,'❤️',1.5,true)},i*500);
+    speakDad('מילקי... אתה הכי טוב שיש. יום הולדת שמח.');sayDani('אוהבים אותך, מילקי ❤️')}}else bd.hugT=0;
+ }
+}
+window.BDAY_READY=true;
+loadWeekPhases();renderDay();renderWeek();
 (function mergeAll(){
  scene.updateMatrixWorld(true);
  // 1) Static scenery: merge per area, so whole rooms you cannot see are skipped by the GPU.

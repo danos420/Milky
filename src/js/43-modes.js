@@ -15,7 +15,7 @@ const WEAR_DEFS=[
  {id:'party',icon:'🥳',name:'כובע מסיבה',need:s=>[s.chal,3,'אתגרים']},
  {id:'gold',icon:'📿',name:'קולר זהב',need:s=>[s.days,1,'לסיים יום שלם']},
  {id:'cape',icon:'🦸',name:'גלימת גיבור',need:s=>[s.chal,9,'אתגרים']},
- {id:'crown',icon:'👑',name:'כתר המלך',need:s=>[s.bones,12,'עצמות זהב']}
+ {id:'crown',icon:'👑',name:'כתר המלך',need:s=>[save.mods&&save.mods.bday?12:s.bones,12,'עצמות זהב']}
 ];
 function progressStats(){const d=save.day||{};return {bones:save.bones.length,chal:save.challenges.length,days:d.completed||0,stars:d.bestStars||0,best:save.best||0}}
 function isUnlocked(def,s){const [have,need]=def.need(s||progressStats());return have>=need}

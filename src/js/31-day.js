@@ -57,7 +57,7 @@ function finishDay(){
  day.finished=true;day.light=3;renderDay();showBanner('🌙 לילה. מילקי עשה את זה!');
  const stars=1+(score>=5000?1:0)+(score>=10000?1:0),time=day.t;
  const prev=save.day||{completed:0,bestStars:0,bestTime:0,bestScore:0};
- const rec={completed:prev.completed+1,bestStars:Math.max(prev.bestStars,stars),bestTime:prev.bestTime?Math.min(prev.bestTime,time):time,bestScore:Math.max(prev.bestScore,score)};
+ const rec={completed:(+prev.completed||0)+1,bestStars:Math.max(+prev.bestStars||0,stars),bestTime:+prev.bestTime?Math.min(prev.bestTime,time):time,bestScore:Math.max(+prev.bestScore||0,score)};
  save.day=rec;if(window.WEEK_READY)weekFinished(stars);recordProgress();
  setTimeout(()=>{
   const el=document.getElementById('dayEnd');

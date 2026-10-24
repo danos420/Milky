@@ -78,8 +78,9 @@ const DOGS=[makeDog({name:'רקס',color:0x2b2622,color2:0x3a332e,size:1.05,spee
  makeDog({name:'צ\'ופי',color:0xd9a35f,color2:0xc28a4a,size:.42,speed:4.4,bigEars:true,x:14,z:-50})];
 const [REX,BONBON,CHUPI]=DOGS;
 const DOG_LINES={'רקס':['וואף. (קול עמוק)','אתה חדש פה?','הכדור הזה שלי. אחי.'],'בונבון':['אני הכי יפה פה 💅','אל תתקרב לתסרוקת','היי חמוד 😳'],'צ\'ופי':['יפ! יפ! יפ!','אני ענק בפנים!','תופסת!!! אתה תופס!']};
-function parkFree(x,z){return x>-19.3&&x<19.3&&z>PZ1+.7&&z<PZ0-1}
-function pickSpot(d){for(let i=0;i<20;i++){const x=-18+Math.random()*36,z=PZ1+1.5+Math.random()*(PZ0-PZ1-3);if(!obstacles.some(o=>insidePlatform(o,x,z,.8))){d.tx=x;d.tz=z;return}}d.tx=d.home.x;d.tz=d.home.z}
+var PARTY_DOGS=false;
+function parkFree(x,z,d){if(d&&d.zone==='home')return x>-5.9&&x<5.9&&z>-8.3&&z<8.3;return x>-19.3&&x<19.3&&z>PZ1+.7&&z<PZ0-1}
+function pickSpot(d){for(let i=0;i<20;i++){const home=d.zone==='home',x=home?-5+Math.random()*10:-18+Math.random()*36,z=home?-7.5+Math.random()*15:PZ1+1.5+Math.random()*(PZ0-PZ1-3);if(!obstacles.some(o=>insidePlatform(o,x,z,.8))){d.tx=x;d.tz=z;return}}d.tx=d.home.x;d.tz=d.home.z}
 DOGS.forEach(pickSpot);
 // park ball thrown by Dani
 const pBall=ball(.16,mat(0xc8e04a,.5),0,.16,-44,scene);pBall.visible=false;const pBallV=new THREE.Vector2();
@@ -118,7 +119,7 @@ function updateParkBall(dt){
  if(Math.hypot(pBall.position.x-pos.x,pBall.position.z-pos.z)<.9*MS&&pBall.position.y<1.2+jumpY){park.ballHeld=true;milkyThought('😼',1.2,true)}
 }
 function updateDogs(dt,t){
- const inPark=pos.z<PZ0;
+ const inPark=PARTY_DOGS?(pos.z>-8.9&&pos.z<8.9):pos.z<PZ0;
  for(const d of DOGS){
   d.t+=dt;const p=d.g.position,dm=Math.hypot(pos.x-p.x,pos.z-p.z);let sp=d.speed*.45,tx=d.tx,tz=d.tz;
   if(d===CHUPI&&park.tagOn){tx=pos.x;tz=pos.z;sp=4.6;if(dm<.9&&jumpY<.6){park.tagOn=false;sayText(d.b,'תפסתי!!! 😝',1.8,'say',true);d.state='wander';d.t=0;addActivity('🐕 צ\'ופי תפס את מילקי! תיגע בו שוב')}}
@@ -127,7 +128,7 @@ function updateDogs(dt,t){
   else if(inPark&&d===REX&&pBall.visible&&!park.ballHeld&&park.on){tx=pBall.position.x;tz=pBall.position.z;sp=3.2;if(Math.hypot(tx-p.x,tz-p.z)<.7){pBallV.set((Math.random()-.5)*8,(Math.random()-.5)*8);park.ballVY=3;sayText(d.b,pick(DOG_LINES['רקס']),1.6,'say')}}
   if(Math.hypot(tx-p.x,tz-p.z)<.5&&sp>0&&tx===d.tx){pickSpot(d)}
   const dx=tx-p.x,dz=tz-p.z,dd=Math.hypot(dx,dz);let step=0;
-  if(dd>.3&&sp>0){step=Math.min(dd,sp*dt);let nx=p.x+dx/dd*step,nz=p.z+dz/dd*step;if(parkFree(nx,nz)&&!obstacles.some(o=>o.name!=='ספסל'&&insidePlatform(o,nx,nz,.15))){p.x=nx;p.z=nz}else pickSpot(d);
+  if(dd>.3&&sp>0){step=Math.min(dd,sp*dt);let nx=p.x+dx/dd*step,nz=p.z+dz/dd*step;if(parkFree(nx,nz,d)&&!obstacles.some(o=>o.name!=='ספסל'&&insidePlatform(o,nx,nz,.15))){p.x=nx;p.z=nz}else pickSpot(d);
    const a=Math.atan2(dx,dz);d.g.rotation.y+=Math.atan2(Math.sin(a-d.g.rotation.y),Math.cos(a-d.g.rotation.y))*Math.min(1,dt*8)}
   else if(dm<3){const a=Math.atan2(pos.x-p.x,pos.z-p.z);d.g.rotation.y+=Math.atan2(Math.sin(a-d.g.rotation.y),Math.cos(a-d.g.rotation.y))*Math.min(1,dt*4)}
   // keep out of Milky
@@ -146,7 +147,7 @@ function updatePark(dt){
  // gate swing
  const go=PARK_OPEN?1.4:0;gateL.rotation.y+=(go-gateL.rotation.y)*Math.min(1,dt*3);gateR.rotation.y+=(-go-gateR.rotation.y)*Math.min(1,dt*3);
  if(MUDDY&&Math.random()<dt*2)emit(pos.x,.2,pos.z,(Math.random()-.5),.3,(Math.random()-.5),'dust',.6);
- if(!PARK_OPEN&&!park.on)return;
+ if(!PARK_OPEN&&!park.on&&!PARTY_DOGS)return;
  updateDogs(dt,t);updateParkBall(dt);
  if(!park.on)return;
  if(!day.done.has('home')&&daniState!=='park'&&dani.position.z<-40.2)daniState='park';

@@ -4,7 +4,9 @@ const KIND_ICON={tp:'🧻',shampoo:'🧴',baguette:'🥖',tissues:'🤧',thermo:
 const KIND_NAME={tp:'נייר',shampoo:'שמפו',baguette:'בגט',tissues:'טישו',thermo:'מדחום',bowl:'קערה',can:'קופסה',receipt:'קבלה',bottle:'בקבוק',book:'ספר',shoe:'נעל',duck:'ברווז',remote:'שלט',trash:'פח',chair:'כיסא',cone:'קונוס',cooler:'צידנית',bin:'פח',soccer:'כדור',cushion:'כרית',box:'ארגז',ball:'כדור'};
 const ACT_LABEL={remote:'שלט',duck:'צפצף',bottle:'גלגל',shoe:'העף נעל',book:'פזר',trash:'הפוך פח',bowl:'לאכול',chair:'הפל',cone:'בעט',cooler:'דחוף',bin:'הפל',soccer:'בעט',tp:'גלגל',shampoo:'בועות',baguette:'דחוף',can:'בעט',receipt:'אכול קבלה',tissues:'דחוף',thermo:'דחוף'};
 function grabCandidate(){const m=mouthPos();let best=null,bd=1.45;for(const b of bodies){if(carried.has(b.o)||!b.o.visible)continue;const d=Math.hypot(b.o.position.x-m.x,b.o.position.z-m.z)-b.r;if(d<bd){bd=d;best=b}}return best}
+const CTX_HOOKS={act:[],grab:[]};function ctxHook(k){for(const f of CTX_HOOKS[k]){const r=f();if(r)return r}return null}
 function grabInfo(){
+ const hk=ctxHook('grab');if(hk)return hk;
  if(grab)return {i:'⬇️',l:'שחרר',on:2,fn:toggleGrab};
  if(slipperState==='carried')return {i:'⬇️',l:'שחרר כפכף',on:2,fn:dropSlipper};
  if(kebabState==='carried')return {i:'🍢',l:'ברח!',on:0,fn:()=>{}};
@@ -15,6 +17,7 @@ function grabInfo(){
  return {i:'👅',l:'לשון',on:0,fn:toggleGrab};
 }
 function actInfo(){
+ const hk=ctxHook('act');if(hk)return hk;
  if(!won&&jumpY>=.78&&Math.hypot(pos.x-.5,pos.z-.3)<1.9&&snack.visible)return {i:'🍪',l:'חטיף!',on:1,fn:trySnack};
  if(slipperState==='carried')return {i:'⬇️',l:'שחרר',on:2,fn:dropSlipper};
  if(nearSausage())return {i:'🌭',l:'נקניקייה',on:1,fn:interact};

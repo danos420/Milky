@@ -147,6 +147,7 @@ trainButton.addEventListener('click',train);interactButton.addEventListener('cli
 window.addEventListener('keydown',e=>{if(e.repeat)return;if(e.code==='KeyR')train()});
 // E is contextual: snack when standing on the table, otherwise touch the nearest thing.
 function smartAction(){
+ if(window.CTRL_READY){const h=ctxHook('act');if(h){h.fn();return}}
  if(!won&&jumpY>=.78&&Math.hypot(pos.x-.5,pos.z-.3)<1.9){trySnack();return}
  const nearThing=nearMangal()||nearSausage()||nearFridge()||slipperState==='carried'||(slipperState==='floor'&&Math.hypot(pos.x-slipper.position.x,pos.z-slipper.position.z)<1.45)||extras.some(p=>Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z)<1.65);
  if(nearThing)interact();else trySnack();

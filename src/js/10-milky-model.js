@@ -30,7 +30,7 @@ let tongueTimer=0,mood=0,blinkTimer=0;const moodNames=["רגיל","שמח","סק
 function stickTongue(){tongueTimer=2.4}
 function nextMood(){mood=(mood+1)%4;setBtn('moodBtn',["😄","😍","🤨","🥺"][mood],["הבעה","שמח","סקרן","תמים"][mood])}
 document.querySelector("#tongueBtn").addEventListener("click",()=>toggleGrab());document.querySelector("#ragdollBtn").addEventListener("click",()=>startRagdoll());document.querySelector("#moodBtn").addEventListener("click",nextMood);
-window.addEventListener("keydown",e=>{if(e.repeat)return;if(e.code==="KeyT")toggleGrab();if(e.code==="KeyX")startRagdoll();if(e.code==="KeyF")nextMood()});
+window.addEventListener("keydown",e=>{if(e.repeat)return;if(e.code==="KeyT"){const h=window.CTRL_READY&&ctxHook("grab");h?h.fn():toggleGrab()};if(e.code==="KeyX")startRagdoll();if(e.code==="KeyF")nextMood()});
 const ears=[];
 // Rose ears: tan, sticking out sideways like little wings, tips folded over.
 for(const s of [-1,1]){
