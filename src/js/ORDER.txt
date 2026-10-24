@@ -60,4 +60,5 @@
 60-zombies.js
 61-human.js
 62-menu-human.js
+63-detective.js
 47-render-setup.js

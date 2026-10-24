@@ -197,3 +197,11 @@ body.zombieMode #vignette{background:radial-gradient(ellipse at 50% 48%,transpar
 
 #touchKeys{display:none;font-size:13px;opacity:.85}@media (pointer:coarse){#touchKeys{display:block}}
 #saveNote{display:none}
+
+#startDetective{flex:1 1 230px;max-width:340px;background:#d9b97a;border:0;border-radius:14px;padding:16px 24px;font-size:20px;font-weight:800;cursor:pointer;color:#2b1f0e;box-shadow:inset 0 -4px 0 #9c7a3e}
+@media (max-width:430px){#startDetective{font-size:17px;padding:13px 16px}}
+@media (max-height:480px){#startDetective{padding:10px 14px;font-size:15px;flex-basis:180px}}
+#dClues{text-align:right;font-size:14px;line-height:1.6;margin:6px 0 12px;color:#ffe9a8;max-height:30vh;overflow:auto}
+#dSuspects button{font-size:17px;padding:12px 14px;flex:1 1 140px}
+#dEndStats{font-size:16px;line-height:1.8;margin:8px 0 14px;color:#ffe9a8}
+body.detective #vignette{background:radial-gradient(ellipse at 50% 48%,transparent 50%,rgba(25,18,8,.55) 100%)}
