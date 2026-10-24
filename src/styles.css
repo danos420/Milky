@@ -194,3 +194,6 @@ body.zombieMode #vignette{background:radial-gradient(ellipse at 50% 48%,transpar
 #intro{margin:auto}
 #startModes{margin:10px 0 14px}
 @media (max-height:480px){#overlay{align-items:flex-start;padding:12px}#startModes button{padding:10px 14px;font-size:15px;flex-basis:180px}#intro h1{margin:4px 0}}
+
+#touchKeys{display:none;font-size:13px;opacity:.85}@media (pointer:coarse){#touchKeys{display:block}}
+#saveNote{display:none}
