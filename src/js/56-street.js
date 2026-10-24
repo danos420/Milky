@@ -21,7 +21,7 @@ box(1.2,.12,2.4,mat(0xcfc6b5),7.0,3.0,26);for(let i=0;i<7;i++)box(.04,.8,.04,met
 // guard dog yard: fence on the west sidewalk edge
 const GUARD_YARD={x0:2.6,x1:6.4,z0:15.6,z1:16};box(.08,1.5,.08,metal,6.55,.75,16.2);
 // far side shops
-const SHOPS=[{name:'🛒 מכולת',z0:0,z1:10,c:bldB,a:awn[0],open:true},{name:'🩺 וטרינר',z0:10.4,z1:20,c:bldA,a:awn[3]},{name:'🍕 פיצה פלאפל',z0:20.4,z1:30,c:bldC,a:awn[2]},{name:'✂️ מספרה לכלבים',z0:30.4,z1:40,c:bldB,a:awn[1]}];
+const SHOPS=[{name:'🛒 מכולת',z0:0,z1:10,c:bldB,a:awn[0],open:true},{name:'🩺 וטרינר',z0:10.4,z1:20,c:bldA,a:awn[3],open:true},{name:'🍕 פיצה פלאפל',z0:20.4,z1:30,c:bldC,a:awn[2]},{name:'✂️ מספרה לכלבים',z0:30.4,z1:40,c:bldB,a:awn[1]}];
 function shopSign(text,z,soon){const cv=document.createElement('canvas');cv.width=512;cv.height=112;const g=cv.getContext('2d');g.fillStyle=soon?'#5b5246':'#2b2420';g.fillRect(0,0,512,112);g.fillStyle='#fff3d6';g.font='bold 54px system-ui,Arial';g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.fillText(text,256,56);
  const hold=new THREE.Group();scene.add(hold);const p=new THREE.Mesh(new THREE.PlaneGeometry(3.4,.75),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),toneMapped:false}));p.position.set(19.55,3.4,z);p.rotation.y=-Math.PI/2;hold.add(p)}
 for(const s of SHOPS){const zc=(s.z0+s.z1)/2,len=s.z1-s.z0;

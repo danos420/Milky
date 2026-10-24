@@ -120,8 +120,8 @@ const camK=MS<1?.45+.5*MS:1+(MS-1)*.8;look.set(pos.x,1.35*MS+jumpY*.45,pos.z);
 const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK,orbitHeight*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK);
 let safeFraction=1;
 // Walk along the camera arm and stop before it leaves the walkable rooms (walls between rooms included).
-const camWall=(x,z)=>{const lx=look.x;if(lx>6.5&&x<6.7&&z>-9&&z<16)return false;if(lx<6.5&&x>6.3&&look.z>-9&&look.z<16)return false;if(lx>20&&x<20.15)return false;if(lx<19.95&&lx>6.5&&x>19.75&&z>-.3&&z<10.3)return false;return true};
-const camInside=(x,z,r)=>camWall(x,z)&&((x>=6.6+r&&x<=19.4-r&&z>=-8.6+r&&z<=44-r)||(x>=20.2+r&&x<=27.6-r&&z>=1.2+r&&z<=8.8-r)||(z>-9?Math.abs(x)<=6.4-r&&z<=15.9-r:Math.abs(x)<=20-r&&z>=(PARK_OPEN?-58:-40)+r));
+const camWall=(x,z)=>{const lx=look.x;if(lx>6.5&&x<6.7&&z>-9&&z<16)return false;if(lx<6.5&&x>6.3&&look.z>-9&&look.z<16)return false;if(lx>20&&x<20.15)return false;if(lx<19.95&&lx>6.5&&x>19.75&&z>-.3&&z<20.1)return false;if(lx>20&&look.z<10.2&&z>10.1)return false;if(lx>20&&look.z>10.4&&z<10.5)return false;return true};
+const camInside=(x,z,r)=>camWall(x,z)&&((x>=6.6+r&&x<=19.4-r&&z>=-8.6+r&&z<=44-r)||(x>=20.2+r&&x<=27.6-r&&z>=1.2+r&&z<=8.8-r)||(x>=20.2+r&&x<=27.6-r&&z>=10.6+r&&z<=19.6-r)||(z>-9?Math.abs(x)<=6.4-r&&z<=15.9-r:Math.abs(x)<=20-r&&z>=(PARK_OPEN?-58:-40)+r));
 for(let k=1;k<=28;k++){const f=k/28;if(!camInside(look.x+cameraDirection.x*f,look.z+cameraDirection.z*f,.14)){safeFraction=Math.max(.08,(k-1)/28-.015);break}}
 // Shorten the camera arm before it enters furniture. Treat furniture as
 // padded 3D boxes; the camera stays on Milky's side of the obstruction.
