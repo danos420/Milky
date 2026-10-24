@@ -32,7 +32,7 @@ const WORLDS=[
  {icon:'🌍',name:'עולם פתוח',col:'#7fd3a8',sub:()=>'משימות צד · '+save.challenges.length+'/'+challengeDefs.length,go:()=>document.getElementById('startOpen').click()},
  {icon:'🧟',name:'מתקפת זומבים',col:'#8fd36d',sub:()=>'10 לילות · ⭐ '+epStars('zombie')+'/30',go:()=>epBoard('zombie')},
  {icon:'🕵️',name:'הבלש מילקי',col:'#d9b97a',sub:()=>'10 תיקים · ⭐ '+totalStars()+'/30',go:()=>document.getElementById('startDetective').click()},
- {icon:'🕺',name:'מילקי בן אדם',col:'#c9a7ff',sub:()=>'יום סידורים',go:()=>document.getElementById('startHuman').click()},
+ {icon:'🕺',name:'מילקי בן אדם',col:'#c9a7ff',sub:()=>'10 סידורים · ⭐ '+epStars('human')+'/30',go:()=>epBoard('human')},
  {icon:'👨',name:'לשחק כאבא',col:'#b8c4d0',sub:()=>epComplete('dad')?'✔ פתוח בעולם הפתוח · ⭐ '+epStars('dad')+'/30':'10 משימות · ⭐ '+epStars('dad')+'/30',go:()=>epBoard('dad')}
 ];
 const uniBox=document.createElement('div');uniBox.id='universe';document.getElementById('startModes').after(uniBox);
@@ -46,4 +46,7 @@ epRegister({id:'zombie',icon:'🧟',title:'מתקפת זומבים: 10 לילו�
  levels:NIGHTS.map((n,i)=>({id:'n'+(i+1),title:'לילה '+(i+1)+': '+n.t,icon:n.icon,sub:n.sub})),
  start:i=>{zs.night=i;document.querySelector('#overlay').style.display='none';setZombie(true);startGame();setTimeout(()=>showBanner('🌙 לילה '+(i+1)+': '+NIGHTS[i].t),200)},
  quit:()=>{if(ZOMBIE)setZombie(false)}});
+epRegister({id:'human',icon:'🕺',title:'מילקי בן אדם: 10 סידורים',rewardDone:'🎩 כל הסידורים "בוצעו"! אבא עדיין לא בטוח מה קרה היום',
+ levels:ERRANDS.map(e=>({id:e.id,title:e.name,icon:e.icon,sub:'כל סידור נגמר בפיאסקו'})),
+ start:i=>{document.querySelector('#overlay').style.display='none';setHuman(true);startGame();hStartErrand(i)},quit:()=>{if(HUMAN)setHuman(false)}});
 window.EP_READY=true;
