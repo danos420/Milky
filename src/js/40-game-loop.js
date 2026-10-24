@@ -1,6 +1,6 @@
 function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started&&!window.PHOTO_ON)gameStep(dt*(window.JUICE_READY?juiceTick(dt):1));if(window.JUICE_READY&&started)levelupFrame(dt);renderFrame();perfMeterTick(t0)}
 function gameStep(dt){{const free=!rag.active&&!(dizzy.active&&dizzy.t<1.15),forward=free&&!!(keys.KeyW||keys.ArrowUp),back=free&&!!(keys.KeyS||keys.ArrowDown),left=free&&!!(keys.KeyA||keys.ArrowLeft),right=free&&!!(keys.KeyD||keys.ArrowRight);
-let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1)*(window.DADP?.82:1);
+let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1)*(window.DADP?.82:1)*(window.PARP?(grounded?.6:1.55):1);
 if(free&&stick.active&&stick.mag>.12){
  // Joystick: push where you want Milky to go, relative to the camera. Full push = run.
  const heading=camYaw+Math.atan2(-stick.x,stick.y),diff=Math.atan2(Math.sin(heading-yaw),Math.cos(heading-yaw)),stepTurn=Math.sign(diff)*Math.min(Math.abs(diff)*(1-Math.exp(-dt*13)),dt*10);
@@ -17,14 +17,14 @@ const targetSpeed=free?runSpeed*move*(inPool?.55:1):0,accel=(Math.abs(targetSpee
 curSpeed+=THREE.MathUtils.clamp(targetSpeed-curSpeed,-accel*dt,accel*dt);const speed=curSpeed;lastDogSpeed=Math.abs(speed);const dx=Math.sin(yaw)*speed*dt,dz=Math.cos(yaw)*speed*dt;sweepMove(dx,dz);
 if(rag.active)updateRagdoll(dt);else{
 // A jump begins from whichever surface Milky is currently standing on.
-if(keys.Space&&grounded&&free){velocityY=5.6*(window.DADP?.75:1);grounded=false;SFX.jump()}
+if(window.PARP){if(keys.Space&&free){velocityY=Math.min(velocityY+(velocityY<0?40:24)*dt,4.6);grounded=false}}else if(keys.Space&&grounded&&free){velocityY=5.6*(window.DADP?.75:1);grounded=false;SFX.jump()}
 const spaceEdge=keys.Space&&!lastSpace;lastSpace=!!keys.Space;
-if(spaceEdge&&!grounded&&jumpY>.5&&!flip.active){flip.active=true;flip.t=0;SFX.whoosh()}
+if(spaceEdge&&!grounded&&jumpY>.5&&!flip.active&&!window.PARP){flip.active=true;flip.t=0;SFX.whoosh()}
 if(flip.active){flip.t+=dt;if(flip.t>=.55){flip.active=false;flipsThisAir++;playToySound(480+flipsThisAir*120,.08,'triangle')}}
 if(!grounded)airTime+=dt;
 const previousFoot=jumpY;
 const wasAir=!grounded;
-if(!grounded){velocityY-=12*mutG()*dt;jumpY+=velocityY*dt}
+if(!grounded){if(window.PARP){velocityY=Math.max(velocityY-4.5*dt,-2.6);jumpY+=velocityY*dt;const mx=pMax();if(jumpY>mx){jumpY=mx;velocityY=Math.min(velocityY,0)}}else{velocityY-=12*mutG()*dt;jumpY+=velocityY*dt}}
 const fallV=velocityY;
 // Resolve landing only when descending across a real surface from above.
 // Never snap upward onto a table from below or from its side.

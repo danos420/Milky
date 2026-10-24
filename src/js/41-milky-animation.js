@@ -117,8 +117,8 @@ function renderFrame(){
 // Keep the follow camera INSIDE the room and on Milky's side of any wall.
 // The room is axis-aligned; a ray from Milky toward the desired camera location
 // is shortened before it reaches the wall plane (with a safety margin).
-const inShop=pos.x>20.05&&pos.z>0&&pos.z<40?1:0,hum=window.HUMAN_READY&&(HUMAN||window.DETECT||window.DADP)?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.55*hum,pos.z);
-const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1),(inShop?Math.max(orbitHeight,5.6):orbitHeight)*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1));
+const inShop=pos.x>20.05&&pos.z>0&&pos.z<40?1:0,hum=window.HUMAN_READY&&(HUMAN||window.DETECT||window.DADP)?1:0,par=window.PARP?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum)*(1-.12*par);look.set(pos.x,1.35*MS+jumpY*(.45+.45*par)+.55*hum-.5*par,pos.z);
+const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1),(inShop?Math.max(orbitHeight,5.6):orbitHeight)*camK+jumpY*(.45+.45*par)-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1));
 let safeFraction=1;
 // Walk along the camera arm and stop before it leaves the walkable rooms (walls between rooms included).
 const camWall=(x,z)=>{const lx=look.x;if(lx>6.5&&x<6.7&&z>-9&&z<16)return false;if(lx<6.5&&x>6.3&&look.z>-9&&look.z<16)return false;if(lx>20&&x<20.15)return false;if(lx<19.95&&lx>6.5&&x>19.75&&z>-.3&&z<40.1)return false;if(lx>20){const cell=v=>v<10?0:v<20?1:v<30?2:3;if(cell(look.z)!==cell(z))return false}return true};

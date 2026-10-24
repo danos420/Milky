@@ -228,5 +228,5 @@ body.detective #vignette{background:radial-gradient(ellipse at 50% 48%,transpare
 #startModes{display:none!important}
 @media (max-height:480px){#universe{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin:6px 0}.uCard{min-height:76px;padding:8px 6px}.uCard b{font-size:24px}.uCard strong{font-size:14px}.uCard small{font-size:11px}}
 
-body.dadPlay #turboBtn,body.dadPlay #trainBtn,body.dadPlay #ragdollBtn,body.dadPlay #moodBtn,body.dadPlay #tongueBtn,body.dadPlay #snackBtn,body.dadPlay #slipperBtn,body.dadPlay #dadInteractBtn,body.dadPlay #interactBtn{display:none!important}
+body.parPlay #turboBtn,body.parPlay #trainBtn,body.parPlay #ragdollBtn,body.parPlay #moodBtn,body.parPlay #tongueBtn,body.parPlay #snackBtn,body.parPlay #slipperBtn,body.parPlay #dadInteractBtn,body.parPlay #interactBtn,body.dadPlay #turboBtn,body.dadPlay #trainBtn,body.dadPlay #ragdollBtn,body.dadPlay #moodBtn,body.dadPlay #tongueBtn,body.dadPlay #snackBtn,body.dadPlay #slipperBtn,body.dadPlay #dadInteractBtn,body.dadPlay #interactBtn{display:none!important}
 @media (max-width:520px){#universe{grid-template-columns:1fr 1fr;gap:8px}.uCard{min-height:96px;padding:10px 6px}.uCard b{font-size:28px}.uCard strong{font-size:15px}.uCard small{font-size:11.5px}}

@@ -22,7 +22,7 @@ mohawk.parent.remove(mohawk);HM.head.add(mohawk);mohawk.position.set(0,.3,0);moh
 for(const g of [milkG,extG]){g.parent.remove(g);HM.arms[1].add(g);g.position.set(0,-.82,.18)}extG.rotation.set(0,0,0);
 let hmWalk=0;
 function humanRig(dt){
- const on=HUMAN;HM.g.visible=on;dog.visible=!on&&!window.DADP;if(!on)return;
+ const on=HUMAN;HM.g.visible=on;dog.visible=!on&&!window.DADP&&!window.PARP;if(!on)return;
  HM.g.position.set(pos.x,Math.max(0,jumpY),pos.z);
  if(rag.active){HM.g.quaternion.copy(dog.quaternion);HM.g.position.y=Math.max(0,rag.y)}else{HM.g.rotation.set(0,yaw,0)}
  const sp=lastDogSpeed,step=sp*dt*.85;

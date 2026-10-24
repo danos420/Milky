@@ -137,6 +137,7 @@ function updateStreet(dt){
  // street cats: hiss and jump away when Milky gets close
  for(const c of SCATS){const g=c.g,h=c.home,dm=Math.hypot(pos.x-h[0],pos.z-h[2]);
   if(c.flee>0){c.flee-=dt;g.position.y=Math.min(3.2,g.position.y+dt*6);g.position.x+=dt*1.5;if(c.flee<=0){g.position.set(...h)}}
+  else if(dm<1.6&&window.PARP){g.rotation.y+=dt*2;g.position.y=h[1]+Math.abs(Math.sin(performance.now()/160))*.12;if(Math.random()<dt*.4)sayText(c.b,pick(['ששש!!! ציפור!!! 😾','רד לפה אם אתה גבר!','מיאו!!!']),1.4,'say',true)}
   else if(dm<1.6){c.flee=6;sayText(c.b,pick(['ששששש!!! 😾','מיאאאו!! לך מפה!','חחחח... ששש!']),1.6,'say',true);if(window.JUICE_READY)pow('ששש!',h[0],h[1]+.8,h[2]);if(!street.catHiss.has(c)){street.catHiss.add(c);addActivity('🐈 חתול רחוב '+street.catHiss.size+'/3');if(street.catHiss.size>=3)completeChallenge('streetCat')}}
   else{g.rotation.y+=Math.atan2(Math.sin(Math.atan2(pos.x-g.position.x,pos.z-g.position.z)-g.rotation.y),Math.cos(Math.atan2(pos.x-g.position.x,pos.z-g.position.z)-g.rotation.y))*Math.min(1,dt*2)}}
  // pigeons: peck, then explode into the air when Milky runs at them

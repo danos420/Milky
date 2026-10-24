@@ -38,7 +38,7 @@ const _nth=nextTaskHint;nextTaskHint=function(){if(!OPEN_WORLD)return _nth();con
 const _ct=currentTarget;currentTarget=function(){if(!OPEN_WORLD)return _ct();if(!guideOn)return null;const n=owNearest();return n?n.p:null};
 const _wps=weekPhaseStart;weekPhaseStart=function(phase,fresh){if(OPEN_WORLD){renderWeek();return}_wps(phase,fresh)};
 const _lwp=loadWeekPhases;loadWeekPhases=function(){_lwp();if(OPEN_WORLD){DAY.splice(0,DAY.length,...DAY_NORMAL)}};
-const _cc=completeChallenge;completeChallenge=function(id){const had=challengesDone.has(id);_cc(id);if(OPEN_WORLD&&!had&&!(window.Z_READY&&ZOMBIE)){owChip();showBanner('❗ משימת צד: '+owLabel(id));if(window.JUICE_READY){pow('✔ '+owLabel(id).split(' ')[0],pos.x,2.4,pos.z,true)}}};
+const _cc=completeChallenge;completeChallenge=function(id){const had=challengesDone.has(id);_cc(id);if(OPEN_WORLD&&!had&&!(window.Z_READY&&ZOMBIE)&&!window.PARP&&!window.DADP){owChip();showBanner('❗ משימת צד: '+owLabel(id));if(window.JUICE_READY){pow('✔ '+owLabel(id).split(' ')[0],pos.x,2.4,pos.z,true)}}};
 // day/night keeps turning in the open world
 const OW_CYCLE=[[0,110],[1,110],[2,90],[3,60]];let owClock=0;
 function updateOpenWorld(dt){

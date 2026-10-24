@@ -125,12 +125,19 @@ function setDadPlay(on){if(on===DADP&&on)return;DADP=on;window.DADP=on;
  if(on){if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}if(DETECT){DETECT=false;dApply(false)}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();
   if(dadSeated)unseatDad();dadState='player';dad.visible=true;NM.g.visible=true;NM.g.position.set(-2,0,-3)}
  else{dm.m=null;dSit=false;dadSitBlend=0;NM.g.visible=false;NM.g.position.set(0,0,-80);dog.visible=true;dadState='rest';dad.position.set(4.1,0,5.7);dad.rotation.set(0,0,0);dad.quaternion.identity();for(const T of THROWN){T.life=0;T.g.visible=false}if(slipperState==='nm')carrySlipper(false);evtPill.hidden=true}
- document.body.classList.toggle('dadPlay',DADP);swapChip.textContent=DADP?'🔄 👨→🐕':'🔄 🐕→👨'}
+ document.body.classList.toggle('dadPlay',DADP);charLabel()}
 // character switch chip (open world, after Dad is unlocked)
 const swapChip=document.createElement('button');swapChip.id='swapChip';swapChip.className='chip';swapChip.type='button';swapChip.textContent='🔄 🐕→👨';swapChip.title='החלפת דמות';
 document.getElementById('menuBtn').after(swapChip);swapChip.hidden=true;swapChip.style.display='none';
-swapChip.addEventListener('click',()=>{if(!epComplete('dad'))return;const was=DADP;dm.m=null;setDadPlay(!was);if(!was){dm.m=null;showBanner('👨 עכשיו אתה אבא! 🩴 זרוק כפכפים · 💺 שב בכורסה')}else showBanner('🐕 חזרת להיות מילקי')});
-function swapRefresh(){const h=!(epComplete('dad')&&OPEN_WORLD&&!ZOMBIE&&!HUMAN&&!DETECT&&!(dm.m&&!dm.over));if(swapChip.hidden!==h){swapChip.hidden=h;swapChip.style.display=h?'none':''}}
+// playable characters in the open world; each later character module pushes itself here
+const CHARS=[{id:'milky',icon:'🐕',name:'מילקי',ok:()=>true,active:()=>!CHARS.some(c=>c.id!=='milky'&&c.active()),on:()=>{},off:()=>{},hello:'🐕 חזרת להיות מילקי'},
+ {id:'dad',icon:'👨',name:'אבא',ok:()=>epComplete('dad'),active:()=>DADP,on:()=>{dm.m=null;setDadPlay(true);dm.m=null},off:()=>setDadPlay(false),hello:'👨 עכשיו אתה אבא! 🩴 זרוק כפכפים · 💺 שב בכורסה'}];
+function charCur(){return CHARS.find(c=>c.id!=='milky'&&c.active())||CHARS[0]}
+function charNext(){const av=CHARS.filter(c=>c.ok());const cur=charCur();return av[(av.indexOf(cur)+1)%av.length]}
+function charLabel(){const a=charCur(),b=charNext();swapChip.textContent='🔄 '+a.icon+'→'+b.icon}
+function charSwitch(){const cur=charCur(),nx=charNext();if(nx===cur)return;cur.off();nx.on();charLabel();showBanner(nx.hello)}
+swapChip.addEventListener('click',charSwitch);
+function swapRefresh(){const h=!(CHARS.filter(c=>c.ok()).length>1&&OPEN_WORLD&&!ZOMBIE&&!HUMAN&&!DETECT&&!(dm.m&&!dm.over)&&!(window.PM&&PM.m&&!PM.over));if(swapChip.hidden!==h){swapChip.hidden=h;swapChip.style.display=h?'none':'';if(!h)charLabel()}}
 // hooks
 const _bub=sayText;sayText=function(b,text,dur,kind,force){if(DADP&&(b===milkyB))b=dadB;return _bub(b,text,dur,kind,force)};
 const _thd=thought;thought=function(b,e,d,f){if(DADP&&b===milkyB)b=dadB;return _thd(b,e,d,f)};
