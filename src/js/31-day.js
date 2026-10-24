@@ -28,7 +28,7 @@ function fmtTime(sec){sec=Math.floor(sec);return String(Math.floor(sec/60)).padS
 function phaseDone(i){return DAY[i].tasks.every(t=>day.done.has(t.id))}
 function renderDay(){
  const ph=DAY[Math.min(day.phase,2)],n=ph.tasks.filter(t=>day.done.has(t.id)).length;
- dayChip.textContent=day.finished?'🌙 סוף היום':((window.WEEK_READY&&weekIcon())||ph.icon)+' '+ph.name+' '+n+'/4';
+ dayChip.textContent=(typeof OPEN_WORLD!=='undefined'&&OPEN_WORLD)?'🌍 '+challengesDone.size+'/'+challengeDefs.length:day.finished?'🌙 סוף היום':((window.WEEK_READY&&weekIcon())||ph.icon)+' '+ph.name+' '+n+'/4';
  dayList.innerHTML='';
  DAY.forEach((p,i)=>{const h=document.createElement('h3');h.textContent=p.icon+' '+p.name+(i<day.phase||day.finished?' ✓':i===day.phase?' · עכשיו':'');if(i>day.phase&&!day.finished)h.className='later';dayList.appendChild(h);
   if(i>day.phase&&!day.finished)return;
@@ -81,7 +81,7 @@ function updateDay(dt){
  day.lightK+=(L.k-day.lightK)*k;ambient.intensity=(tier==='high'?.54:tier==='medium'?.62:.66)*day.lightK;
 }
 function nextTaskHint(){if(day.finished)return '🌙 היום נגמר. להמשיך להשתולל או יום חדש';const p=DAY[day.phase];const t=p.tasks.find(t=>!day.done.has(t.id));return t?'👉 '+(t.tip||t.label):'🐽 התקרב לחפץ כדי לשחק'}
-function resetDay(){if(window.WEEK_READY)loadWeekPhases();if(window.EVENTS_READY)resetEvents();clearTimeout(bannerTimer);dayBanner.classList.remove('show');day.phase=0;day.done.clear();day.t=0;day.finished=false;day.light=0;{const L=LIGHT[0];scene.background.setHex(L.sky);scene.fog.color.setHex(L.sky);ambient.color.setHex(L.hemi);ambient.groundColor.setHex(L.ground);sun.color.setHex(L.sun);sun.intensity=L.sunI;day.lightK=L.k}document.getElementById('dayEnd').hidden=true;renderDay();if(window.WEEK_READY)weekPhaseStart(0,true)}
+function resetDay(){if(window.WEEK_READY)loadWeekPhases();if(window.EVENTS_READY)resetEvents();clearTimeout(bannerTimer);dayBanner.classList.remove('show');day.phase=0;day.done.clear();day.t=0;day.finished=false;day.light=0;{const L=LIGHT[0];scene.background.setHex(L.sky);scene.fog.color.setHex(L.sky);ambient.color.setHex(L.hemi);ambient.groundColor.setHex(L.ground);sun.color.setHex(L.sun);sun.intensity=L.sunI;day.lightK=L.k}document.getElementById('dayEnd').hidden=true;renderDay();if(window.WEEK_READY)weekPhaseStart(0,true);if(window.OW_READY&&OPEN_WORLD)owApply()}
 dayChip.addEventListener('click',()=>{const open=dayPanel.hidden;if(open){if(!activityDrawer.hidden)activityToggle.click();if(!challengePanel.hidden)challengeToggle.onclick()}dayPanel.hidden=!open;dayChip.classList.toggle('active',open);renderDay()});
 document.getElementById('dayNew').addEventListener('click',()=>{reset()});
 document.getElementById('dayKeep').addEventListener('click',()=>{document.getElementById('dayEnd').hidden=true});

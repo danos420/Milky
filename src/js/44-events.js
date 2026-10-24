@@ -33,14 +33,14 @@ const EVENTS={
   win(){addScore(1000,'אבא ישן כמו תינוק');thought(milkyB,'😇',1.8,true)},
   fail(){speakDad(pick(['מי עשה רעש?!','מילקי! רק נרדמתי!','אני ער! אני ער!']));if(typeof dadLaughT!=='undefined')dadLaughT=0},
   end(){evtNap=false},timeoutWins:true},
- rain:{ok:()=>day.phase>=1,limit:32,banner:'🌧️ גשם! 5 קפיצות בחוץ בגשם',
+ rain:{ok:()=>day.phase>=1||OPEN_WORLD,limit:32,banner:'🌧️ גשם! 5 קפיצות בחוץ בגשם',
   start(){evt.jumps=0;rain.visible=true;day.light=4;speakDad('מילקי, אל תיכנס רטוב הביתה!')},
   pill:()=>'🌧️ קפיצות בגשם '+evt.jumps+'/5',
   update(){if(outside()&&!grounded&&evt.prevGround&&velocityY>0){evt.jumps++;wet=1;for(let i=0;i<6;i++)emit(pos.x,.15,pos.z,(Math.random()-.5)*3,2+Math.random()*2,(Math.random()-.5)*3,'water',.6)}
    if(outside())wet=1;if(evt.jumps>=5)return 'win'},
   win(){addScore(800,'ריקוד גשם!');thought(milkyB,'🌈',2,true)},
   fail(){addActivity('🌤️ הגשם נגמר')},
-  end(){rain.visible=false;day.light=day.finished?3:Math.min(day.phase,2)}}
+  end(){rain.visible=false;if(!OPEN_WORLD)day.light=day.finished?3:Math.min(day.phase,2)}}
 };
 function startEvent(){
  const ids=Object.keys(EVENTS).filter(k=>k!==evt.last&&EVENTS[k].ok());if(!ids.length)return;
@@ -58,7 +58,7 @@ function updateEvents(dt,t){
    if(y<0||Math.abs(P[k]-cx)>9||Math.abs(P[k+2]-cz)>9){P[k]=cx+(Math.random()-.5)*18;P[k+2]=cz+(Math.random()-.5)*18;y=y<0?7+Math.random()*2:Math.random()*8}
    P[k+1]=y;_rm.makeTranslation(P[k],P[k+2]>-9.2||Math.abs(P[k]-cx)+Math.abs(P[k+2]-cz)<2.6?-50:y,P[k+2]);rain.setMatrixAt(i,_rm)}
   rain.instanceMatrix.needsUpdate=true}
- if(day.finished){if(evt.cur)endEvent('cancel');return}
+ if(day.finished&&!OPEN_WORLD){if(evt.cur)endEvent('cancel');return}
  if(!evt.cur){if(BATH_BLOCK||rag.active||slipperState==='carried'||kebabState==='carried')return;evt.cool-=dt;if(evt.cool<=0)startEvent();return}
  const E=EVENTS[evt.cur];evt.t+=dt;
  let r=E.update(dt);evt.prevGround=grounded;

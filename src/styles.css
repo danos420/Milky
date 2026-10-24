@@ -170,3 +170,9 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
 #holdBar span{font:800 13px system-ui;color:#ffe9a8;white-space:nowrap}
 #holdBar i{display:block;width:100%;height:8px;background:#ffffff22;border-radius:6px;overflow:hidden}
 #holdBar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd166,#ff9f43);border-radius:6px}
+
+#startModes{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+#startModes button{flex:1 1 230px;max-width:340px}
+#startOpen{background:#7fd3a8;border:0;border-radius:14px;padding:16px 24px;font-size:20px;font-weight:800;cursor:pointer;color:#14301f}
+#start{padding:16px 24px}
+@media (max-width:430px){#startModes button{font-size:17px;padding:13px 16px}}
