@@ -164,3 +164,9 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
 @keyframes ctxPulse{0%{box-shadow:0 0 0 0 #ffd166cc}100%{box-shadow:0 0 0 10px #ffd16600}}
 @media (max-aspect-ratio:1/1){#icons{grid-template-columns:repeat(4,1fr)!important}}
 @media (max-height:480px){#icons{grid-template-columns:repeat(4,52px)!important}#icons .ctx{font-size:19px;gap:4px;padding:0 4px}#icons .ctx small{font-size:10.5px}}
+
+#holdBar{position:fixed;z-index:8;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 46%);transform:translate(-50%,8px);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;background:#2b1f12e8;border:2px solid #ffd166;border-radius:14px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:180px;direction:rtl}
+#holdBar.on{opacity:1;transform:translate(-50%,0)}
+#holdBar span{font:800 13px system-ui;color:#ffe9a8;white-space:nowrap}
+#holdBar i{display:block;width:100%;height:8px;background:#ffffff22;border-radius:6px;overflow:hidden}
+#holdBar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd166,#ff9f43);border-radius:6px}

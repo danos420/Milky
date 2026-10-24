@@ -4,7 +4,7 @@ PHASE_SETS.party=[
  {name:'בוקר',icon:'🎂',banner:'🎂 יום הולדת למילקי! ...ואף אחד לא אומר כלום?!',tasks:[
   {id:'sadFace',label:'🥺 פרצוף עצוב לאבא',tip:'כפתור הבעה עד 🥺, ליד אבא'},
   {id:'balloons3',label:'🎈 למצוא 3 בלונים מוחבאים',tip:'אחד על המיטה, אחד במטבח, אחד גבוה מעל הטרמפולינה'},
-  {id:'spy',label:'🕵️ לרגל אחרי דני במטבח',tip:'תעמוד לידו רגע. הוא מסתיר משהו'},
+  {id:'spy',label:'🕵️ לרגל אחרי דני במטבח',tip:'תעמוד ליד דני במטבח 3 שניות בלי לזוז'},
   {id:'gift',label:'🎁 למצוא קופסה מסתורית בחצר',tip:'מאחורי המחסן'}]},
  {name:'צהריים',icon:'🎉',banner:'🎉 הפתעה!!! כולם מחכים בסלון!',tasks:[
   {id:'surprise',label:'🎉 להיכנס למסיבה בסלון',tip:'כולם בסלון'},
@@ -90,7 +90,7 @@ function updateBirthday(dt){
  if(bd.phase===0){
   hidB.forEach((b,i)=>{if(!b.visible)return;b.position.y=HID[i].y+Math.sin(t*2+i)*.1;if(Math.hypot(pos.x-b.position.x,pos.z-b.position.z)<1.0&&Math.abs(jumpY+1.1*MS-b.position.y)<1.1){b.visible=false;bd.found.add(i);addScore(200,'בלון '+bd.found.size+'/3');if(window.JUICE_READY)pow('🎈 '+bd.found.size+'/3');milkyThought('🎈',1.4,true);if(bd.found.size>=3){dayEvent('balloons3');sayText(milkyB,'🤔 בלונים... מישהו מתכנן משהו',2.4,'think',true)}}});
   if(mood===3&&dd<2.8&&!day.done.has('sadFace')){dayEvent('sadFace');speakDad(pick(['מה? היום? לא... לא קורה כלום היום. בכלל. ...למה אתה מסתכל עליי ככה?','אל תעשה לי את הפרצוף הזה... אני לא אגלה!']));thought(dadB,'😅',2,true)}
-  if(Math.hypot(pos.x-dani.position.x,pos.z-dani.position.z)<2.3&&lastDogSpeed<.5){bd.spyT+=dt;if(bd.spyT>3&&!day.done.has('spy')){dayEvent('spy');sayDani('מה? אני? סתם מבשל! אין פה שום עוגה! ...לך מפה!');thought(daniB,'😳',2,true)}}else bd.spyT=0;
+  if(Math.hypot(pos.x-dani.position.x,pos.z-dani.position.z)<3.2&&lastDogSpeed<1.2){bd.spyT+=dt;holdShow('spy',bd.spyT,3);if(bd.spyT>3&&!day.done.has('spy')){dayEvent('spy');sayDani('מה? אני? סתם מבשל! אין פה שום עוגה! ...לך מפה!');thought(daniB,'😳',2,true)}}else bd.spyT=0;
   if(giftBox.visible&&Math.hypot(pos.x-GIFT_YARD.x,pos.z-GIFT_YARD.z)<1.3&&!day.done.has('gift')){dayEvent('gift');speakDad('לא!!! זה... זה של השכן! אל תיגע!');milkyThought('🤨',1.8,true);sayText(nbB,'מה? זה לא שלי',1.8,'say')}
  }
  if(bd.phase===1){
@@ -102,7 +102,7 @@ function updateBirthday(dt){
   DOGS.forEach(d=>{if(!bd.dogs.has(d.name)&&Math.hypot(pos.x-d.g.position.x,pos.z-d.g.position.z)<1.9){bd.dogs.add(d.name);thought(d.b,'🎉',1.6,true);addActivity('🐕 '+d.name+' שמח לראות אותך ('+bd.dogs.size+'/3)');if(bd.dogs.size>=3)dayEvent('dogFriends')}});
  }
  if(bd.phase===2&&!bd.lit&&!day.done.has('groupHug')){
-  if(Math.abs(pos.x)<3&&pos.z>-5&&pos.z<5&&jumpY<.2&&lastDogSpeed<.3){bd.hugT+=dt;GUESTS.forEach(g=>{g.tx=pos.x+Math.sin(g.r*20)*1.3;g.tz=pos.z+Math.cos(g.r*20)*1.3});
+  if(Math.abs(pos.x)<3&&pos.z>-5&&pos.z<5&&jumpY<.2&&lastDogSpeed<.3){bd.hugT+=dt;holdShow('groupHug',bd.hugT,3);GUESTS.forEach(g=>{g.tx=pos.x+Math.sin(g.r*20)*1.3;g.tz=pos.z+Math.cos(g.r*20)*1.3});
    if(bd.hugT>3){dayEvent('groupHug');confetti(pos.x,pos.z,5);for(let i=0;i<4;i++)setTimeout(()=>{milkyThought('❤️',1.5,true);GUESTS.forEach(g=>thought(g.b,'❤️',1.5,true));thought(dadB,'❤️',1.5,true);thought(daniB,'❤️',1.5,true)},i*500);
     speakDad('מילקי... אתה הכי טוב שיש. יום הולדת שמח.');sayDani('אוהבים אותך, מילקי ❤️')}}else bd.hugT=0;
  }

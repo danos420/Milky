@@ -158,7 +158,7 @@ function updatePark(dt){
   if(!park.tagOn&&dc<1.1&&!day.done.has('tag')){park.tagOn=true;sayText(CHUPI.b,'תופסת!!! אתה בורח!',1.8,'say',true);milkyThought('😱',1.4,true)}
   if(park.tagOn){park.tagT+=dt;if(park.tagT>=12){park.tagOn=false;dayEvent('tag');sayText(CHUPI.b,'אוף! אתה מהיר מדי 😤',2,'say',true);addScore(300,'ניצחת את צ\'ופי')}}
   if(!day.done.has('tag')&&(park.tagOn||park.tagT>0)){evtPill.hidden=false;const l='🐕 בורח מצ\'ופי '+Math.floor(park.tagT)+'/12'+(park.tagOn?'':' · תיגע בו שוב');if(evtPill.textContent!==l)evtPill.textContent=l}else if(!(typeof evt!=='undefined'&&evt.cur)&&!BATH_BLOCK)evtPill.hidden=true;
-  if(Math.hypot(pos.x-FOUNT.x,pos.z-FOUNT.z)<1.1&&lastDogSpeed<.3&&grounded){park.drinkT+=dt;if(park.drinkT>1.5&&!day.done.has('drink')){dayEvent('drink');idleAction='sniff';idleClock=0;sayText(milkyB,'💧 לאפ לאפ לאפ',2,'say',true)}}else park.drinkT=0;
+  if(Math.hypot(pos.x-FOUNT.x,pos.z-FOUNT.z)<1.1&&lastDogSpeed<.3&&grounded){park.drinkT+=dt;holdShow('drink',park.drinkT,1.5);if(park.drinkT>1.5&&!day.done.has('drink')){dayEvent('drink');idleAction='sniff';idleClock=0;sayText(milkyB,'💧 לאפ לאפ לאפ',2,'say',true)}}else park.drinkT=0;
  }
  if(park.phase===1){
   // tunnel: inside the tube from one end to the other
@@ -170,11 +170,11 @@ function updatePark(dt){
   park.throwT-=dt;if(!pBall.visible&&park.throwT<=0&&Math.hypot(pos.x-dani.position.x,pos.z-dani.position.z)<9&&inPark)throwParkBall();
  }
  if(park.phase===2){
-  if(Math.abs(pos.x-SAND.x)<SAND.w/2-.2&&Math.abs(pos.z-SAND.z)<SAND.d/2-.2&&grounded&&lastDogSpeed<.3){park.digT+=dt;if(Math.random()<.5)emit(pos.x+Math.sin(yaw)*.5,.2,pos.z+Math.cos(yaw)*.5,(Math.random()-.5)*2,2,(Math.random()-.5)*2,'dust',.6);
+  if(Math.abs(pos.x-SAND.x)<SAND.w/2-.2&&Math.abs(pos.z-SAND.z)<SAND.d/2-.2&&grounded&&lastDogSpeed<.3){park.digT+=dt;holdShow('dig',park.digT,2);if(Math.random()<.5)emit(pos.x+Math.sin(yaw)*.5,.2,pos.z+Math.cos(yaw)*.5,(Math.random()-.5)*2,2,(Math.random()-.5)*2,'dust',.6);
    idleAction='sniff';idleClock=0;if(park.digT>2&&!day.done.has('dig')){dayEvent('dig');sayText(milkyB,'⛏️ מצאתי... גרב?!',2.2,'say',true);addScore(200,'חפירה')}}else park.digT=0;
   if(Math.hypot((pos.x-MUD.x),(pos.z-MUD.z)/.7)<MUD.r&&jumpY<.3){if(!MUDDY){MUDDY=true;dayEvent('mud');SFX.splash();if(window.JUICE_READY)pow('פלוץ׳!');sayDani('לאאאא! עכשיו צריך אמבטיה שוב!')}}
   const bd=Math.hypot(pos.x-BONBON.g.position.x,pos.z-BONBON.g.position.z);
-  if(bd<2.2&&lastDogSpeed<.4){BONBON.friendT+=dt;if(BONBON.friendT>3&&!day.done.has('friend')){dayEvent('friend');for(let i=0;i<3;i++)setTimeout(()=>{thought(BONBON.b,'❤️',1.4,true);milkyThought('❤️',1.4,true)},i*500);sayText(BONBON.b,'טוב, אתה חמוד. קצת. 💅',2.4,'say',true)}}else BONBON.friendT=0;
+  if(bd<2.2&&lastDogSpeed<.4){BONBON.friendT+=dt;holdShow('friend',BONBON.friendT,3);if(BONBON.friendT>3&&!day.done.has('friend')){dayEvent('friend');for(let i=0;i<3;i++)setTimeout(()=>{thought(BONBON.b,'❤️',1.4,true);milkyThought('❤️',1.4,true)},i*500);sayText(BONBON.b,'טוב, אתה חמוד. קצת. 💅',2.4,'say',true)}}else BONBON.friendT=0;
   if(pos.z>-8.9&&!day.done.has('home')){dayEvent('home');if(MUDDY)speakDad('מילקי!!! הבוץ!!! על השטיח!!!');else speakDad('חזרתם! איך היה בגינה?');daniState='cook';dani.position.copy(DANI_HOME);daniNav.path=[]}
  }
 }

@@ -89,7 +89,7 @@ function updateBath(dt){
   const sh=extras.find(p=>p.kind==='shampoo');if(sh&&!carried.has(sh.g)&&Math.hypot(sh.g.position.x-BED.x,sh.g.position.z-BED.z)<1.7&&!day.done.has('hideShampoo')){dayEvent('hideShampoo');speakDad('איפה השמפו?! ...טוב, יש סבון כלים');milkyThought('😏',2,true)}
  }
  if(bath.phase===2){
-  if(Math.hypot(pos.x-BED.x,pos.z-BED.z)<1.0&&grounded&&lastDogSpeed<.3&&!rag.active){bath.bedT+=dt;if(bath.bedT>2.5&&!day.done.has('bedSleep')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 ררר...',3,'think',true);dayEvent('bedSleep')}}else bath.bedT=0;
+  if(Math.hypot(pos.x-BED.x,pos.z-BED.z)<1.0&&grounded&&lastDogSpeed<.3&&!rag.active){bath.bedT+=dt;holdShow('bedSleep',bath.bedT,2.5);if(bath.bedT>2.5&&!day.done.has('bedSleep')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 ררר...',3,'think',true);dayEvent('bedSleep')}}else bath.bedT=0;
  }
 }
 window.BATH_READY=true;

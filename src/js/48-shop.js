@@ -82,7 +82,7 @@ function updateShop(dt){
  if(!shop.on)return;
  if(shop.phase===0&&dadState!=='away'){setDadState('away');dad.visible=false;dad.position.set(0,0,-70)}
  const ac=armchairObs();
- if(jumpY>.4&&grounded&&insidePlatform(ac,pos.x,pos.z,.05)&&lastDogSpeed<.3){shop.chairT+=dt;if(shop.chairT>2.5&&!day.done.has('chairNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 הכורסה של אבא... נוח',2.6,'think',true);dayEvent('chairNap')}}else shop.chairT=0;
+ if(jumpY>.4&&grounded&&insidePlatform(ac,pos.x,pos.z,.05)&&lastDogSpeed<.3){shop.chairT+=dt;holdShow('chairNap',shop.chairT,2.5);if(shop.chairT>2.5&&!day.done.has('chairNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 הכורסה של אבא... נוח',2.6,'think',true);dayEvent('chairNap')}}else shop.chairT=0;
  if(shop.phase>=1){
   const bg=shopProp('baguette');if(grab&&grab.b.o===bg.g){if(!shop.bagWarn){shop.bagWarn=true;speakDad('הבגט! מילקי, זה לא מקל!')}if(pos.z<-9.4&&!day.done.has('baguette')){dayEvent('baguette');addScore(250,'בגט בחצר');sayDani('הוא קובר את הבגט. כמו עצם.')}}
   if(bigBag.visible&&!headBag.visible&&jumpY<.4&&Math.hypot(pos.x-bigBag.position.x,pos.z-bigBag.position.z)<.6){bigBag.visible=false;headBag.visible=true;shop.bagT=5;dayEvent('bagHead');addScore(200,'שקית על הראש');sayText(milkyB,'🙈 מי כיבה את האור?!',2.2,'say',true);setTimeout(()=>sayDani('חחחחח אבא תסתכל!'),700)}
@@ -91,10 +91,10 @@ function updateShop(dt){
  }
  if(shop.phase===2){
   shop.smokeT-=dt;if(shop.smokeT<=0){shop.smokeT=.35;emit(STOVE.x+(Math.random()-.5)*.6,1.25,STOVE.z-.1,(Math.random()-.5)*.3,.7,-.25,'smoke',2.2)}
-  if(Math.hypot(pos.x-STOVE.x,pos.z-STOVE.z)<1.9&&lastDogSpeed<.3&&grounded){shop.sniffT+=dt;if(shop.sniffT>2.2&&!day.done.has('sniffChicken')){dayEvent('sniffChicken');sayText(milkyB,'🤤 עוווף...',2.4,'think',true);idleAction='stand';idleClock=0}}else shop.sniffT=0;
+  if(Math.hypot(pos.x-STOVE.x,pos.z-STOVE.z)<1.9&&lastDogSpeed<.3&&grounded){shop.sniffT+=dt;holdShow('sniffChicken',shop.sniffT,2.2);if(shop.sniffT>2.2&&!day.done.has('sniffChicken')){dayEvent('sniffChicken');sayText(milkyB,'🤤 עוווף...',2.4,'think',true);idleAction='stand';idleClock=0}}else shop.sniffT=0;
   const legs=chicken.userData.legs.filter(l=>l.visible);
   if(legs.length&&jumpY>.6&&Math.hypot(pos.x-chicken.position.x,pos.z-chicken.position.z)<1.0){legs[0].visible=false;mouthItem.visible=true;shop.mouthT=8;dayEvent('drumstick');addScore(400,'כרע עוף!');setDani('scold','מילקי!!! זה לארוחת ערב!');speakDad('חחח... טוב, מגיע לו');milkyThought('😋',1.6,true)}
-  const sofa=obstacles.find(o=>o.name==='ספה');if(day.done.has('drumstick')&&jumpY>.8&&grounded&&insidePlatform(sofa,pos.x,pos.z,0)&&lastDogSpeed<.3){shop.sofaT=(shop.sofaT||0)+dt;if(shop.sofaT>2.5&&!day.done.has('sofaNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 עוף... ספה... החיים יפים',2.8,'think',true);dayEvent('sofaNap');speakDad('תראו אותו. כמו מלך.')}}else shop.sofaT=0;
+  const sofa=obstacles.find(o=>o.name==='ספה');if(day.done.has('drumstick')&&jumpY>.8&&grounded&&insidePlatform(sofa,pos.x,pos.z,0)&&lastDogSpeed<.3){shop.sofaT=(shop.sofaT||0)+dt;holdShow('sofaNap',shop.sofaT,2.5);if(shop.sofaT>2.5&&!day.done.has('sofaNap')){idleAction='lie';idleClock=0;sayText(milkyB,'💤 עוף... ספה... החיים יפים',2.8,'think',true);dayEvent('sofaNap');speakDad('תראו אותו. כמו מלך.')}}else shop.sofaT=0;
   if(trainingTime>0&&activeCmd==='שב'&&Math.hypot(pos.x-DTABLE.x,pos.z-DTABLE.z)<2.6&&!day.done.has('beg')){dayEvent('beg');mouthItem.visible=true;shop.mouthT=4;sayDani(pick(['טוב... חתיכה אחת. רק אחת.','איך אפשר להגיד לו לא?']));thought(daniB,'🥹',2,true)}
  }
 }
