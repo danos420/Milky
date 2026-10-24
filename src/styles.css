@@ -176,3 +176,12 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
 #startOpen{background:#7fd3a8;border:0;border-radius:14px;padding:16px 24px;font-size:20px;font-weight:800;cursor:pointer;color:#14301f}
 #start{padding:16px 24px}
 @media (max-width:430px){#startModes button{font-size:17px;padding:13px 16px}}
+
+#startZombie{flex:1 1 230px;max-width:340px;background:#8fd36d;border:0;border-radius:14px;padding:16px 24px;font-size:20px;font-weight:800;cursor:pointer;color:#14300a;box-shadow:inset 0 -4px 0 #4f8a2a}
+@media (max-width:430px){#startZombie{font-size:17px;padding:13px 16px}}
+#zHud{position:fixed;z-index:8;top:calc(var(--topbar,90px) + 8px);left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center;background:#16240fe8;border:2px solid #8fd36d;color:#e8ffd9;font:800 15px system-ui;padding:6px 14px;border-radius:999px;direction:rtl;pointer-events:none;white-space:nowrap}
+#zHud[hidden]{display:none}#zHud b{color:#c8ff8a}
+#zHud.hit{animation:zHit .4s}@keyframes zHit{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 8px))}75%{transform:translateX(calc(-50% + 8px))}}
+#zStats{font-size:16px;line-height:1.8;margin:8px 0 14px;color:#ffe9a8}
+body.zombieMode #vignette{background:radial-gradient(ellipse at 50% 48%,transparent 45%,rgba(20,50,10,.55) 100%)}
+@media (max-height:480px){#zHud{left:10px;transform:none;font-size:13px;padding:4px 10px}}

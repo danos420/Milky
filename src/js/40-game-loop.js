@@ -44,7 +44,7 @@ if(!grounded&&velocityY<=0 && crossed>0){
 }
 // Floor is always a valid landing surface.
 if(jumpY<=0){jumpY=0;velocityY=0;grounded=true}
-if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);if(window.JUICE_READY&&squash>.62&&!flip.active&&flipsThisAir===0){pow(MS>1.2?'בוווום!':'בום!');punch(MS>1.2?7:3.5)}
+if(wasAir&&grounded){squash=Math.min(1,Math.abs(fallV)/7);if(window.Z_READY&&ZOMBIE&&fallV<-3)zLand();if(MS>1.2&&squash>.2)chaosShake=Math.max(chaosShake,.3*squash);squashKick=squash;if(squash>.3)SFX.land(squash);if(window.JUICE_READY&&squash>.62&&!flip.active&&flipsThisAir===0){pow(MS>1.2?'בוווום!':'בום!');punch(MS>1.2?7:3.5)}
  const air=airTime;airTime=0;
  if(flip.active){flip.active=false;flipsThisAir=0;startRagdoll();addScore(100,'נחיתה על הפרצוף')}
  else if(flipsThisAir>0){const n=flipsThisAir;flipsThisAir=0;startDizzy(n);addScore(n===1?250:n===2?600:1500*(n-2),n===1?'סלטה!':n===2?'סלטה כפולה!':'מילקי האגדי! ×'+n);completeChallenge('flip');dayEvent('flip');if(window.JUICE_READY){if(n>=2){slowMo(.55);punch(6);pow(n===2?'וואו!!':'אגדי!!!',pos.x,2*MS,pos.z,true)}else pow('סלטה!')}if(window.SICK_READY)sickFlip();if(window.FAMILY_READY)familyFlip()}

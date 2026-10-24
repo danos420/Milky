@@ -21,7 +21,7 @@ function owApply(){
  day.finished=true;document.getElementById('dayEnd').hidden=true;PARK_OPEN=true;if(typeof gateOpen==='function')gateOpen();BATH_BLOCK=false;
  if(typeof applyModes==='function')applyModes(true);if(typeof renderModes==='function')renderModes();owChip();
 }
-function owChip(){if(!OPEN_WORLD)return;dayChip.textContent='🌍 '+challengesDone.size+'/'+challengeDefs.length}
+function owChip(){if(!OPEN_WORLD)return;if(window.Z_READY&&ZOMBIE){dayChip.textContent='🧟 שיא: גל '+zs.best;return}dayChip.textContent='🌍 '+challengesDone.size+'/'+challengeDefs.length}
 function setMode(open){OPEN_WORLD=open;try{localStorage.setItem('milky-mode',open?'open':'story')}catch(_){}
  document.body.classList.toggle('openWorld',open);Object.values(OW_MARKS).forEach(s=>s.visible=false);reset();if(open)owApply();else{renderDay();if(typeof applyModes==='function')applyModes(true)}}
 // story vs open world: start buttons + a switch inside the 🏆 panel
@@ -38,7 +38,7 @@ const _nth=nextTaskHint;nextTaskHint=function(){if(!OPEN_WORLD)return _nth();con
 const _ct=currentTarget;currentTarget=function(){if(!OPEN_WORLD)return _ct();if(!guideOn)return null;const n=owNearest();return n?n.p:null};
 const _wps=weekPhaseStart;weekPhaseStart=function(phase,fresh){if(OPEN_WORLD){renderWeek();return}_wps(phase,fresh)};
 const _lwp=loadWeekPhases;loadWeekPhases=function(){_lwp();if(OPEN_WORLD){DAY.splice(0,DAY.length,...DAY_NORMAL)}};
-const _cc=completeChallenge;completeChallenge=function(id){const had=challengesDone.has(id);_cc(id);if(OPEN_WORLD&&!had){owChip();showBanner('❗ משימת צד: '+owLabel(id));if(window.JUICE_READY){pow('✔ '+owLabel(id).split(' ')[0],pos.x,2.4,pos.z,true)}}};
+const _cc=completeChallenge;completeChallenge=function(id){const had=challengesDone.has(id);_cc(id);if(OPEN_WORLD&&!had&&!(window.Z_READY&&ZOMBIE)){owChip();showBanner('❗ משימת צד: '+owLabel(id));if(window.JUICE_READY){pow('✔ '+owLabel(id).split(' ')[0],pos.x,2.4,pos.z,true)}}};
 // day/night keeps turning in the open world
 const OW_CYCLE=[[0,110],[1,110],[2,90],[3,60]];let owClock=0;
 function updateOpenWorld(dt){
