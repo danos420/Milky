@@ -49,4 +49,5 @@
 49-sick.js
 50-levelup.js
 51-park.js
+52-controls.js
 47-render-setup.js

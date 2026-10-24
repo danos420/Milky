@@ -152,6 +152,18 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
 #photoBar button{width:48px;height:48px;border-radius:50%;border:1px solid #ffffff40;background:#2a3038;color:#fff;font-size:20px;cursor:pointer;touch-action:manipulation}
 #photoBar #photoSnap{width:64px;height:64px;font-size:28px;background:#f2b84b;border-color:#fff}
 #photoBar p{flex-basis:100%;margin:0;text-align:center;font:600 11px system-ui;color:#fff9;}
+
+/* ---------- Smart controls: two context buttons that show what they will do ---------- */
+#snackBtn,#interactBtn,#slipperBtn,#dadInteractBtn,#tongueBtn{display:none!important}
+#icons{grid-template-columns:repeat(4,var(--b))!important}
+#icons .ctx{grid-column:span 2;background:#2a2116e0;border-color:#c9a160;font-size:22px;flex-direction:row;gap:6px;padding:0 6px}
+#icons .ctx small{font-size:12px;max-width:none}
+#icons .ctx.live{border-color:#ffd166;background:#5a3d14e6;box-shadow:0 0 0 2px #ffd16644}
+#icons .ctx.dim{opacity:.62}
+#icons .ctx.pulse{animation:ctxPulse .5s ease-out}
+@keyframes ctxPulse{0%{box-shadow:0 0 0 0 #ffd166cc}100%{box-shadow:0 0 0 10px #ffd16600}}
+@media (max-aspect-ratio:1/1){#icons{grid-template-columns:repeat(4,1fr)!important}}
+@media (max-height:480px){#icons{grid-template-columns:repeat(4,52px)!important}#icons .ctx{font-size:19px;gap:4px;padding:0 4px}#icons .ctx small{font-size:10.5px}}
 </style></head><body><div id="uiTop">
  <div id="hud"><h1>🐶 מילקי: ברדק אחולמניוקי</h1><p id="status">המשימה: גנוב את הכפכף של אבא והחבא אותו במיטה 🩴</p><button id="reset" class="chip" title="התחלה מחדש" aria-label="התחלה מחדש">↻</button></div>
  <div id="toolbar">
@@ -181,6 +193,8 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
  <div id="pad"><span class="empty"></span><button class="tb" data-key="KeyW" aria-label="קדימה">▲</button><span class="empty"></span><button class="tb" data-key="KeyA" aria-label="שמאלה">◀</button><button class="tb" data-key="KeyS" aria-label="אחורה">▼</button><button class="tb" data-key="KeyD" aria-label="ימינה">▶</button></div>
  <div id="stick" role="application" aria-label="ג׳ויסטיק תנועה"><div id="knob"></div></div>
  <div id="icons">
+  <button id="actBtn" class="tb ctx" type="button" title="פעולה (E)"><b>🐾</b><small>לגעת</small></button>
+  <button id="grabBtn" class="tb ctx" type="button" title="תפוס / שחרר (T)"><b>👅</b><small>תפוס</small></button>
   <button id="snackBtn" class="tb" title="חטיף (E על השולחן)"><b>🍪</b><small>חטיף</small></button>
   <button id="interactBtn" class="tb" title="לגעת בחפץ (E)"><b>🐾</b><small>לגעת</small></button>
   <button id="slipperBtn" class="tb" title="תפוס / שחרר כפכף (P)"><b>🩴</b><small>כפכף</small></button>
@@ -2082,7 +2096,7 @@ for(const c of roundBlockers()){
 }
 landingCooldown=Math.max(0,landingCooldown-dt);
 // Paws planted on the floor: stride rate matches ground speed (longer strides in a gallop), so the legs never treadmill.
-steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);if(window.SICK_READY)updateSick(dt);if(window.PARK_READY)updatePark(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
+steps+=Math.abs(speed)*dt*THREE.MathUtils.lerp(3.35,1.95,runBlend)/MS;{const fp=Math.floor(steps/Math.PI);if(fp!==lastFootPhase){lastFootPhase=fp;if(grounded&&!rag.active&&lastDogSpeed>.6){SFX.step(lastDogSpeed>4,pos.z<-15.9);if(lastDogSpeed>4&&pos.z<-9.1)emit(pos.x-Math.sin(yaw)*.7*MS,.08,pos.z-Math.cos(yaw)*.7*MS,-Math.sin(yaw)*.6,.5,-Math.cos(yaw)*.6,'dust',.45)}}}updateToy(dt);updateScene(dt);updateChaos(dt);updateTurbo(dt);updateExtra(dt);updateKitchen(dt);updateDani(dt);updateYard(dt);updateDay(dt);updateModes(dt,performance.now()/1000);updateEvents(dt);if(window.BATH_READY)updateBath(dt);if(window.SHOP_READY)updateShop(dt);if(window.SICK_READY)updateSick(dt);if(window.PARK_READY)updatePark(dt);if(window.CTRL_READY)updateCtxButtons(dt);resolveBodies(dt);tickBubbles(dt);updateContextHint();if(chaosStage>=5)completeChallenge('chaos');
 const moving=Math.abs(speed)>0.01;
 runBlend+=(THREE.MathUtils.smoothstep(Math.abs(speed),3.3,5.4)-runBlend)*Math.min(1,dt*6);
 const running=moving&&runBlend>.5;
@@ -2810,7 +2824,7 @@ function updateGuide(rdt,t){
  const p=PHOTO.on?null:currentTarget();
  if(!p){guide.visible=false;guideArrow.hidden=true;return}
  const dist=Math.hypot(p.x-pos.x,p.z-pos.z);
- guide.visible=dist>1.7;guide.position.set(p.x,(p.y||0)+.95+Math.sin(t*3)*.12,p.z);guide.rotation.y=t*1.6;
+ guide.position.set(p.x,(p.y||0)+.95+Math.sin(t*3)*.12,p.z);guide.rotation.y=t*1.6;guide.visible=dist>1.7&&guide.position.distanceTo(camera.position)>2.6;
  _gv.set(p.x,(p.y||0)+1,p.z).project(camera);
  const off=_gv.z>1||Math.abs(_gv.x)>.92||Math.abs(_gv.y)>.85;
  if(!off||dist<1.7){guideArrow.hidden=true;return}
@@ -3063,6 +3077,55 @@ function updatePark(dt){
 }
 window.PARK_READY=true;
 loadWeekPhases();renderDay();renderWeek();
+// ===== Smart touch controls: instant response + two context buttons (action / grab) =====
+const actBtn=document.getElementById('actBtn'),grabBtn=document.getElementById('grabBtn');
+const KIND_ICON={tp:'🧻',shampoo:'🧴',baguette:'🥖',tissues:'🤧',thermo:'🌡️',bowl:'🥣',can:'🥫',receipt:'🧾',bottle:'🧴',book:'📚',shoe:'👟',duck:'🦆',remote:'📺',trash:'🗑️',chair:'🪑',cone:'🔺',cooler:'🧊',bin:'🗑️',soccer:'⚽',cushion:'🛋️',box:'📦',ball:'⚽'};
+const KIND_NAME={tp:'נייר',shampoo:'שמפו',baguette:'בגט',tissues:'טישו',thermo:'מדחום',bowl:'קערה',can:'קופסה',receipt:'קבלה',bottle:'בקבוק',book:'ספר',shoe:'נעל',duck:'ברווז',remote:'שלט',trash:'פח',chair:'כיסא',cone:'קונוס',cooler:'צידנית',bin:'פח',soccer:'כדור',cushion:'כרית',box:'ארגז',ball:'כדור'};
+const ACT_LABEL={remote:'שלט',duck:'צפצף',bottle:'גלגל',shoe:'העף נעל',book:'פזר',trash:'הפוך פח',bowl:'לאכול',chair:'הפל',cone:'בעט',cooler:'דחוף',bin:'הפל',soccer:'בעט',tp:'גלגל',shampoo:'בועות',baguette:'דחוף',can:'בעט',receipt:'אכול קבלה',tissues:'דחוף',thermo:'דחוף'};
+function grabCandidate(){const m=mouthPos();let best=null,bd=1.45;for(const b of bodies){if(carried.has(b.o)||!b.o.visible)continue;const d=Math.hypot(b.o.position.x-m.x,b.o.position.z-m.z)-b.r;if(d<bd){bd=d;best=b}}return best}
+function grabInfo(){
+ if(grab)return {i:'⬇️',l:'שחרר',on:2,fn:toggleGrab};
+ if(slipperState==='carried')return {i:'⬇️',l:'שחרר כפכף',on:2,fn:dropSlipper};
+ if(kebabState==='carried')return {i:'🍢',l:'ברח!',on:0,fn:()=>{}};
+ if(slipperState==='floor'&&Math.hypot(pos.x-slipper.position.x,pos.z-slipper.position.z)<1.45)return {i:'🩴',l:'כפכף',on:1,fn:stealSlipper};
+ if(nearMangal()&&kebabState==='grill')return {i:'🍢',l:'קבב!',on:1,fn:stealKebab};
+ const b=grabCandidate();
+ if(b){const small=b.r<=.3&&!BIG_KINDS.includes(b.kind);return {i:KIND_ICON[b.kind]||'👅',l:(small?'תפוס ':'גרור ')+(KIND_NAME[b.kind]||''),on:1,fn:toggleGrab}}
+ return {i:'👅',l:'לשון',on:0,fn:toggleGrab};
+}
+function actInfo(){
+ if(!won&&jumpY>=.78&&Math.hypot(pos.x-.5,pos.z-.3)<1.9&&snack.visible)return {i:'🍪',l:'חטיף!',on:1,fn:trySnack};
+ if(slipperState==='carried')return {i:'⬇️',l:'שחרר',on:2,fn:dropSlipper};
+ if(nearSausage())return {i:'🌭',l:'נקניקייה',on:1,fn:interact};
+ if(nearFridge())return {i:'🧊',l:fridgeOpen?'סגור מקרר':'פתח מקרר',on:1,fn:interact};
+ if(nearMangal()&&kebabState==='grill')return {i:'🍢',l:'קבב!',on:1,fn:interact};
+ const dd=dad.visible?Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z):99;
+ let near=null,d=1.65;for(const p of extras){if(!p.g.visible||carried.has(p.g))continue;const q=Math.hypot(pos.x-p.g.position.x,pos.z-p.g.position.z);if(q<d){near=p;d=q}}
+ if(dd<1.9&&(!near||dd<d))return {i:'👨',l:'ליטוף',on:1,fn:interactDad};
+ if(near)return {i:KIND_ICON[near.kind]||'🐾',l:ACT_LABEL[near.kind]||'לגעת',on:1,fn:interact};
+ if(dad.visible&&dadState!=='away')return {i:'📣',l:'קרא לאבא',on:0,fn:interactDad};
+ return {i:'🐽',l:'רחרח',on:0,fn:interact};
+}
+let ctxT=0,ctxAct=null,ctxGrab=null;
+function paintCtx(btn,info,prev){
+ if(prev&&prev.i===info.i&&prev.l===info.l&&prev.on===info.on)return;
+ btn.firstChild.textContent=info.i;btn.lastChild.textContent=info.l;btn.classList.toggle('live',info.on>=1);btn.classList.toggle('dim',info.on===0);
+ if(info.on>=1&&(!prev||prev.on===0||prev.l!==info.l)){btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse')}
+}
+function updateCtxButtons(dt){
+ ctxT-=dt;if(ctxT>0)return;ctxT=.1;
+ const a=actInfo(),g=grabInfo();paintCtx(actBtn,a,ctxAct);paintCtx(grabBtn,g,ctxGrab);ctxAct=a;ctxGrab=g;
+}
+actBtn.addEventListener('click',()=>{if(!started)return;const a=actInfo();a.fn();ctxT=0});
+grabBtn.addEventListener('click',()=>{if(!started)return;const g=grabInfo();g.fn();ctxT=0});
+// Instant buttons: fire on touch-down (works while the other thumb holds the joystick), swallow the late click.
+let ctrlAllowClick=false;
+window.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#controls .tb:not([data-key])');if(!b||ctrlAllowClick)return;if(performance.now()-(b._pd||0)<900){e.stopImmediatePropagation();e.preventDefault()}},true);
+document.querySelectorAll('#controls .tb:not([data-key])').forEach(b=>{
+ b.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();b._pd=performance.now();b.classList.add('down');setTimeout(()=>b.classList.remove('down'),130);ctrlAllowClick=true;try{b.click()}finally{ctrlAllowClick=false}});
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+});
+window.CTRL_READY=true;
 (function mergeAll(){
  scene.updateMatrixWorld(true);
  // 1) Static scenery: merge per area, so whole rooms you cannot see are skipped by the GPU.

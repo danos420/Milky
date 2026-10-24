@@ -152,3 +152,15 @@ body.photoMode #uiTop,body.photoMode #controls,body.photoMode #drawers,body.phot
 #photoBar button{width:48px;height:48px;border-radius:50%;border:1px solid #ffffff40;background:#2a3038;color:#fff;font-size:20px;cursor:pointer;touch-action:manipulation}
 #photoBar #photoSnap{width:64px;height:64px;font-size:28px;background:#f2b84b;border-color:#fff}
 #photoBar p{flex-basis:100%;margin:0;text-align:center;font:600 11px system-ui;color:#fff9;}
+
+/* ---------- Smart controls: two context buttons that show what they will do ---------- */
+#snackBtn,#interactBtn,#slipperBtn,#dadInteractBtn,#tongueBtn{display:none!important}
+#icons{grid-template-columns:repeat(4,var(--b))!important}
+#icons .ctx{grid-column:span 2;background:#2a2116e0;border-color:#c9a160;font-size:22px;flex-direction:row;gap:6px;padding:0 6px}
+#icons .ctx small{font-size:12px;max-width:none}
+#icons .ctx.live{border-color:#ffd166;background:#5a3d14e6;box-shadow:0 0 0 2px #ffd16644}
+#icons .ctx.dim{opacity:.62}
+#icons .ctx.pulse{animation:ctxPulse .5s ease-out}
+@keyframes ctxPulse{0%{box-shadow:0 0 0 0 #ffd166cc}100%{box-shadow:0 0 0 10px #ffd16600}}
+@media (max-aspect-ratio:1/1){#icons{grid-template-columns:repeat(4,1fr)!important}}
+@media (max-height:480px){#icons{grid-template-columns:repeat(4,52px)!important}#icons .ctx{font-size:19px;gap:4px;padding:0 4px}#icons .ctx small{font-size:10.5px}}

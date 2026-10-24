@@ -31,7 +31,7 @@ function updateGuide(rdt,t){
  const p=PHOTO.on?null:currentTarget();
  if(!p){guide.visible=false;guideArrow.hidden=true;return}
  const dist=Math.hypot(p.x-pos.x,p.z-pos.z);
- guide.visible=dist>1.7;guide.position.set(p.x,(p.y||0)+.95+Math.sin(t*3)*.12,p.z);guide.rotation.y=t*1.6;
+ guide.position.set(p.x,(p.y||0)+.95+Math.sin(t*3)*.12,p.z);guide.rotation.y=t*1.6;guide.visible=dist>1.7&&guide.position.distanceTo(camera.position)>2.6;
  _gv.set(p.x,(p.y||0)+1,p.z).project(camera);
  const off=_gv.z>1||Math.abs(_gv.x)>.92||Math.abs(_gv.y)>.85;
  if(!off||dist<1.7){guideArrow.hidden=true;return}
