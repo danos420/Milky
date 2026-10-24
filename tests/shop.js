@@ -26,11 +26,11 @@ const {open}=require('./lib');
  // receipt via interact
  await ev(()=>{const r=shopProp('receipt');pos.set(r.g.position.x,0,r.g.position.z+.7);interact()});
  // can roll
- await ev(()=>{pos.set(-3,0,3);const c=shopProp('can');c.vx=0;c.vz=4});await step(90);
+ await ev(()=>{pos.set(-3,0,3);const c=shopProp('can');c.vx=0;c.vz=5});await step(90);
  // baguette to yard
  await ev(()=>{const b=shopProp('baguette');pos.set(b.g.position.x,0,b.g.position.z+.8);yaw=Math.PI;for(let i=0;i<3;i++)gameStep(1/60);toggleGrab()});out.bagGrab=await ev(()=>grab&&grab.b.kind);
  await ev(()=>{pos.set(-1.2,0,-10)});await step(5);
- out.noonDone=await ev(()=>[...day.done]);await ev(()=>releaseGrab(false));await wait(1700);
+ out.noonDone=await ev(()=>[...day.done]);console.log('NOON',JSON.stringify(out.noonDone),await ev(()=>{const c=shopProp('can');return [c.g.position.x,c.g.position.z,c.home.x,c.home.z,c.g.visible]}));await ev(()=>releaseGrab(false));await wait(1700);
  await page.waitForFunction(()=>day.phase===2,null,{timeout:5000});out.eve=await ev(()=>({phase:day.phase,chicken:chicken.visible}));
  await ev(()=>{pos.set(STOVE.x,0,14.5);jumpY=0;curSpeed=0;grounded=true});await step(200);
  await ev(()=>{pos.set(chicken.position.x,0,chicken.position.z);jumpY=.8;grounded=true});await step(3);

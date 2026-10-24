@@ -2710,7 +2710,7 @@ function updateShop(dt){
  if(shop.phase>=1){
   const bg=shopProp('baguette');if(grab&&grab.b.o===bg.g){if(!shop.bagWarn){shop.bagWarn=true;speakDad('הבגט! מילקי, זה לא מקל!')}if(pos.z<-9.4&&!day.done.has('baguette')){dayEvent('baguette');addScore(250,'בגט בחצר');sayDani('הוא קובר את הבגט. כמו עצם.')}}
   if(bigBag.visible&&!headBag.visible&&jumpY<.4&&Math.hypot(pos.x-bigBag.position.x,pos.z-bigBag.position.z)<.6){bigBag.visible=false;headBag.visible=true;shop.bagT=5;dayEvent('bagHead');addScore(200,'שקית על הראש');sayText(milkyB,'🙈 מי כיבה את האור?!',2.2,'say',true);setTimeout(()=>sayDani('חחחחח אבא תסתכל!'),700)}
-  const cn=shopProp('can');if(cn&&cn.g.visible&&Math.hypot(cn.g.position.x-cn.home.x,cn.g.position.z-cn.home.z)>4&&!day.done.has('canRoll')){dayEvent('canRoll');addActivity('🥫 הקופסה מתגלגלת לה בכל הבית')}
+  const cn=shopProp('can');if(cn&&cn.g.visible&&Math.hypot(cn.g.position.x-cn.home.x,cn.g.position.z-cn.home.z)>3.5&&!day.done.has('canRoll')){dayEvent('canRoll');addActivity('🥫 הקופסה מתגלגלת לה בכל הבית')}
   if(cn&&cn.g.visible){const sp=Math.hypot(cn.vx,cn.vz);cn.g.children.forEach(m=>{m.rotation.y+=sp*dt*4})}
  }
  if(shop.phase===2){
