@@ -1,7 +1,13 @@
 // ===== Saved progress (in this browser): challenges, golden bones, best score =====
 const SAVE_KEY='milky-bardak-save-v1';
 let save={challenges:[],bones:[],best:0};
-try{const raw=localStorage.getItem(SAVE_KEY);if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object')save={challenges:Array.isArray(d.challenges)?d.challenges.filter(x=>typeof x==='string'):[],bones:Array.isArray(d.bones)?d.bones.filter(Number.isInteger):[],best:Math.max(0,+d.best||0),day:d.day&&typeof d.day==='object'?{completed:+d.day.completed||0,bestStars:+d.day.bestStars||0,bestTime:+d.day.bestTime||0,bestScore:+d.day.bestScore||0}:undefined,mods:d.mods&&typeof d.mods==='object'?{on:Array.isArray(d.mods.on)?d.mods.on.filter(x=>typeof x==='string'):[],wear:Array.isArray(d.mods.wear)?d.mods.wear.filter(x=>typeof x==='string'):[],seen:Array.isArray(d.mods.seen)?d.mods.seen.filter(x=>typeof x==='string'):[]}:undefined}}}catch(_){}
+function starN(v){return Math.max(0,Math.min(3,Math.round(+v||0)))}
+function starMap(o){const r={};if(o&&typeof o==='object')for(const [k,v] of Object.entries(o))if(/^[a-z0-9_]{1,24}$/i.test(k))r[k]=starN(v);return r}
+try{const raw=localStorage.getItem(SAVE_KEY);if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object')save={challenges:Array.isArray(d.challenges)?d.challenges.filter(x=>typeof x==='string'):[],bones:Array.isArray(d.bones)?d.bones.filter(Number.isInteger):[],best:Math.max(0,+d.best||0),day:d.day&&typeof d.day==='object'?{completed:+d.day.completed||0,bestStars:+d.day.bestStars||0,bestTime:+d.day.bestTime||0,bestScore:+d.day.bestScore||0}:undefined,mods:d.mods&&typeof d.mods==='object'?{on:Array.isArray(d.mods.on)?d.mods.on.filter(x=>typeof x==='string'):[],wear:Array.isArray(d.mods.wear)?d.mods.wear.filter(x=>typeof x==='string'):[],seen:Array.isArray(d.mods.seen)?d.mods.seen.filter(x=>typeof x==='string'):[]}:undefined,
+  // later systems: story week, detective cases, episodes (stars are always 0..3)
+  week:d.week&&typeof d.week==='object'?{cur:Math.max(0,Math.floor(+d.week.cur||0)),stars:Array.isArray(d.week.stars)?d.week.stars.map(v=>v==null?null:starN(v)):[]}:undefined,
+  det:d.det&&typeof d.det==='object'?{stars:starMap(d.det.stars)}:undefined,
+  ep:d.ep&&typeof d.ep==='object'?Object.fromEntries(Object.entries(d.ep).filter(([k,v])=>/^[a-z0-9_]{1,24}$/i.test(k)&&v&&typeof v==='object').map(([k,v])=>[k,starMap(v)])):undefined}}}catch(_){}
 const bestAtStart=save.best;let bestAnnounced=false;
 function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(_){}}
 function updateBestLine(){document.getElementById('bestLine').textContent='שיא ניקוד: '+save.best.toLocaleString('he-IL')}

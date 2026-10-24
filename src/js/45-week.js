@@ -16,7 +16,7 @@ save.week.cur=Math.max(0,Math.min(WEEK.length-1,+save.week.cur||0));
 const week=save.week;
 function dayUnlocked(i){if(i===0)return true;if(WEEK[i].soon)return false;
  return (week.stars[i-1]||0)>0||(i===1&&(save.day&&save.day.completed>0))}
-if(!dayUnlocked(week.cur))week.cur=0;
+// (checked again once every day's module has loaded and dropped its 'soon' flag — see 64-episodes)
 const PHASE_SETS={normal:DAY_NORMAL};
 function loadWeekPhases(){const id=WEEK[week.cur].id;const set=PHASE_SETS[id]||DAY_NORMAL;DAY.splice(0,DAY.length,...set);BATH_BLOCK=false;if(typeof bathResetProps==='function')bathResetProps()}
 function weekIcon(){return week.cur?WEEK[week.cur].icon:''}

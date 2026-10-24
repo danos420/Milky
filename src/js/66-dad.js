@@ -2,7 +2,7 @@
 var DADP=false;
 const v3=(x,y,z)=>new THREE.Vector3(x,y,z);
 // NPC Milky (a simple dog rig with Milky's colours)
-const NM=makeDog({name:'מילקי',color:0xf4f0e8,color2:0xd9a867,size:.95,speed:3,x:0,z:-80});NM.g.visible=false;
+const NM=makeDog({name:'מילקי',color:0xf4f0e8,color2:0xd9a867,size:.95,speed:3,x:0,z:-80});NM.g.visible=false;window.NM_OBJ=NM;
 {const tan=mat(0xd9a867,.9);const p=ball(.2,tan,0,1.25,0,NM.body);p.scale.set(1,.4,1.3);const h=ball(.22,tan,0,.12,-.02,NM.head);h.scale.set(1.05,.7,1)}
 NM.nav={path:[],repath:0,tx:0,tz:0,stuck:0,giveUp:0};NM.stun=0;NM.state='wander';NM.tx=0;NM.tz=0;NM.carry=null;NM.barkT=0;NM.foam=0;
 const NM_SPOTS=[[-4,-6],[4,-6],[-4,0],[3,2],[-4,6],[0,-3],[0,12],[-4,13],[4,11],[2,-7]];

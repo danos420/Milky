@@ -1,5 +1,7 @@
 // ===== The universe: one episode engine (10 levels, stars, unlocks) and a world-select menu =====
 if(!save.ep||typeof save.ep!=='object')save.ep={};
+// all week days are registered by now: restore the saved day, or fall back to Sunday
+if(!dayUnlocked(week.cur))week.cur=0;if(typeof loadWeekPhases==='function')loadWeekPhases();
 const EP={list:{},cur:null,idx:0};
 function epRegister(ep){EP.list[ep.id]=ep;if(!save.ep[ep.id])save.ep[ep.id]={}}
 function epStars(id){return Object.values(save.ep[id]||{}).reduce((a,b)=>a+(+b||0),0)}
@@ -44,7 +46,7 @@ function universeRender(){uniBox.innerHTML='';for(const w of WORLDS){const b=doc
  b.append(ic,n,s);b.addEventListener('click',()=>{w.go()});uniBox.appendChild(b)}}
 function openMenu(){started=false;for(const k in keys)keys[k]=false;for(const id of ['dayEnd','zOver','hEnd','dEnd','dBoard','dAccuse','epEnd','epBoard'])document.getElementById(id).hidden=true;evtPill.hidden=true;universeRender();document.querySelector('#overlay').style.display=''}
 document.getElementById('menuBtn').addEventListener('click',()=>universeRender());
-universeRender();
+universeRender();document.body.classList.add('uniOK');
 epRegister({id:'zombie',icon:'🧟',title:'מתקפת זומבים: 10 לילות',reward:'👑 לסיים את כל הלילות',rewardDone:'שרדת את כל 10 הלילות! מילקי, מגן השכונה 🛡️',
  levels:NIGHTS.map((n,i)=>({id:'n'+(i+1),title:'לילה '+(i+1)+': '+n.t,icon:n.icon,sub:n.sub})),
  start:i=>{zs.night=i;document.querySelector('#overlay').style.display='none';setZombie(true);startGame();setTimeout(()=>showBanner('🌙 לילה '+(i+1)+': '+NIGHTS[i].t),200)},

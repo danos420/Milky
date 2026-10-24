@@ -225,11 +225,16 @@ body.detective #vignette{background:radial-gradient(ellipse at 50% 48%,transpare
 #universe{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:10px 0 14px;width:min(860px,100%)}
 .uCard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 10px;border-radius:16px;border:0;font:inherit;cursor:pointer;touch-action:manipulation;color:#22180c;box-shadow:inset 0 -4px 0 #0003;min-height:112px}
 .uCard b{font-size:34px;line-height:1}.uCard strong{font-size:17px}.uCard small{font-size:12.5px;opacity:.8}.uCard.locked{filter:grayscale(.8);opacity:.55;cursor:default}
-#startModes{display:none!important}
+body.uniOK #startModes{display:none!important}
 @media (max-height:480px){#universe{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin:6px 0}.uCard{min-height:76px;padding:8px 6px}.uCard b{font-size:24px}.uCard strong{font-size:14px}.uCard small{font-size:11px}}
 
 body.parPlay #turboBtn,body.parPlay #trainBtn,body.parPlay #ragdollBtn,body.parPlay #moodBtn,body.parPlay #tongueBtn,body.parPlay #snackBtn,body.parPlay #slipperBtn,body.parPlay #dadInteractBtn,body.parPlay #interactBtn,body.dadPlay #turboBtn,body.dadPlay #trainBtn,body.dadPlay #ragdollBtn,body.dadPlay #moodBtn,body.dadPlay #tongueBtn,body.dadPlay #snackBtn,body.dadPlay #slipperBtn,body.dadPlay #dadInteractBtn,body.dadPlay #interactBtn{display:none!important}
 @media (max-width:520px){#universe{grid-template-columns:1fr 1fr;gap:8px}.uCard{min-height:96px;padding:10px 6px}.uCard b{font-size:28px}.uCard strong{font-size:15px}.uCard small{font-size:11.5px}}
+
+#bootErr{position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;background:#2b1d1d;color:#ffe9d6;border:2px solid #ff8a5c;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14px;direction:rtl}
+#bootErr[hidden]{display:none}
+#bootErr code{direction:ltr;unicode-bidi:plaintext;text-align:start;white-space:pre-wrap;font-size:12px;background:#0004;padding:6px;border-radius:8px;max-height:30vh;overflow:auto}
+#bootErr button{font:inherit;padding:8px;border-radius:10px;border:0;background:#ffcf70;color:#2b1d1d}
 </style></head><body><div id="uiTop">
  <div id="hud"><h1>🐶 מילקי: ברדק אחולמניוקי</h1><p id="status">המשימה: גנוב את הכפכף של אבא והחבא אותו במיטה 🩴</p><button id="reset" class="chip" title="התחלה מחדש" aria-label="התחלה מחדש">↻</button></div>
  <div id="toolbar">
@@ -296,6 +301,13 @@ body.parPlay #turboBtn,body.parPlay #trainBtn,body.parPlay #ragdollBtn,body.parP
 
 <div id="epBoard" class="modal" hidden><div class="modalCard" style="max-width:640px"><div id="epIcon" style="font-size:44px">⭐</div><h1 id="epTitle"></h1><div id="epSub"></div><div id="epLevels"></div><div class="modalBtns"><button id="epBack" type="button">🏠 לתפריט</button></div></div></div>
 <div id="epEnd" class="modal" hidden><div class="modalCard"><div id="epEndIcon" style="font-size:54px">⭐</div><h1 id="epEndTitle"></h1><div id="epEndStars"></div><div id="epEndStats"></div><div class="modalBtns"><button id="epNext" type="button">▶ לשלב הבא</button><button id="epRetry" type="button">🔁 שוב</button><button id="epToBoard" type="button">📋 השלבים</button></div></div></div>
+
+<div id="bootErr" hidden><b>😵 משהו נשבר בטעינה</b><code id="bootErrMsg"></code><small>קודם תנסה "טעינה נקייה". אם זה חוזר, צלם את המסך ושלח לי</small><button id="bootClean" type="button">🔄 טעינה נקייה (ההתקדמות נשמרת)</button><button id="bootReset" type="button">🧹 איפוס התקדמות וטעינה מחדש</button></div>
+<script>(function(){var shown=0;function show(m){if(shown>2)return;shown++;var b=document.getElementById('bootErr'),c=document.getElementById('bootErrMsg');if(!b)return;c.textContent+=(c.textContent?'\n':'')+String(m).slice(0,240);b.hidden=false;document.body.classList.remove('uniOK')}
+addEventListener('error',function(e){show((e.message||'error')+(e.lineno?' @'+e.lineno+':'+(e.colno||''):''))});addEventListener('unhandledrejection',function(e){show('promise: '+(e.reason&&e.reason.message||e.reason))});
+window.__bootErr=show;document.getElementById('bootClean').onclick=function(){var done=function(){location.reload()};try{Promise.all([window.caches?caches.keys().then(function(k){return Promise.all(k.map(function(x){return caches.delete(x)}))}):0,navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(x){return x.unregister()}))}):0]).then(done,done)}catch(_){done()}};
+// if the main game script never finished (cut-off download), say so after a few seconds
+setTimeout(function(){if(!window.EP_READY)show('הקוד של המשחק לא נטען עד הסוף (אולי הורדה שנקטעה)')},6000);document.getElementById('bootReset').onclick=function(){if(!confirm('למחוק את כל ההתקדמות ולטעון מחדש?'))return;try{localStorage.clear()}catch(_){}location.reload()}})();</script>
 <script src="vendor/three.min.js"></script>
 <script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"><\/script>')</script>
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
@@ -1782,7 +1794,7 @@ function roundBlockers(){
  const set=(k,x,z,r,h)=>{const o=_rbDyn[k];o.x=x;o.z=z;o.r=r;o.h=h;_rb.push(o)};
  if(chainPhase<3)set(0,dominoPlant.position.x,dominoPlant.position.z,.33,1.3);
  if(!window.DADP)set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
- if(typeof NM!=='undefined'&&NM.g.visible)set(5,NM.g.position.x,NM.g.position.z,.34,.75);
+ {const nmo=window.NM_OBJ;if(nmo&&nmo.g.visible)set(5,nmo.g.position.x,nmo.g.position.z,.34,.75)}
  set(3,neighbor.g.position.x,neighbor.g.position.z,NB_R,9);set(4,lady.g.position.x,lady.g.position.z,LADY_R,9);
  return _rb;
 }
@@ -1911,7 +1923,13 @@ stickEl.addEventListener('pointerup',stickEnd);stickEl.addEventListener('pointer
 // ===== Saved progress (in this browser): challenges, golden bones, best score =====
 const SAVE_KEY='milky-bardak-save-v1';
 let save={challenges:[],bones:[],best:0};
-try{const raw=localStorage.getItem(SAVE_KEY);if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object')save={challenges:Array.isArray(d.challenges)?d.challenges.filter(x=>typeof x==='string'):[],bones:Array.isArray(d.bones)?d.bones.filter(Number.isInteger):[],best:Math.max(0,+d.best||0),day:d.day&&typeof d.day==='object'?{completed:+d.day.completed||0,bestStars:+d.day.bestStars||0,bestTime:+d.day.bestTime||0,bestScore:+d.day.bestScore||0}:undefined,mods:d.mods&&typeof d.mods==='object'?{on:Array.isArray(d.mods.on)?d.mods.on.filter(x=>typeof x==='string'):[],wear:Array.isArray(d.mods.wear)?d.mods.wear.filter(x=>typeof x==='string'):[],seen:Array.isArray(d.mods.seen)?d.mods.seen.filter(x=>typeof x==='string'):[]}:undefined}}}catch(_){}
+function starN(v){return Math.max(0,Math.min(3,Math.round(+v||0)))}
+function starMap(o){const r={};if(o&&typeof o==='object')for(const [k,v] of Object.entries(o))if(/^[a-z0-9_]{1,24}$/i.test(k))r[k]=starN(v);return r}
+try{const raw=localStorage.getItem(SAVE_KEY);if(raw){const d=JSON.parse(raw);if(d&&typeof d==='object')save={challenges:Array.isArray(d.challenges)?d.challenges.filter(x=>typeof x==='string'):[],bones:Array.isArray(d.bones)?d.bones.filter(Number.isInteger):[],best:Math.max(0,+d.best||0),day:d.day&&typeof d.day==='object'?{completed:+d.day.completed||0,bestStars:+d.day.bestStars||0,bestTime:+d.day.bestTime||0,bestScore:+d.day.bestScore||0}:undefined,mods:d.mods&&typeof d.mods==='object'?{on:Array.isArray(d.mods.on)?d.mods.on.filter(x=>typeof x==='string'):[],wear:Array.isArray(d.mods.wear)?d.mods.wear.filter(x=>typeof x==='string'):[],seen:Array.isArray(d.mods.seen)?d.mods.seen.filter(x=>typeof x==='string'):[]}:undefined,
+  // later systems: story week, detective cases, episodes (stars are always 0..3)
+  week:d.week&&typeof d.week==='object'?{cur:Math.max(0,Math.floor(+d.week.cur||0)),stars:Array.isArray(d.week.stars)?d.week.stars.map(v=>v==null?null:starN(v)):[]}:undefined,
+  det:d.det&&typeof d.det==='object'?{stars:starMap(d.det.stars)}:undefined,
+  ep:d.ep&&typeof d.ep==='object'?Object.fromEntries(Object.entries(d.ep).filter(([k,v])=>/^[a-z0-9_]{1,24}$/i.test(k)&&v&&typeof v==='object').map(([k,v])=>[k,starMap(v)])):undefined}}}catch(_){}
 const bestAtStart=save.best;let bestAnnounced=false;
 function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(_){}}
 function updateBestLine(){document.getElementById('bestLine').textContent='שיא ניקוד: '+save.best.toLocaleString('he-IL')}
@@ -2592,7 +2610,7 @@ save.week.cur=Math.max(0,Math.min(WEEK.length-1,+save.week.cur||0));
 const week=save.week;
 function dayUnlocked(i){if(i===0)return true;if(WEEK[i].soon)return false;
  return (week.stars[i-1]||0)>0||(i===1&&(save.day&&save.day.completed>0))}
-if(!dayUnlocked(week.cur))week.cur=0;
+// (checked again once every day's module has loaded and dropped its 'soon' flag — see 64-episodes)
 const PHASE_SETS={normal:DAY_NORMAL};
 function loadWeekPhases(){const id=WEEK[week.cur].id;const set=PHASE_SETS[id]||DAY_NORMAL;DAY.splice(0,DAY.length,...set);BATH_BLOCK=false;if(typeof bathResetProps==='function')bathResetProps()}
 function weekIcon(){return week.cur?WEEK[week.cur].icon:''}
@@ -4430,6 +4448,8 @@ window.DET_READY=true;
 setTimeout(()=>{if(DETECT){owApply();document.body.classList.add('detective')}},0);
 // ===== The universe: one episode engine (10 levels, stars, unlocks) and a world-select menu =====
 if(!save.ep||typeof save.ep!=='object')save.ep={};
+// all week days are registered by now: restore the saved day, or fall back to Sunday
+if(!dayUnlocked(week.cur))week.cur=0;if(typeof loadWeekPhases==='function')loadWeekPhases();
 const EP={list:{},cur:null,idx:0};
 function epRegister(ep){EP.list[ep.id]=ep;if(!save.ep[ep.id])save.ep[ep.id]={}}
 function epStars(id){return Object.values(save.ep[id]||{}).reduce((a,b)=>a+(+b||0),0)}
@@ -4474,7 +4494,7 @@ function universeRender(){uniBox.innerHTML='';for(const w of WORLDS){const b=doc
  b.append(ic,n,s);b.addEventListener('click',()=>{w.go()});uniBox.appendChild(b)}}
 function openMenu(){started=false;for(const k in keys)keys[k]=false;for(const id of ['dayEnd','zOver','hEnd','dEnd','dBoard','dAccuse','epEnd','epBoard'])document.getElementById(id).hidden=true;evtPill.hidden=true;universeRender();document.querySelector('#overlay').style.display=''}
 document.getElementById('menuBtn').addEventListener('click',()=>universeRender());
-universeRender();
+universeRender();document.body.classList.add('uniOK');
 epRegister({id:'zombie',icon:'🧟',title:'מתקפת זומבים: 10 לילות',reward:'👑 לסיים את כל הלילות',rewardDone:'שרדת את כל 10 הלילות! מילקי, מגן השכונה 🛡️',
  levels:NIGHTS.map((n,i)=>({id:'n'+(i+1),title:'לילה '+(i+1)+': '+n.t,icon:n.icon,sub:n.sub})),
  start:i=>{zs.night=i;document.querySelector('#overlay').style.display='none';setZombie(true);startGame();setTimeout(()=>showBanner('🌙 לילה '+(i+1)+': '+NIGHTS[i].t),200)},
@@ -4487,7 +4507,7 @@ window.EP_READY=true;
 var DADP=false;
 const v3=(x,y,z)=>new THREE.Vector3(x,y,z);
 // NPC Milky (a simple dog rig with Milky's colours)
-const NM=makeDog({name:'מילקי',color:0xf4f0e8,color2:0xd9a867,size:.95,speed:3,x:0,z:-80});NM.g.visible=false;
+const NM=makeDog({name:'מילקי',color:0xf4f0e8,color2:0xd9a867,size:.95,speed:3,x:0,z:-80});NM.g.visible=false;window.NM_OBJ=NM;
 {const tan=mat(0xd9a867,.9);const p=ball(.2,tan,0,1.25,0,NM.body);p.scale.set(1,.4,1.3);const h=ball(.22,tan,0,.12,-.02,NM.head);h.scale.set(1.05,.7,1)}
 NM.nav={path:[],repath:0,tx:0,tz:0,stuck:0,giveUp:0};NM.stun=0;NM.state='wander';NM.tx=0;NM.tz=0;NM.carry=null;NM.barkT=0;NM.foam=0;
 const NM_SPOTS=[[-4,-6],[4,-6],[-4,0],[3,2],[-4,6],[0,-3],[0,12],[-4,13],[4,11],[2,-7]];
