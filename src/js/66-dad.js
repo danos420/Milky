@@ -119,10 +119,10 @@ function updateDadMission(dt){if(!dm.m||dm.over)return;dm.t+=dt;const m=dm.m;NM.
 function updateDadFree(dt){NM.stun=Math.max(0,NM.stun-dt);const p0=NM.g.position.clone();if(NM.stun<=0)fleeOrWander(dt,3,3);nmAnim(NM.g.position.distanceTo(p0),dt);if(Math.random()<dt*.06)nmSay(pick(['🐕','😼','🦴','👅']),1.2)}
 // ---------- mode plumbing ----------
 const DAD_EP={id:'dad',icon:'👨',title:'לשחק כאבא: 10 משימות',reward:'לפתוח את אבא בעולם הפתוח',rewardDone:'אבא נפתח! בעולם הפתוח לוחצים 🔄 כדי להחליף בין מילקי לאבא',
- levels:DAD_MISSIONS.map((m,i)=>({id:'m'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:dadMissionStart,quit:()=>setDadPlay(false)};
+ levels:DAD_MISSIONS.map((m,i)=>({id:'m'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:dadMissionStart,quit:()=>setDadPlay(false),alive:()=>DADP};
 epRegister(DAD_EP);
 function setDadPlay(on){if(on===DADP&&on)return;DADP=on;window.DADP=on;
- if(on){if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}if(DETECT){DETECT=false;dApply(false)}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();
+ if(on){allModesOff('dad');OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();
   if(dadSeated)unseatDad();dadState='player';dad.visible=true;NM.g.visible=true;NM.g.position.set(-2,0,-3)}
  else{dm.m=null;dSit=false;dadSitBlend=0;NM.g.visible=false;NM.g.position.set(0,0,-80);dog.visible=true;dadState='rest';dad.position.set(4.1,0,5.7);dad.rotation.set(0,0,0);dad.quaternion.identity();for(const T of THROWN){T.life=0;T.g.visible=false}if(slipperState==='nm')carrySlipper(false);evtPill.hidden=true}
  document.body.classList.toggle('dadPlay',DADP);charLabel()}

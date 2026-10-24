@@ -107,11 +107,11 @@ function updateParrotMission(dt){if(!PM.m||PM.over)return;PM.t+=dt;const m=PM.m;
  evtPill.hidden=false;const l=m.icon+' '+(PM.i+1)+'/10: '+m.t+(m.limit?' · '+Math.max(0,Math.ceil(m.limit-PM.t)):'');if(evtPill.textContent!==l)evtPill.textContent=l;
  if(m.done())return parrotMissionEnd(true);if(m.limit&&PM.t>=m.limit)parrotMissionEnd(false)}
 function setParrotPlay(on){if(on===PARP&&on)return;
- if(on){if(window.DADP)setDadPlay(false);if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}if(DETECT){DETECT=false;dApply(false)}PARP=true;window.PARP=true;OPEN_WORLD=true;document.body.classList.add('openWorld');reset();owApply();PP.visible=true;parrot.visible=false}
+ if(on){allModesOff('parrot');PARP=true;window.PARP=true;OPEN_WORLD=true;document.body.classList.add('openWorld');reset();owApply();PP.visible=true;parrot.visible=false}
  else{PARP=false;window.PARP=false;PM.m=null;itemDrop();PP.visible=false;parrot.visible=true;dog.visible=true;NM.g.visible=false;NM.g.position.set(0,0,-80);RINGS.forEach(r=>r.visible=false);for(const it of Object.values(ITEMS))it.visible=false;evtPill.hidden=true}
  document.body.classList.toggle('parPlay',PARP);{const jb=document.getElementById('jumpBtn');if(jb){jb.querySelector('b').textContent=PARP?'🪶':'🐾';jb.querySelector('small').textContent=PARP?'לנפנף':'קפיצה'}}if(typeof charLabel==='function')charLabel()}
 epRegister({id:'parrot',icon:'🦜',title:'קוקו התוכי: 10 משימות',reward:'לפתוח את קוקו בעולם הפתוח',rewardDone:'קוקו נפתח! בעולם הפתוח לוחצים 🔄 כדי להחליף דמות',
- levels:P_MISSIONS.map((m,i)=>({id:'p'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:parrotMissionStart,quit:()=>setParrotPlay(false)});
+ levels:P_MISSIONS.map((m,i)=>({id:'p'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:parrotMissionStart,quit:()=>setParrotPlay(false),alive:()=>PARP});
 CHARS.push({id:'parrot',icon:'🦜',name:'קוקו',ok:()=>epComplete('parrot'),active:()=>PARP,on:()=>{setParrotPlay(true);PM.m=null},off:()=>setParrotPlay(false),hello:'🦜 עכשיו אתה קוקו! החזק קפיצה כדי לעוף · 🗣️ לצרוח'});
 WORLDS.push({icon:'🦜',name:'קוקו התוכי',col:'#9fe0a0',sub:()=>epComplete('parrot')?'✔ פתוח בעולם הפתוח · ⭐ '+epStars('parrot')+'/30':'10 משימות · ⭐ '+epStars('parrot')+'/30',go:()=>epBoard('parrot')});if(typeof universeRender==='function')universeRender();
 // buttons

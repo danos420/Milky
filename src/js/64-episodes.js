@@ -15,8 +15,11 @@ function epBoard(id){const ep=EP.list[id];EP.cur=ep;started=false;document.query
   b.append(ic,t,sm);b.addEventListener('click',()=>{epB.hidden=true;EP.idx=i;ep.start(i)});box.appendChild(b)});
  epB.hidden=false}
 document.getElementById('epBack').addEventListener('click',()=>{epB.hidden=true;if(EP.cur&&EP.cur.quit)EP.cur.quit();openMenu()});
-function epFinish(win,stars,lines,title){const ep=EP.cur,i=EP.idx,lv=ep.levels[i];const wasDone=epComplete(ep.id);
+function epFinish(win,stars,lines,title){const ep=EP.cur;if(!ep)return;
+ // a delayed result must not pop up over the menu or inside another mode
+ const i=EP.idx,lv=ep.levels[i];const wasDone=epComplete(ep.id);
  if(win){save.ep[ep.id][lv.id]=Math.max(save.ep[ep.id][lv.id]||0,stars);writeSave()}
+ if(document.querySelector('#overlay').style.display!=='none'||(ep.alive&&!ep.alive())){if(win&&!wasDone&&epComplete(ep.id)&&ep.onComplete)ep.onComplete();return}
  document.getElementById('epEndIcon').textContent=win?lv.icon:'💀';document.getElementById('epEndTitle').textContent=title||(win?lv.title+' — הושלם!':lv.title+' — נכשל');
  document.getElementById('epEndStars').innerHTML=win?[0,1,2].map(k=>'<span class="'+(k<stars?'on':'off')+'">⭐</span>').join(''):'';
  const st=document.getElementById('epEndStats');st.innerHTML='';const ls=lines.slice();if(win&&!wasDone&&epComplete(ep.id)&&ep.rewardDone){ls.push('🎉 '+ep.rewardDone);if(ep.onComplete)ep.onComplete()}
@@ -45,8 +48,8 @@ universeRender();
 epRegister({id:'zombie',icon:'🧟',title:'מתקפת זומבים: 10 לילות',reward:'👑 לסיים את כל הלילות',rewardDone:'שרדת את כל 10 הלילות! מילקי, מגן השכונה 🛡️',
  levels:NIGHTS.map((n,i)=>({id:'n'+(i+1),title:'לילה '+(i+1)+': '+n.t,icon:n.icon,sub:n.sub})),
  start:i=>{zs.night=i;document.querySelector('#overlay').style.display='none';setZombie(true);startGame();setTimeout(()=>showBanner('🌙 לילה '+(i+1)+': '+NIGHTS[i].t),200)},
- quit:()=>{if(ZOMBIE)setZombie(false)}});
+ quit:()=>{if(ZOMBIE)setZombie(false)},alive:()=>ZOMBIE});
 epRegister({id:'human',icon:'🕺',title:'מילקי בן אדם: 10 סידורים',rewardDone:'🎩 כל הסידורים "בוצעו"! אבא עדיין לא בטוח מה קרה היום',
  levels:ERRANDS.map(e=>({id:e.id,title:e.name,icon:e.icon,sub:'כל סידור נגמר בפיאסקו'})),
- start:i=>{document.querySelector('#overlay').style.display='none';setHuman(true);startGame();hStartErrand(i)},quit:()=>{if(HUMAN)setHuman(false)}});
+ start:i=>{document.querySelector('#overlay').style.display='none';setHuman(true);startGame();hStartErrand(i)},quit:()=>{if(HUMAN)setHuman(false)},alive:()=>HUMAN});
 window.EP_READY=true;

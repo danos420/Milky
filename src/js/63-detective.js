@@ -157,7 +157,7 @@ function dGuess(s){document.getElementById('dAccuse').hidden=true;started=true;
  const c=dCase(),time=(performance.now()-ds.t0)/1000;const stars=(ds.wrong===0&&ds.found.size>=c.clues.length&&time<=c.par)?3:(ds.wrong<=1?2:1);
  showBanner('✅ '+s.n+'! התיק נפתר!');if(window.JUICE_READY){slowMo(.6);punch(6);pow('נפתר!!',pos.x,2.8,pos.z,true)}addScore(1000-ds.wrong*200,'תיק נפתר!');c.reveal();CLUE_SPR.forEach(s=>s.visible=false);evtPill.hidden=true;ds.phase='solved';
  setTimeout(()=>dEnd(true,stars,time),3800)}
-function dEnd(win,stars,time){const c=dCase();const before=rankIdx();if(win){save.det.stars[c.id]=Math.max(save.det.stars[c.id]||0,stars);writeSave()}const after=rankIdx();
+function dEnd(win,stars,time){const c=dCase();const before=rankIdx();if(win){save.det.stars[c.id]=Math.max(save.det.stars[c.id]||0,stars);writeSave()}const after=rankIdx();if(!DETECT||document.querySelector('#overlay').style.display!=='none')return;
  document.getElementById('dEndTitle').textContent=win?'📁 '+c.title+' — נסגר!':'🦝 הדביבונים ניצחו...';
  document.getElementById('dEndStars').innerHTML=win?[0,1,2].map(i=>'<span class="'+(i<stars?'on':'off')+'">⭐</span>').join(''):'';
  const st=document.getElementById('dEndStats');st.innerHTML='';
@@ -234,7 +234,7 @@ function dSniff(){if(ds.sniffCool>0)return;const c=dCase();const left=c.clues.fi
 CTX_HOOKS.grab.unshift(()=>DETECT&&!dCase().night&&ds.phase==='investigate'&&ds.found.size<dCase().clues.length?{i:'👃',l:ds.sniffCool>0?'רחרוח '+Math.ceil(ds.sniffCool):'רחרוח!',on:ds.sniffCool>0?0:1,fn:dSniff}:null);
 // ---------- mode plumbing ----------
 function dApply(on){document.body.classList.toggle('detective',on);if(!on){DM.g.visible=false;dHideEvidence();dvReset();evtPill.hidden=true;for(const id of ['dAccuse','dEnd','dBoard'])document.getElementById(id).hidden=true}else{setTimeout(dBoard,50)}}
-function setDetective(on){DETECT=on;if(on){if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}}try{localStorage.setItem('milky-mode',on?'detective':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();dApply(on)}
+function setDetective(on){if(on)allModesOff('detective');DETECT=on;try{localStorage.setItem('milky-mode',on?'detective':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();dApply(on)}
 document.getElementById('startDetective').addEventListener('click',()=>{setDetective(true);startGame()});
 for(const id of ['start','startOpen','startZombie','startHuman'])document.getElementById(id).addEventListener('click',()=>{if(DETECT){DETECT=false;dApply(false)}},true);
 {const b=document.createElement('button');b.className='chip';b.type='button';b.textContent='🕵️ הבלש מילקי';b.addEventListener('click',()=>{setDetective(!DETECT);b.textContent=DETECT?'🐕 לחזור להיות כלב':'🕵️ הבלש מילקי'});document.getElementById('challengePanel').appendChild(b)}

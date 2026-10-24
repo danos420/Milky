@@ -60,7 +60,7 @@ function zGameOver(){if(window.EP_READY&&EP.cur&&EP.cur.id==='zombie'){zs.over=t
 function zReset(){for(const z of ZPOOL){z.on=false;z.P.g.visible=false;z.P.g.position.set(0,0,-90)}Object.assign(zs,{won:false,inBreak:false,wave:0,hearts:3,inv:0,breakT:3,alive:0,toSpawn:0,spawnT:0,kos:0,barkCool:0,over:false,bossQ:[],dadThrow:4});zOver.hidden=true;zHudPaint()}
 const ZHIDE=()=>[neighbor.g,lady.g,stroller,...PEOPLE.map(p=>p.P.g)];
 function zApply(on){document.body.classList.toggle('zombieMode',on);zHud.hidden=!on;for(const g of ZHIDE())g.visible=!on;scene.fog.near=on&&zCfg().fog?3:30;scene.fog.far=on&&zCfg().fog?20:115;if(!on)dad.visible=true;if(on){zReset();day.light=zCfg().dark?Z_DARK:Z_LIGHT}else{for(const z of ZPOOL){z.on=false;z.P.g.visible=false}zOver.hidden=true}}
-function setZombie(on){ZOMBIE=on;try{localStorage.setItem('milky-mode',on?'zombie':'open')}catch(_){}
+function setZombie(on){if(on)allModesOff('zombie');ZOMBIE=on;try{localStorage.setItem('milky-mode',on?'zombie':'open')}catch(_){}
  OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();zApply(on)}
 document.getElementById('startZombie').addEventListener('click',()=>{setZombie(true);startGame()});
 document.getElementById('startOpen').addEventListener('click',()=>{if(ZOMBIE){ZOMBIE=false;zApply(false);try{localStorage.setItem('milky-mode','open')}catch(_){}}},true);

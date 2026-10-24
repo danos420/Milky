@@ -70,7 +70,9 @@ for(const c of roundBlockers()){
  if(jumpY>=c.h)continue;
  const dx=pos.x-c.x,dz=pos.z-c.z,d=Math.hypot(dx,dz),m=c.r+dogRadius;
  if(d<m-.01){const nx=d>1e-4?dx/d:Math.sin(yaw),nz=d>1e-4?dz/d:Math.cos(yaw);
-  let x=c.x+nx*(m+.01),z=c.z+nz*(m+.01);if(!walkable(x,z,.44))[x,z]=nearestWalkable(x,z,.44);pos.x=x;pos.z=z}
+  let x=c.x+nx*(m+.01),z=c.z+nz*(m+.01);if(!walkable(x,z,.44))[x,z]=nearestWalkable(x,z,.44);
+  // ease out over a few frames instead of popping (a walking person nudges Milky aside)
+  const ex=x-pos.x,ez=z-pos.z,el=Math.hypot(ex,ez),lim=.09;if(el>lim){x=pos.x+ex/el*lim;z=pos.z+ez/el*lim}if(walkable(x,z,.4)){pos.x=x;pos.z=z}}
 }
 }
 landingCooldown=Math.max(0,landingCooldown-dt);

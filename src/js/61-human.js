@@ -115,7 +115,7 @@ function updateHuman(dt){
 }
 Object.assign(_holdLabels,{hairHold:'💇 יושב לתספורת...',birdHold:'🕊️ מאכיל יונים...'});
 function hApply(on){hat.visible=on;tie.visible=false;hs.i=-1;if(!on){for(const g of [mohawk,milkG,extG,chefSnow,dadMilk,parcelG,falG,hatFly,leash])g.visible=false;bullRun.g.visible=false;GUARD.g.visible=true;extWall.visible=true;evtPill.hidden=true;document.getElementById('hEnd').hidden=true}}
-function setHuman(on){HUMAN=on;if(on&&ZOMBIE){ZOMBIE=false;zApply(false)}if(on&&window.DETECT){DETECT=false;dApply(false)}if(on&&window.DADP)setDadPlay(false);try{localStorage.setItem('milky-mode',on?'human':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();hApply(on)}
+function setHuman(on){if(on)allModesOff('human');HUMAN=on;try{localStorage.setItem('milky-mode',on?'human':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();hApply(on)}
 document.getElementById('startHuman').addEventListener('click',()=>{if(window.EP_READY)epBoard('human');else{setHuman(true);startGame()}});
 for(const id of ['start','startOpen','startZombie'])document.getElementById(id).addEventListener('click',()=>{if(HUMAN){HUMAN=false;hApply(false)}},true);
 document.getElementById('hAgain').addEventListener('click',()=>{setHuman(true)});

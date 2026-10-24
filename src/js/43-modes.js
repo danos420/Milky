@@ -129,3 +129,12 @@ function updateModes(dt,t){
  if(WEAR.cape.visible){const sp=Math.min(1,Math.abs(curSpeed)/6);WEAR.cape.rotation.x+=((-.08+sp*.32+(grounded?0:.35)+Math.sin(t*14)*.06*sp)-WEAR.cape.rotation.x)*Math.min(1,dt*8);WEAR.cape.rotation.z=Math.sin(t*9)*.05*sp}
 }
 applyModes();checkUnlocks();window.MODES_READY=true;
+
+// ===== one switch that turns every special mode off before another one starts =====
+function allModesOff(keep){
+ if(keep!=='human'&&window.HUMAN&&typeof hApply==='function'){HUMAN=false;hApply(false)}
+ if(keep!=='detective'&&window.DETECT&&typeof dApply==='function'){DETECT=false;dApply(false)}
+ if(keep!=='zombie'&&window.ZOMBIE&&typeof zApply==='function'){ZOMBIE=false;zApply(false)}
+ if(keep!=='dad'&&window.DADP&&typeof setDadPlay==='function')setDadPlay(false);
+ if(keep!=='parrot'&&window.PARP&&typeof setParrotPlay==='function')setParrotPlay(false);
+}

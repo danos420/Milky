@@ -3,12 +3,13 @@
 // goes deeper into a blocker, so Milky can never get trapped inside one.
 const decorRounds=[{x:-5.8,z:-6.3,r:.24,h:9},{x:4.85,z:-7.2,r:.42,h:1.2}];
 for(const [x,z] of trees)decorRounds.push({x,z,r:.32,h:9});decorRounds.push({x:-5,z:-11,r:.55,h:1.7});
-const _rb=[],_rbDyn=[0,1,2,3,4].map(()=>({x:0,z:0,r:0,h:9}));
+const _rb=[],_rbDyn=[0,1,2,3,4,5].map(()=>({x:0,z:0,r:0,h:9}));
 function roundBlockers(){
  _rb.length=0;for(const d of decorRounds)_rb.push(d);
  const set=(k,x,z,r,h)=>{const o=_rbDyn[k];o.x=x;o.z=z;o.r=r;o.h=h;_rb.push(o)};
  if(chainPhase<3)set(0,dominoPlant.position.x,dominoPlant.position.z,.33,1.3);
- set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
+ if(!window.DADP)set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
+ if(typeof NM!=='undefined'&&NM.g.visible)set(5,NM.g.position.x,NM.g.position.z,.34,.75);
  set(3,neighbor.g.position.x,neighbor.g.position.z,NB_R,9);set(4,lady.g.position.x,lady.g.position.z,LADY_R,9);
  return _rb;
 }

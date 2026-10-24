@@ -1776,12 +1776,13 @@ const down=e=>{e.preventDefault();b.classList.add('down');setKey(k,true)};const 
 // goes deeper into a blocker, so Milky can never get trapped inside one.
 const decorRounds=[{x:-5.8,z:-6.3,r:.24,h:9},{x:4.85,z:-7.2,r:.42,h:1.2}];
 for(const [x,z] of trees)decorRounds.push({x,z,r:.32,h:9});decorRounds.push({x:-5,z:-11,r:.55,h:1.7});
-const _rb=[],_rbDyn=[0,1,2,3,4].map(()=>({x:0,z:0,r:0,h:9}));
+const _rb=[],_rbDyn=[0,1,2,3,4,5].map(()=>({x:0,z:0,r:0,h:9}));
 function roundBlockers(){
  _rb.length=0;for(const d of decorRounds)_rb.push(d);
  const set=(k,x,z,r,h)=>{const o=_rbDyn[k];o.x=x;o.z=z;o.r=r;o.h=h;_rb.push(o)};
  if(chainPhase<3)set(0,dominoPlant.position.x,dominoPlant.position.z,.33,1.3);
- set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
+ if(!window.DADP)set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
+ if(typeof NM!=='undefined'&&NM.g.visible)set(5,NM.g.position.x,NM.g.position.z,.34,.75);
  set(3,neighbor.g.position.x,neighbor.g.position.z,NB_R,9);set(4,lady.g.position.x,lady.g.position.z,LADY_R,9);
  return _rb;
 }
@@ -2178,7 +2179,9 @@ for(const c of roundBlockers()){
  if(jumpY>=c.h)continue;
  const dx=pos.x-c.x,dz=pos.z-c.z,d=Math.hypot(dx,dz),m=c.r+dogRadius;
  if(d<m-.01){const nx=d>1e-4?dx/d:Math.sin(yaw),nz=d>1e-4?dz/d:Math.cos(yaw);
-  let x=c.x+nx*(m+.01),z=c.z+nz*(m+.01);if(!walkable(x,z,.44))[x,z]=nearestWalkable(x,z,.44);pos.x=x;pos.z=z}
+  let x=c.x+nx*(m+.01),z=c.z+nz*(m+.01);if(!walkable(x,z,.44))[x,z]=nearestWalkable(x,z,.44);
+  // ease out over a few frames instead of popping (a walking person nudges Milky aside)
+  const ex=x-pos.x,ez=z-pos.z,el=Math.hypot(ex,ez),lim=.09;if(el>lim){x=pos.x+ex/el*lim;z=pos.z+ez/el*lim}if(walkable(x,z,.4)){pos.x=x;pos.z=z}}
 }
 }
 landingCooldown=Math.max(0,landingCooldown-dt);
@@ -2490,6 +2493,15 @@ function updateModes(dt,t){
  if(WEAR.cape.visible){const sp=Math.min(1,Math.abs(curSpeed)/6);WEAR.cape.rotation.x+=((-.08+sp*.32+(grounded?0:.35)+Math.sin(t*14)*.06*sp)-WEAR.cape.rotation.x)*Math.min(1,dt*8);WEAR.cape.rotation.z=Math.sin(t*9)*.05*sp}
 }
 applyModes();checkUnlocks();window.MODES_READY=true;
+
+// ===== one switch that turns every special mode off before another one starts =====
+function allModesOff(keep){
+ if(keep!=='human'&&window.HUMAN&&typeof hApply==='function'){HUMAN=false;hApply(false)}
+ if(keep!=='detective'&&window.DETECT&&typeof dApply==='function'){DETECT=false;dApply(false)}
+ if(keep!=='zombie'&&window.ZOMBIE&&typeof zApply==='function'){ZOMBIE=false;zApply(false)}
+ if(keep!=='dad'&&window.DADP&&typeof setDadPlay==='function')setDadPlay(false);
+ if(keep!=='parrot'&&window.PARP&&typeof setParrotPlay==='function')setParrotPlay(false);
+}
 // ===== Surprise events during the day: fetch, pizza, dad's nap, rain dance =====
 var noiseLevel=0,evtNap=false;
 LIGHT.push({sky:0x7f8a97,hemi:0xc6d0dc,ground:0x34363e,sun:0xcfd8e6,sunI:.55,k:.76});
@@ -3937,7 +3949,7 @@ function zGameOver(){if(window.EP_READY&&EP.cur&&EP.cur.id==='zombie'){zs.over=t
 function zReset(){for(const z of ZPOOL){z.on=false;z.P.g.visible=false;z.P.g.position.set(0,0,-90)}Object.assign(zs,{won:false,inBreak:false,wave:0,hearts:3,inv:0,breakT:3,alive:0,toSpawn:0,spawnT:0,kos:0,barkCool:0,over:false,bossQ:[],dadThrow:4});zOver.hidden=true;zHudPaint()}
 const ZHIDE=()=>[neighbor.g,lady.g,stroller,...PEOPLE.map(p=>p.P.g)];
 function zApply(on){document.body.classList.toggle('zombieMode',on);zHud.hidden=!on;for(const g of ZHIDE())g.visible=!on;scene.fog.near=on&&zCfg().fog?3:30;scene.fog.far=on&&zCfg().fog?20:115;if(!on)dad.visible=true;if(on){zReset();day.light=zCfg().dark?Z_DARK:Z_LIGHT}else{for(const z of ZPOOL){z.on=false;z.P.g.visible=false}zOver.hidden=true}}
-function setZombie(on){ZOMBIE=on;try{localStorage.setItem('milky-mode',on?'zombie':'open')}catch(_){}
+function setZombie(on){if(on)allModesOff('zombie');ZOMBIE=on;try{localStorage.setItem('milky-mode',on?'zombie':'open')}catch(_){}
  OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();zApply(on)}
 document.getElementById('startZombie').addEventListener('click',()=>{setZombie(true);startGame()});
 document.getElementById('startOpen').addEventListener('click',()=>{if(ZOMBIE){ZOMBIE=false;zApply(false);try{localStorage.setItem('milky-mode','open')}catch(_){}}},true);
@@ -4104,7 +4116,7 @@ function updateHuman(dt){
 }
 Object.assign(_holdLabels,{hairHold:'💇 יושב לתספורת...',birdHold:'🕊️ מאכיל יונים...'});
 function hApply(on){hat.visible=on;tie.visible=false;hs.i=-1;if(!on){for(const g of [mohawk,milkG,extG,chefSnow,dadMilk,parcelG,falG,hatFly,leash])g.visible=false;bullRun.g.visible=false;GUARD.g.visible=true;extWall.visible=true;evtPill.hidden=true;document.getElementById('hEnd').hidden=true}}
-function setHuman(on){HUMAN=on;if(on&&ZOMBIE){ZOMBIE=false;zApply(false)}if(on&&window.DETECT){DETECT=false;dApply(false)}if(on&&window.DADP)setDadPlay(false);try{localStorage.setItem('milky-mode',on?'human':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();hApply(on)}
+function setHuman(on){if(on)allModesOff('human');HUMAN=on;try{localStorage.setItem('milky-mode',on?'human':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();hApply(on)}
 document.getElementById('startHuman').addEventListener('click',()=>{if(window.EP_READY)epBoard('human');else{setHuman(true);startGame()}});
 for(const id of ['start','startOpen','startZombie'])document.getElementById(id).addEventListener('click',()=>{if(HUMAN){HUMAN=false;hApply(false)}},true);
 document.getElementById('hAgain').addEventListener('click',()=>{setHuman(true)});
@@ -4317,7 +4329,7 @@ function dGuess(s){document.getElementById('dAccuse').hidden=true;started=true;
  const c=dCase(),time=(performance.now()-ds.t0)/1000;const stars=(ds.wrong===0&&ds.found.size>=c.clues.length&&time<=c.par)?3:(ds.wrong<=1?2:1);
  showBanner('✅ '+s.n+'! התיק נפתר!');if(window.JUICE_READY){slowMo(.6);punch(6);pow('נפתר!!',pos.x,2.8,pos.z,true)}addScore(1000-ds.wrong*200,'תיק נפתר!');c.reveal();CLUE_SPR.forEach(s=>s.visible=false);evtPill.hidden=true;ds.phase='solved';
  setTimeout(()=>dEnd(true,stars,time),3800)}
-function dEnd(win,stars,time){const c=dCase();const before=rankIdx();if(win){save.det.stars[c.id]=Math.max(save.det.stars[c.id]||0,stars);writeSave()}const after=rankIdx();
+function dEnd(win,stars,time){const c=dCase();const before=rankIdx();if(win){save.det.stars[c.id]=Math.max(save.det.stars[c.id]||0,stars);writeSave()}const after=rankIdx();if(!DETECT||document.querySelector('#overlay').style.display!=='none')return;
  document.getElementById('dEndTitle').textContent=win?'📁 '+c.title+' — נסגר!':'🦝 הדביבונים ניצחו...';
  document.getElementById('dEndStars').innerHTML=win?[0,1,2].map(i=>'<span class="'+(i<stars?'on':'off')+'">⭐</span>').join(''):'';
  const st=document.getElementById('dEndStats');st.innerHTML='';
@@ -4394,7 +4406,7 @@ function dSniff(){if(ds.sniffCool>0)return;const c=dCase();const left=c.clues.fi
 CTX_HOOKS.grab.unshift(()=>DETECT&&!dCase().night&&ds.phase==='investigate'&&ds.found.size<dCase().clues.length?{i:'👃',l:ds.sniffCool>0?'רחרוח '+Math.ceil(ds.sniffCool):'רחרוח!',on:ds.sniffCool>0?0:1,fn:dSniff}:null);
 // ---------- mode plumbing ----------
 function dApply(on){document.body.classList.toggle('detective',on);if(!on){DM.g.visible=false;dHideEvidence();dvReset();evtPill.hidden=true;for(const id of ['dAccuse','dEnd','dBoard'])document.getElementById(id).hidden=true}else{setTimeout(dBoard,50)}}
-function setDetective(on){DETECT=on;if(on){if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}}try{localStorage.setItem('milky-mode',on?'detective':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();dApply(on)}
+function setDetective(on){if(on)allModesOff('detective');DETECT=on;try{localStorage.setItem('milky-mode',on?'detective':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();dApply(on)}
 document.getElementById('startDetective').addEventListener('click',()=>{setDetective(true);startGame()});
 for(const id of ['start','startOpen','startZombie','startHuman'])document.getElementById(id).addEventListener('click',()=>{if(DETECT){DETECT=false;dApply(false)}},true);
 {const b=document.createElement('button');b.className='chip';b.type='button';b.textContent='🕵️ הבלש מילקי';b.addEventListener('click',()=>{setDetective(!DETECT);b.textContent=DETECT?'🐕 לחזור להיות כלב':'🕵️ הבלש מילקי'});document.getElementById('challengePanel').appendChild(b)}
@@ -4433,8 +4445,11 @@ function epBoard(id){const ep=EP.list[id];EP.cur=ep;started=false;document.query
   b.append(ic,t,sm);b.addEventListener('click',()=>{epB.hidden=true;EP.idx=i;ep.start(i)});box.appendChild(b)});
  epB.hidden=false}
 document.getElementById('epBack').addEventListener('click',()=>{epB.hidden=true;if(EP.cur&&EP.cur.quit)EP.cur.quit();openMenu()});
-function epFinish(win,stars,lines,title){const ep=EP.cur,i=EP.idx,lv=ep.levels[i];const wasDone=epComplete(ep.id);
+function epFinish(win,stars,lines,title){const ep=EP.cur;if(!ep)return;
+ // a delayed result must not pop up over the menu or inside another mode
+ const i=EP.idx,lv=ep.levels[i];const wasDone=epComplete(ep.id);
  if(win){save.ep[ep.id][lv.id]=Math.max(save.ep[ep.id][lv.id]||0,stars);writeSave()}
+ if(document.querySelector('#overlay').style.display!=='none'||(ep.alive&&!ep.alive())){if(win&&!wasDone&&epComplete(ep.id)&&ep.onComplete)ep.onComplete();return}
  document.getElementById('epEndIcon').textContent=win?lv.icon:'💀';document.getElementById('epEndTitle').textContent=title||(win?lv.title+' — הושלם!':lv.title+' — נכשל');
  document.getElementById('epEndStars').innerHTML=win?[0,1,2].map(k=>'<span class="'+(k<stars?'on':'off')+'">⭐</span>').join(''):'';
  const st=document.getElementById('epEndStats');st.innerHTML='';const ls=lines.slice();if(win&&!wasDone&&epComplete(ep.id)&&ep.rewardDone){ls.push('🎉 '+ep.rewardDone);if(ep.onComplete)ep.onComplete()}
@@ -4463,10 +4478,10 @@ universeRender();
 epRegister({id:'zombie',icon:'🧟',title:'מתקפת זומבים: 10 לילות',reward:'👑 לסיים את כל הלילות',rewardDone:'שרדת את כל 10 הלילות! מילקי, מגן השכונה 🛡️',
  levels:NIGHTS.map((n,i)=>({id:'n'+(i+1),title:'לילה '+(i+1)+': '+n.t,icon:n.icon,sub:n.sub})),
  start:i=>{zs.night=i;document.querySelector('#overlay').style.display='none';setZombie(true);startGame();setTimeout(()=>showBanner('🌙 לילה '+(i+1)+': '+NIGHTS[i].t),200)},
- quit:()=>{if(ZOMBIE)setZombie(false)}});
+ quit:()=>{if(ZOMBIE)setZombie(false)},alive:()=>ZOMBIE});
 epRegister({id:'human',icon:'🕺',title:'מילקי בן אדם: 10 סידורים',rewardDone:'🎩 כל הסידורים "בוצעו"! אבא עדיין לא בטוח מה קרה היום',
  levels:ERRANDS.map(e=>({id:e.id,title:e.name,icon:e.icon,sub:'כל סידור נגמר בפיאסקו'})),
- start:i=>{document.querySelector('#overlay').style.display='none';setHuman(true);startGame();hStartErrand(i)},quit:()=>{if(HUMAN)setHuman(false)}});
+ start:i=>{document.querySelector('#overlay').style.display='none';setHuman(true);startGame();hStartErrand(i)},quit:()=>{if(HUMAN)setHuman(false)},alive:()=>HUMAN});
 window.EP_READY=true;
 // ===== Play as Dad: 10 missions with an AI Milky. Finishing them unlocks Dad in the open world (switch characters with 🔄) =====
 var DADP=false;
@@ -4589,10 +4604,10 @@ function updateDadMission(dt){if(!dm.m||dm.over)return;dm.t+=dt;const m=dm.m;NM.
 function updateDadFree(dt){NM.stun=Math.max(0,NM.stun-dt);const p0=NM.g.position.clone();if(NM.stun<=0)fleeOrWander(dt,3,3);nmAnim(NM.g.position.distanceTo(p0),dt);if(Math.random()<dt*.06)nmSay(pick(['🐕','😼','🦴','👅']),1.2)}
 // ---------- mode plumbing ----------
 const DAD_EP={id:'dad',icon:'👨',title:'לשחק כאבא: 10 משימות',reward:'לפתוח את אבא בעולם הפתוח',rewardDone:'אבא נפתח! בעולם הפתוח לוחצים 🔄 כדי להחליף בין מילקי לאבא',
- levels:DAD_MISSIONS.map((m,i)=>({id:'m'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:dadMissionStart,quit:()=>setDadPlay(false)};
+ levels:DAD_MISSIONS.map((m,i)=>({id:'m'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:dadMissionStart,quit:()=>setDadPlay(false),alive:()=>DADP};
 epRegister(DAD_EP);
 function setDadPlay(on){if(on===DADP&&on)return;DADP=on;window.DADP=on;
- if(on){if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}if(DETECT){DETECT=false;dApply(false)}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();
+ if(on){allModesOff('dad');OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();
   if(dadSeated)unseatDad();dadState='player';dad.visible=true;NM.g.visible=true;NM.g.position.set(-2,0,-3)}
  else{dm.m=null;dSit=false;dadSitBlend=0;NM.g.visible=false;NM.g.position.set(0,0,-80);dog.visible=true;dadState='rest';dad.position.set(4.1,0,5.7);dad.rotation.set(0,0,0);dad.quaternion.identity();for(const T of THROWN){T.life=0;T.g.visible=false}if(slipperState==='nm')carrySlipper(false);evtPill.hidden=true}
  document.body.classList.toggle('dadPlay',DADP);charLabel()}
@@ -4728,11 +4743,11 @@ function updateParrotMission(dt){if(!PM.m||PM.over)return;PM.t+=dt;const m=PM.m;
  evtPill.hidden=false;const l=m.icon+' '+(PM.i+1)+'/10: '+m.t+(m.limit?' · '+Math.max(0,Math.ceil(m.limit-PM.t)):'');if(evtPill.textContent!==l)evtPill.textContent=l;
  if(m.done())return parrotMissionEnd(true);if(m.limit&&PM.t>=m.limit)parrotMissionEnd(false)}
 function setParrotPlay(on){if(on===PARP&&on)return;
- if(on){if(window.DADP)setDadPlay(false);if(HUMAN){HUMAN=false;hApply(false)}if(ZOMBIE){ZOMBIE=false;zApply(false)}if(DETECT){DETECT=false;dApply(false)}PARP=true;window.PARP=true;OPEN_WORLD=true;document.body.classList.add('openWorld');reset();owApply();PP.visible=true;parrot.visible=false}
+ if(on){allModesOff('parrot');PARP=true;window.PARP=true;OPEN_WORLD=true;document.body.classList.add('openWorld');reset();owApply();PP.visible=true;parrot.visible=false}
  else{PARP=false;window.PARP=false;PM.m=null;itemDrop();PP.visible=false;parrot.visible=true;dog.visible=true;NM.g.visible=false;NM.g.position.set(0,0,-80);RINGS.forEach(r=>r.visible=false);for(const it of Object.values(ITEMS))it.visible=false;evtPill.hidden=true}
  document.body.classList.toggle('parPlay',PARP);{const jb=document.getElementById('jumpBtn');if(jb){jb.querySelector('b').textContent=PARP?'🪶':'🐾';jb.querySelector('small').textContent=PARP?'לנפנף':'קפיצה'}}if(typeof charLabel==='function')charLabel()}
 epRegister({id:'parrot',icon:'🦜',title:'קוקו התוכי: 10 משימות',reward:'לפתוח את קוקו בעולם הפתוח',rewardDone:'קוקו נפתח! בעולם הפתוח לוחצים 🔄 כדי להחליף דמות',
- levels:P_MISSIONS.map((m,i)=>({id:'p'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:parrotMissionStart,quit:()=>setParrotPlay(false)});
+ levels:P_MISSIONS.map((m,i)=>({id:'p'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:parrotMissionStart,quit:()=>setParrotPlay(false),alive:()=>PARP});
 CHARS.push({id:'parrot',icon:'🦜',name:'קוקו',ok:()=>epComplete('parrot'),active:()=>PARP,on:()=>{setParrotPlay(true);PM.m=null},off:()=>setParrotPlay(false),hello:'🦜 עכשיו אתה קוקו! החזק קפיצה כדי לעוף · 🗣️ לצרוח'});
 WORLDS.push({icon:'🦜',name:'קוקו התוכי',col:'#9fe0a0',sub:()=>epComplete('parrot')?'✔ פתוח בעולם הפתוח · ⭐ '+epStars('parrot')+'/30':'10 משימות · ⭐ '+epStars('parrot')+'/30',go:()=>epBoard('parrot')});if(typeof universeRender==='function')universeRender();
 // buttons
