@@ -12,6 +12,8 @@ async function open(file, vp, opts={}){
   await page.route(/three(\.min)?\.js/,r=>r.fulfill({body:THREE_SRC,contentType:'application/javascript'}));
   await page.goto('file://'+path.resolve(file));
   await page.waitForTimeout(800);
+  // the old mode buttons are hidden behind the universe menu; click them programmatically
+  const _click=page.click.bind(page);page.click=(sel,o)=>/^#start/.test(sel)?page.evaluate(s=>document.querySelector(s).click(),sel):_click(sel,o);
   return {browser,page,errors};
 }
 module.exports={open};

@@ -61,4 +61,6 @@
 61-human.js
 62-menu-human.js
 63-detective.js
+64-episodes.js
+66-dad.js
 47-render-setup.js

@@ -117,7 +117,7 @@ function renderFrame(){
 // Keep the follow camera INSIDE the room and on Milky's side of any wall.
 // The room is axis-aligned; a ray from Milky toward the desired camera location
 // is shortened before it reaches the wall plane (with a safety margin).
-const inShop=pos.x>20.05&&pos.z>0&&pos.z<40?1:0,hum=window.HUMAN_READY&&(HUMAN||window.DETECT)?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.55*hum,pos.z);
+const inShop=pos.x>20.05&&pos.z>0&&pos.z<40?1:0,hum=window.HUMAN_READY&&(HUMAN||window.DETECT||window.DADP)?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.55*hum,pos.z);
 const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1),(inShop?Math.max(orbitHeight,5.6):orbitHeight)*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1));
 let safeFraction=1;
 // Walk along the camera arm and stop before it leaves the walkable rooms (walls between rooms included).

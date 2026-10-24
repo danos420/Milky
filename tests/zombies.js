@@ -2,7 +2,7 @@ const {open}=require('./lib');
 (async()=>{
  const {page,browser,errors}=await open(process.argv[2]||'dist/index.html',{width:1000,height:640});
  const ev=f=>page.evaluate(f);const wait=ms=>page.waitForTimeout(ms);const out={};
- await ev(()=>localStorage.removeItem('milky-mode'));await page.click('#startZombie');await wait(300);
+ await ev(()=>localStorage.removeItem('milky-mode'));await ev(()=>{EP.cur=EP.list.zombie;EP.idx=0;EP.list.zombie.start(0)});await wait(300);
  out.start=await ev(()=>({Z:ZOMBIE,hud:!zHud.hidden,hidden:ZHIDE().every(g=>!g.visible),light:day.light}));
  await ev(()=>{pos.set(0,0,0);for(let i=0;i<60*8;i++)gameStep(1/60)});
  out.wave1=await ev(()=>({wave:zs.wave,alive:zs.alive,toSpawn:zs.toSpawn,hearts:zs.hearts}));
@@ -14,6 +14,12 @@ const {open}=require('./lib');
  out.street=await ev(()=>{pos.set(13,0,20);rag.active=false;for(const z of ZPOOL)if(z.on)zKO(z);for(let i=0;i<60*4;i++)gameStep(1/60);zs.toSpawn=Math.max(zs.toSpawn,2);for(let i=0;i<60*3;i++)gameStep(1/60);return ZPOOL.filter(z=>z.on&&z.fall<=0).map(z=>zoneOf(z.P.g.position.x,z.P.g.position.z))});
  await ev(()=>{yaw=Math.PI;camYaw=Math.PI});await wait(500);await page.screenshot({path:'tests/shots/z_street.png'});
  out.over=await ev(()=>{zs.hearts=1;zs.inv=0;rag.active=false;let z=ZPOOL.find(z=>z.on&&z.fall<=0);if(!z){zSpawn();z=ZPOOL.find(z=>z.on)}z.hitCool=0;z.stun=0;z.fall=0;z.P.g.position.set(pos.x+.5,0,pos.z);jumpY=0;gameStep(1/60);return zs.over});
- await wait(1800);out.modal=await ev(()=>!zOver.hidden);await page.screenshot({path:'tests/shots/z_over.png'});
- await ev(()=>document.getElementById('zQuit').click());out.quit=await ev(()=>({Z:ZOMBIE,hud:zHud.hidden,people:ZHIDE().every(g=>g.visible),zombies:ZPOOL.filter(z=>z.P.g.visible).length}));
+ await wait(1800);out.modal=await ev(()=>!document.getElementById('epEnd').hidden&&document.getElementById('epEndTitle').textContent);await page.screenshot({path:'tests/shots/z_over.png'});
+ await ev(()=>{document.getElementById('epEnd').hidden=true;EP.list.zombie.quit()});out.quit=await ev(()=>({Z:ZOMBIE,hud:zHud.hidden,people:ZHIDE().every(g=>g.visible),zombies:ZPOOL.filter(z=>z.P.g.visible).length}));
+ // night 1 win: clear all waves
+ out.win=await ev(()=>{save.ep.zombie={};EP.cur=EP.list.zombie;EP.idx=0;EP.list.zombie.start(0);pos.set(0,0,0);for(let k=0;k<60*400&&!zs.over;k++){for(const z of ZPOOL)if(z.on&&z.fall<=0)zKO(z);zs.hearts=3;gameStep(1/60)}return zs.won});
+ await wait(3500);out.winEnd=await ev(()=>[document.getElementById('epEndTitle').textContent,JSON.stringify(save.ep.zombie)]);
+ // boss night
+ out.boss=await ev(()=>{document.getElementById('epEnd').hidden=true;EP.idx=9;EP.list.zombie.start(9);pos.set(0,0,0);for(let k=0;k<60*200&&!ZPOOL.some(z=>z.on&&z.boss);k++){for(const z of ZPOOL)if(z.on&&!z.boss&&z.fall<=0)zKO(z);zs.hearts=3;gameStep(1/60)}return ZPOOL.filter(z=>z.on&&z.boss).map(z=>z.boss)});
+ await wait(400);await page.screenshot({path:'tests/shots/z_boss.png'});
  console.log(JSON.stringify(out),errors);await browser.close()})();
