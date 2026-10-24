@@ -205,3 +205,14 @@ body.zombieMode #vignette{background:radial-gradient(ellipse at 50% 48%,transpar
 #dSuspects button{font-size:17px;padding:12px 14px;flex:1 1 140px}
 #dEndStats{font-size:16px;line-height:1.8;margin:8px 0 14px;color:#ffe9a8}
 body.detective #vignette{background:radial-gradient(ellipse at 50% 48%,transparent 50%,rgba(25,18,8,.55) 100%)}
+
+#dBoard .modalCard{max-height:92vh;overflow:auto}
+#dRank{margin:4px 0 10px;font:800 15px system-ui;color:#ffe9a8}
+#dRank i{display:block;height:9px;border-radius:6px;background:#ffffff22;margin:6px auto 0;max-width:320px;overflow:hidden}#dRank i b{display:block;height:100%;background:linear-gradient(90deg,#f2c14e,#ff9f43)}
+#dCases{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.dCase{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;border-radius:12px;border:1px solid #c9a160;background:#2a2116;color:#fff0d3;font:inherit;cursor:pointer;touch-action:manipulation;min-height:96px}
+.dCase b{font-size:26px}.dCase strong{font-size:13px;line-height:1.25}.dCase small{font-size:12px;color:#ffd166}
+.dCase.night{background:#16202e;border-color:#6f8fc9}.dCase.locked{opacity:.4;cursor:default}.dCase.next{box-shadow:0 0 0 2px #ffd166;animation:ctxPulse 1.4s infinite}
+#dEndStars{font-size:44px;letter-spacing:6px;margin:0 0 6px}#dEndStars span.off{filter:grayscale(1);opacity:.35}
+#dSniff{position:fixed}
+@media (max-height:480px){.dCase{min-height:70px;padding:6px}.dCase b{font-size:20px}}
