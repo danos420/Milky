@@ -20,7 +20,7 @@ const {open}=require('./lib');
  // parrot
  await ev(()=>{pos.set(9,0,26);street.parrotT=0});await step(60*11);out.parrot=await ev(()=>[street.parrotHeard.size,challengesDone.has('parrot')]);
  // guard dog
- await ev(()=>{pos.set(7.6,0,13.4);curSpeed=0});await step(60);await ev(()=>{trainingIndex=0;train()});await step(3);out.guard=await ev(()=>street.guardFriend);
+ await ev(()=>{pos.set(18.9,0,42.2);curSpeed=0});await step(60);await ev(()=>{trainingIndex=0;train()});await step(3);out.guard=await ev(()=>street.guardFriend);
  await wait(200);await page.screenshot({path:'tests/shots/st_guard.png'});
  // kiosk: enter through its door
  await ev(()=>{pos.set(18.2,0,5.1);yaw=Math.PI/2;camYaw=yaw;keys.KeyW=true});await step(70);await ev(()=>{keys.KeyW=false});

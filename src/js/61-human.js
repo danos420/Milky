@@ -64,7 +64,7 @@ function updateHuman(dt){
    setTimeout(()=>{speakDad('...מילקי. זה היה החלב?');setTimeout(()=>{speakDad('חחחחחח! אתה הכלב הכי מוזר בעולם. בוא לפה');sayDani('תגיד, הכלב הזה... תמיד עמד?');hFiasco('מעד על הכפכף ושפך את החלב על אבא')},1800)},900)},1300)}
 }
 Object.assign(_holdLabels,{hairHold:'💇 יושב לתספורת...'});
-function hApply(on){for(const g of [hat,tie])g.visible=on;if(!on){for(const g of [mohawk,milkG,extG,chefSnow,dadMilk])g.visible=false;extWall.visible=true;hs.i=-1;evtPill.hidden=true;document.getElementById('hEnd').hidden=true}else hStartAll()}
+function hApply(on){hat.visible=on;tie.visible=false;if(!on){for(const g of [mohawk,milkG,extG,chefSnow,dadMilk])g.visible=false;extWall.visible=true;hs.i=-1;evtPill.hidden=true;document.getElementById('hEnd').hidden=true}else hStartAll()}
 function setHuman(on){HUMAN=on;if(on&&ZOMBIE){ZOMBIE=false;zApply(false)}try{localStorage.setItem('milky-mode',on?'human':'open')}catch(_){}OPEN_WORLD=true;document.body.classList.toggle('openWorld',true);reset();owApply();hApply(on)}
 document.getElementById('startHuman').addEventListener('click',()=>{setHuman(true);startGame()});
 for(const id of ['start','startOpen','startZombie'])document.getElementById(id).addEventListener('click',()=>{if(HUMAN){HUMAN=false;hApply(false)}},true);
@@ -78,6 +78,6 @@ const _ct3=currentTarget;currentTarget=function(){if(!HUMAN)return _ct3();if(!gu
 const _uow2=updateOpenWorld;updateOpenWorld=function(dt){_uow2(dt);if(HUMAN)updateHuman(dt)};
 if(HUMAN)OPEN_WORLD=true;
 window.HUMAN_READY=true;
-setTimeout(()=>{if(HUMAN){owApply();for(const g of [hat,tie])g.visible=true}},0);
+setTimeout(()=>{if(HUMAN){owApply();hat.visible=true}},0);
 // the story start button kicks off the errands if the saved mode is human
 document.getElementById('start').addEventListener('click',()=>{},true);

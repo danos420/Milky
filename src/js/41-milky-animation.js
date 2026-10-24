@@ -15,7 +15,7 @@ if(!idleAction&&idleTime>3.2){
 if(idleAction){idleClock+=dt;if(idleClock>IDLE_LEN[idleAction])idleAction=null}
 const poi=pointOfInterest();
 if(poi&&poi.food&&!moving&&poi.d<2.6)think('food',2.4);
-const pose=(window.HUMAN_READY&&HUMAN&&!rag.active)?'stand':trainingTime>0&&(activeCmd==='שב'||activeCmd==='ארצה')?activeCmd:idleAction==='scratch'?'שב':idleAction==='lie'?'ארצה':idleAction==='stand'?'stand':null;
+const pose=trainingTime>0&&(activeCmd==='שב'||activeCmd==='ארצה')?activeCmd:idleAction==='scratch'?'שב':idleAction==='lie'?'ארצה':idleAction==='stand'?'stand':null;
 // ---- Body: bounce, squash on landing, stretch in the air, lean into turns ----
 // Walk: the body dips at the ends of each stride so planted paws stay on the floor (no floating feet).
 const bounce=moving&&grounded?THREE.MathUtils.lerp(-(1-Math.cos(.5*Math.sin(steps)))*.85*MS,(.5-.5*Math.cos(steps*2.3))*.085,runBlend)*gait:0;
@@ -50,7 +50,7 @@ legs.forEach(({pivot,knee,front,s})=>{
  knee.rotation.x+=(kneeX-knee.rotation.x)*legK;
  pivot.rotation.z=sw*.045*gait;
 });
-if(window.HUMAN_READY&&HUMAN&&!rag.active&&grounded)humanLegs(moving,dt);
+
 // ---- Head: curious, looks at interesting things, sniffs, tilts ----
 let lookYaw=THREE.MathUtils.clamp((orbitAngle+Math.atan2(Math.sin(camYaw-yaw),Math.cos(camYaw-yaw)))*.58,-.72,.72),lookPitch=0;
 if(poi&&!running){const a=Math.atan2(poi.x-pos.x,poi.z-pos.z),rel=Math.atan2(Math.sin(a-yaw),Math.cos(a-yaw));
@@ -117,12 +117,12 @@ function renderFrame(){
 // Keep the follow camera INSIDE the room and on Milky's side of any wall.
 // The room is axis-aligned; a ray from Milky toward the desired camera location
 // is shortened before it reaches the wall plane (with a safety margin).
-const hum=window.HUMAN_READY&&HUMAN?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.8*hum,pos.z);
-const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK,orbitHeight*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK);
+const inShop=pos.x>20.05&&pos.z>0&&pos.z<40?1:0,hum=window.HUMAN_READY&&HUMAN?1:0,camK=(MS<1?.45+.5*MS:1+(MS-1)*.8)*(1+.22*hum);look.set(pos.x,1.35*MS+jumpY*.45+.55*hum,pos.z);
+const cameraDirection=_camDir.set(-Math.sin(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1),(inShop?Math.max(orbitHeight,5.6):orbitHeight)*camK+jumpY*.45-look.y,-Math.cos(camYaw+orbitAngle)*cameraDistance*camK*(inShop?.85:1));
 let safeFraction=1;
 // Walk along the camera arm and stop before it leaves the walkable rooms (walls between rooms included).
-const camWall=(x,z)=>{const lx=look.x;if(lx>6.5&&x<6.7&&z>-9&&z<16)return false;if(lx<6.5&&x>6.3&&look.z>-9&&look.z<16)return false;if(lx>20&&x<20.15)return false;if(lx<19.95&&lx>6.5&&x>19.75&&z>-.3&&z<40.1)return false;if(lx>20){const cell=v=>v<10.4?0:v<20.4?1:v<30.4?2:3;if(cell(look.z)!==cell(z))return false}return true};
-const camInside=(x,z,r)=>camWall(x,z)&&((x>=6.6+r&&x<=19.4-r&&z>=-8.6+r&&z<=44-r)||(x>=20.2+r&&x<=27.6-r&&z>=1.2+r&&z<=8.8-r)||(x>=20.2+r&&x<=27.6-r&&z>=10.6+r&&z<=19.6-r)||(x>=20.2+r&&x<=27.6-r&&z>=20.6+r&&z<=29.6-r)||(x>=20.2+r&&x<=27.6-r&&z>=30.6+r&&z<=39.6-r)||(z>-9?Math.abs(x)<=6.4-r&&z<=15.9-r:Math.abs(x)<=20-r&&z>=(PARK_OPEN?-58:-40)+r));
+const camWall=(x,z)=>{const lx=look.x;if(lx>6.5&&x<6.7&&z>-9&&z<16)return false;if(lx<6.5&&x>6.3&&look.z>-9&&look.z<16)return false;if(lx>20&&x<20.15)return false;if(lx<19.95&&lx>6.5&&x>19.75&&z>-.3&&z<40.1)return false;if(lx>20){const cell=v=>v<10?0:v<20?1:v<30?2:3;if(cell(look.z)!==cell(z))return false}return true};
+const camInside=(x,z,r)=>camWall(x,z)&&((x>=6.6+r&&x<=19.4-r&&z>=-8.6+r&&z<=44-r)||(x>=20.1+r&&x<=31.5-r&&z>=.1+r&&z<=39.9-r)||(z>-9?Math.abs(x)<=6.4-r&&z<=15.9-r:Math.abs(x)<=20-r&&z>=(PARK_OPEN?-58:-40)+r));
 for(let k=1;k<=28;k++){const f=k/28;if(!camInside(look.x+cameraDirection.x*f,look.z+cameraDirection.z*f,.14)){safeFraction=Math.max(.08,(k-1)/28-.015);break}}
 // Shorten the camera arm before it enters furniture. Treat furniture as
 // padded 3D boxes; the camera stays on Milky's side of the obstruction.
@@ -147,7 +147,7 @@ const currentDist=camera.position.distanceTo(look);
 const desiredDist=desired.distanceTo(look);
 const ease=1-Math.exp(-lastFrameDt*(desiredDist<currentDist-.4?16:7));
 camera.position.lerp(desired,ease);
-if(look.x>6.5&&look.z>-8.6){camera.position.x=THREE.MathUtils.clamp(camera.position.x,look.x>20?20.3:6.75,look.x>20?27.4:19.6);camera.position.z=THREE.MathUtils.clamp(camera.position.z,-8.5,43.9)}else if(camera.position.z>-9){camera.position.x=THREE.MathUtils.clamp(camera.position.x,-6.3,6.3);camera.position.z=Math.min(15.8,camera.position.z)}else{camera.position.x=THREE.MathUtils.clamp(camera.position.x,-19.9,19.9);camera.position.z=Math.max(PARK_OPEN?-57.9:-39.9,camera.position.z)}
+if(look.x>6.5&&look.z>-8.6){camera.position.x=THREE.MathUtils.clamp(camera.position.x,look.x>20?20.25:6.75,look.x>20?31.45:19.6);camera.position.z=THREE.MathUtils.clamp(camera.position.z,-8.5,43.9)}else if(camera.position.z>-9){camera.position.x=THREE.MathUtils.clamp(camera.position.x,-6.3,6.3);camera.position.z=Math.min(15.8,camera.position.z)}else{camera.position.x=THREE.MathUtils.clamp(camera.position.x,-19.9,19.9);camera.position.z=Math.max(PARK_OPEN?-57.9:-39.9,camera.position.z)}
 const across=(camera.position.z-9)*(look.z-9)<0||Math.abs(camera.position.z-9)<.35;
 dividerMat.opacity+=((across?.16:1)-dividerMat.opacity)*.25;dividerMat.depthWrite=dividerMat.opacity>.95;frameMat.opacity=Math.min(1,dividerMat.opacity*1.6);frameMat.depthWrite=dividerMat.depthWrite;
 const acrossB=(camera.position.z+9)*(look.z+9)<0||Math.abs(camera.position.z+9)<.35;balconyMat.opacity+=((acrossB?.16:1)-balconyMat.opacity)*.25;balconyMat.depthWrite=balconyMat.opacity>.95;

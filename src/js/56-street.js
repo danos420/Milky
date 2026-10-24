@@ -1,5 +1,5 @@
 // ===== The street: out the front door. Sidewalks, a road with polite cars, shops, funny neighbours and animals =====
-const STREET={x0:6.6,x1:19.4,z0:-8.6,z1:44},KIOSK={x0:20.2,x1:27.6,z0:1.2,z1:8.8};
+const STREET={x0:6.6,x1:19.4,z0:-8.6,z1:44},KIOSK={x0:20.2,x1:31.4,z0:.2,z1:9.8};
 AREAS.push(STREET,KIOSK);
 DOORS.push({ax:true,x0:5.7,x1:7.4,z0:5.1,z1:7.3},{ax:true,x0:18.5,x1:21.1,z0:4.0,z1:6.2});
 const asph=mat(0x4a4b50,.95),walk=mat(0xbdb6aa,.9),curb=mat(0x8f8a82),stripe=decal(mat(0xf2efe6));
@@ -19,20 +19,25 @@ for(let z=18;z<44;z+=3.2)for(const y of [2,4.8,7.4]){box(.06,1.2,1.4,winM,6.42,y
 // parrot balcony
 box(1.2,.12,2.4,mat(0xcfc6b5),7.0,3.0,26);for(let i=0;i<7;i++)box(.04,.8,.04,metal,7.55,3.45,24.9+i*.36);box(.04,.04,2.4,metal,7.55,3.85,26);
 // guard dog yard: fence on the west sidewalk edge
-const GUARD_YARD={x0:2.6,x1:6.4,z0:15.6,z1:16};box(.08,1.5,.08,metal,6.55,.75,16.2);
+
 // far side shops
 const SHOPS=[{name:'🛒 מכולת',z0:0,z1:10,c:bldB,a:awn[0],open:true},{name:'🩺 וטרינר',z0:10.4,z1:20,c:bldA,a:awn[3],open:true},{name:'🍕 פיצה פלאפל',z0:20.4,z1:30,c:bldC,a:awn[2],open:true},{name:'✂️ מספרה לכלבים',z0:30.4,z1:40,c:bldB,a:awn[1],open:true}];
 function shopSign(text,z,soon){const cv=document.createElement('canvas');cv.width=512;cv.height=112;const g=cv.getContext('2d');g.fillStyle=soon?'#5b5246':'#2b2420';g.fillRect(0,0,512,112);g.fillStyle='#fff3d6';g.font='bold 54px system-ui,Arial';g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.fillText(text,256,56);
- const hold=new THREE.Group();scene.add(hold);const p=new THREE.Mesh(new THREE.PlaneGeometry(3.4,.75),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),toneMapped:false}));p.position.set(19.55,3.4,z);p.rotation.y=-Math.PI/2;hold.add(p)}
+ const hold=new THREE.Group();scene.add(hold);const p=new THREE.Mesh(new THREE.PlaneGeometry(3.4,.75),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),toneMapped:false}));p.position.set(19.82,2.85,z+3);p.rotation.y=-Math.PI/2;hold.add(p)}
 for(const s of SHOPS){const zc=(s.z0+s.z1)/2,len=s.z1-s.z0;
  if(!s.open){box(8,6,len,s.c,23.6,3,zc);box(.1,2.4,1.5,mat(0x5b4636),19.58,1.2,zc);box(.08,1.3,2.2,winM,19.58,1.6,zc-2.6);box(.08,1.3,2.2,winM,19.58,1.6,zc+2.6);
   const so=document.createElement('canvas');so.width=256;so.height=96;const g=so.getContext('2d');g.fillStyle='#f2c14e';g.fillRect(0,0,256,96);g.fillStyle='#2b1f12';g.font='bold 40px system-ui';g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.fillText('נפתח בקרוב!',128,50);
   const hold=new THREE.Group();scene.add(hold);const p=new THREE.Mesh(new THREE.PlaneGeometry(1.3,.5),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(so),toneMapped:false}));p.position.set(19.5,1.4,zc);p.rotation.y=-Math.PI/2;hold.add(p)}
- const a=box(1.3,.12,len-.6,s.a,19.0,2.75,zc);a.rotation.z=-.25;shopSign(s.name,zc,!s.open)}
+ const a=box(1.3,.12,len-.6,s.a,19.0,2.45,zc);a.rotation.z=-.25;shopSign(s.name,zc,!s.open)}
 // kiosk building (enterable): walls with a door gap, flat roof hidden so the camera can look in
-{const K=bldB;box(.2,6,KIOSK.z1-KIOSK.z0+1.4,K,27.9,3,(KIOSK.z0+KIOSK.z1)/2);box(8,6,.2,K,24,3,KIOSK.z0-.5);box(8,6,.2,K,24,3,KIOSK.z1+.5);box(8,6,.2,K,24,3,-.2);box(8,6,.2,K,24,3,10.2);
- box(.2,6,3.3,K,19.95,3,2.0);box(.2,6,3.1,K,19.95,3,7.95);box(.2,3,2.4,K,19.95,4.5,5.1);box(.08,1.4,1.3,winM,19.86,1.7,2.3);box(.08,1.4,1.3,winM,19.86,1.7,7.8);
- box(7.6,.05,7.8,mat(0xd9cfbd),24,.02,5);}
+// One shell for all four shops: deep rooms, low walls (3.2m) so the camera can look in from above. No overlapping walls.
+const SHOP_WALL=3.2,SHOP_BACK=31.6,SHOP_DOORS=[[4.0,6.2],[11.6,13.8],[21.6,23.8],[31.6,33.8]],SHOP_WALLM=[bldB,mat(0xe8f1ef),mat(0xf3e2c4),mat(0xfbe3ef)],SHOP_FLOORM=[mat(0xd9cfbd),mat(0xcfe3df),mat(0xc9a27a),mat(0xe9eef2)];
+for(let k=0;k<4;k++){const z0=k*10,z1=z0+10,[d0,d1]=SHOP_DOORS[k],W=SHOP_WALLM[k],H=SHOP_WALL;
+ box(.2,H,d0-z0,W,19.95,H/2,(z0+d0)/2);box(.2,H,z1-d1,W,19.95,H/2,(d1+z1)/2);box(.2,H-2.6,d1-d0,W,19.95,2.6+(H-2.6)/2,(d0+d1)/2);
+ box(.08,1.4,2.2,winM,19.86,1.7,(d1+z1)/2);box(SHOP_BACK-20,.05,9.8,SHOP_FLOORM[k],(20+SHOP_BACK)/2,.02,z0+5);
+ box(.06,2.6,.12,mat(0x5b4636),19.85,1.3,d0);box(.06,2.6,.12,mat(0x5b4636),19.85,1.3,d1)}
+for(let k=0;k<=4;k++)box(SHOP_BACK-19.85,SHOP_WALL,.2,SHOP_WALLM[Math.min(k,3)],(19.85+SHOP_BACK)/2,SHOP_WALL/2,k*10);
+box(.2,SHOP_WALL,40.2,bldB,SHOP_BACK,SHOP_WALL/2,20);
 // street furniture: trees, lamps, benches, bins, bus stop, mailbox, end barriers
 for(const z of [-4,8,22,36]){cyl(.2,2.4,mat(0x6b4a32),8.0,1.2,z);for(let i=0;i<4;i++){const a=i*1.6;ball(.85,mat(i%2?0x4f7f45:0x5f9150),8.0+Math.cos(a)*.5,2.9+(i%2)*.3,z+Math.sin(a)*.5)}}
 for(const z of [0,14,28,42]){cyl(.06,4,metal,9.3,2,z);box(.6,.1,.25,metal,9.05,4,z);const l=ball(.14,new THREE.MeshBasicMaterial({color:0xfff1c4}),8.8,3.92,z)}
@@ -91,9 +96,9 @@ const parrot=new THREE.Group();parrot.position.set(7.5,3.9,26);scene.add(parrot)
 parrot.rotation.y=Math.PI/2;const parrotB=makeBubble(parrot,.85);
 const PARROT_LINES=['מילקיייי! לא!!','קנית במבה? קנית במבה?','אפצ\'יייי!','שבת שלום! איפה האוכל?','יפ! יפ! יפ!','מי הכלב הכי טוב? מי?','הכפכף! הכפכף!','רק להסתכל! לא לגעת!'];
 // guard dog behind the fence (west side yard between buildings)
-const GUARD=makeDog({name:'בולדוזר',color:0x2b2018,color2:0x9c6b3e,size:1.25,speed:2,x:5,z:13.5});GUARD.g.rotation.y=Math.PI/2;
-box(3.8,.08,4.6,mat(0x6f8f4a),4.5,.01,13.2); // guard yard grass
-for(let z=11;z<=15.6;z+=.35)box(.05,1.6,.05,metal,6.5,.8,z);box(.06,.06,4.7,metal,6.5,1.55,13.3);box(.06,.06,4.7,metal,6.5,.4,13.3);
+const GUARD=makeDog({name:'בולדוזר',color:0x2b2018,color2:0x9c6b3e,size:1.25,speed:2,x:23,z:42});GUARD.g.rotation.y=-Math.PI/2;
+box(6,.08,3.8,mat(0x6f8f4a),23,.01,42.2);box(.2,1.8,3.8,bldC,26.1,.9,42.2); // guard yard
+for(let z=40.5;z<=44;z+=.35)box(.05,1.6,.05,metal,19.75,.8,z);box(.06,.06,3.6,metal,19.75,1.55,42.25);box(.06,.06,3.6,metal,19.75,.4,42.25);
 const street={guardFriend:false,guardBark:0,parrotHeard:new Set(),parrotT:0,bamba:{state:'shelf',t:0},chaseT:0,catHiss:new Set(),pigeonsScared:false};
 // ---------- the kiosk inside ----------
 box(.8,1.05,3.2,mat(0x8b5a3a),25.4,.52,5);box(.9,.06,3.3,mat(0xe9e4da),25.4,1.06,5); // counter
@@ -146,9 +151,9 @@ function updateStreet(dt){
  street.parrotT-=dt;if(dpar<5&&street.parrotT<=0){street.parrotT=3.2;const l=pick(PARROT_LINES);sayText(parrotB,l,2.4,'say',true);street.parrotHeard.add(l);if(street.parrotHeard.size>=3&&!challengesDone.has('parrot')){completeChallenge('parrot');milkyThought('🤨',1.6,true)}}
  // guard dog: barks behind the fence until Milky sits nicely
  {const g=GUARD,o=g.g.position,dm=Math.hypot(pos.x-o.x,pos.z-o.z);street.guardBark=Math.max(0,street.guardBark-dt);
-  const tz=Math.max(11.2,Math.min(15.4,pos.z)),tx=street.guardFriend?6.1:6.0;const wantNear=dm<7;
-  const dz=(wantNear?tz:13.5)-o.z,dx=(wantNear?tx:4.6)-o.x,dd=Math.hypot(dx,dz);let step=0;if(dd>.2){step=Math.min(dd,(street.guardFriend?1.6:2.6)*dt);o.x+=dx/dd*step;o.z+=dz/dd*step}
-  g.walk+=step*10;g.legs.forEach((l,i)=>{l.rotation.x=step>.001?Math.sin(g.walk+(i===0||i===3?0:Math.PI))*.7:0});g.g.rotation.y=Math.PI/2;g.tail.rotation.z=Math.sin(t*(street.guardFriend?16:3))*.6;
+  const tz=Math.max(40.7,Math.min(43.8,pos.z)),tx=20.5;const wantNear=dm<7;
+  const dz=(wantNear?tz:42)-o.z,dx=(wantNear?tx:22.5)-o.x,dd=Math.hypot(dx,dz);let step=0;if(dd>.2){step=Math.min(dd,(street.guardFriend?1.6:2.6)*dt);o.x+=dx/dd*step;o.z+=dz/dd*step}
+  g.walk+=step*10;g.legs.forEach((l,i)=>{l.rotation.x=step>.001?Math.sin(g.walk+(i===0||i===3?0:Math.PI))*.7:0});g.g.rotation.y=-Math.PI/2;g.tail.rotation.z=Math.sin(t*(street.guardFriend?16:3))*.6;
   if(!street.guardFriend&&dm<4&&street.guardBark===0){street.guardBark=1.4;sayText(g.b,pick(['וואף!! וואף!!','גררררר!!!','מי זה?! מי זה?!','לך מפה, ננס!']),1.2,'say',true);g.body.position.y=.15}
   else g.body.position.y*=.85;
   if(!street.guardFriend&&dm<3.4&&trainingTime>0&&activeCmd==='שב'){street.guardFriend=true;completeChallenge('guardFriend');sayText(g.b,'...אוקיי. אתה בסדר. רוצה לגרד לי מאחורי האוזן?',2.6,'say',true);thought(g.b,'❤️',2,true);addScore(300,'חבר חדש')}

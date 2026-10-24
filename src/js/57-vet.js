@@ -1,12 +1,12 @@
 // ===== Street stage 2: the vet clinic. Waiting room full of patients, a scale, treats, the cone of shame... and THE SHOT =====
-const VET={x0:20.2,x1:27.6,z0:10.6,z1:19.6};
+const VET={x0:20.2,x1:31.4,z0:10.2,z1:19.8};
 AREAS.push(VET);DOORS.push({ax:true,x0:18.5,x1:21.1,z0:11.6,z1:13.8});
 const vetWall=mat(0xe8f1ef),vetFloor=mat(0xcfe3df),vetTeal=mat(0x2f8f86);
 // building shell (front wall with a door gap, back, north side; south side is shared with the kiosk)
-box(.2,6,1.4,vetWall,19.95,3,10.95);box(.2,6,5.8,vetWall,19.95,3,16.7);box(.2,3,2.2,vetWall,19.95,4.5,12.7);box(.2,6,9.8,vetWall,27.9,3,15.1);box(8,6,.2,vetWall,24,3,19.95);
-box(.08,1.4,2.2,winM,19.86,1.7,16.6);box(7.6,.05,9,vetFloor,24,.02,15.1);
-for(let z=11;z<19.6;z+=1.2)box(7.6,.01,.04,decal(mat(0xb5cfca)),24,.05,z);
-box(.06,2.6,.12,vetTeal,19.85,1.3,11.55);box(.06,2.6,.12,vetTeal,19.85,1.3,13.85);
+
+
+for(let z=11;z<19.6;z+=1.2)box(11.2,.01,.04,decal(mat(0xb5cfca)),25.8,.05,z);
+
 // reception desk + treats jar
 box(2.4,1.05,.8,vetTeal,23.2,.52,12.0);box(2.5,.06,.9,mat(0xf3f3ef),23.2,1.06,12.0);
 const JAR={x:22.4,z:12.0};const jar=cyl(.16,.32,new THREE.MeshStandardMaterial({color:0xcfe9ff,transparent:true,opacity:.55,roughness:.1}),JAR.x,1.25,JAR.z);for(let i=0;i<5;i++)box(.08,.04,.04,mat(0xb07a45),JAR.x+(Math.random()-.5)*.15,1.15+i*.04,JAR.z+(Math.random()-.5)*.15);
@@ -20,7 +20,7 @@ const igTank=new THREE.Group();igTank.position.set(22.6,.52,18.5);scene.add(igTa
  const ig=new THREE.Group();ig.position.set(0,.12,0);igTank.add(ig);const gm=mat(0x5fae4a,.7);const b=ball(.1,gm,0,.04,0,ig);b.scale.set(1,.6,2.2);const h=ball(.07,gm,0,.06,.22,ig);h.scale.set(1,.8,1.3);for(const s of [-1,1])ball(.018,mat(0xf2c14e),s*.05,.09,.25,ig);
  const tl=cyl(.025,.4,gm,0,.03,-.36,ig);tl.rotation.x=Math.PI/2;for(let i=0;i<5;i++)mesh(new THREE.ConeGeometry(.015,.05,4),mat(0x3f8a3a),0,.11,-.12+i*.07,ig);igTank.userData.ig=ig}
 const igTankBub=makeBubble(igTank,.9);
-const hutch=new THREE.Group();hutch.position.set(26.6,0,18.6);scene.add(hutch);{box(1,.9,.7,mat(0xd9c29a),0,.45,0,hutch);for(let i=0;i<6;i++)box(.025,.6,.02,mat(0x777777),-.4+i*.16,.55,.36,hutch);
+const hutch=new THREE.Group();hutch.position.set(29.8,0,18.6);scene.add(hutch);{box(1,.9,.7,mat(0xd9c29a),0,.45,0,hutch);for(let i=0;i<6;i++)box(.025,.6,.02,mat(0x777777),-.4+i*.16,.55,.36,hutch);
  const bun=new THREE.Group();bun.position.set(0,.2,.05);hutch.add(bun);const w=mat(0xf5f0e6);ball(.15,w,0,.1,0,bun).scale.set(1,.9,1.2);ball(.1,w,0,.25,.12,bun);for(const s of [-1,1]){const e=ball(.04,w,s*.04,.42,.1,bun);e.scale.set(.6,2.4,.6)}ball(.02,mat(0xd27b86),0,.24,.22,bun);hutch.userData.bun=bun}
 const hutchB=makeBubble(hutch,1.2);
 // exam corner: table, scale, giant syringe, cone-of-shame shelf
@@ -28,8 +28,8 @@ const EXAM={x:26.2,z:13.4};box(1.6,.85,.9,mat(0xdfe6ea,.4),EXAM.x,.42,EXAM.z);bo
 const SCALE={x:24.2,z:16.6};box(.9,.06,.9,mat(0x9aa3a6,.4),SCALE.x,.03,SCALE.z);box(.3,.4,.06,mat(0x3a3a3e),SCALE.x,.25,SCALE.z+.45);
 {const cv=document.createElement('canvas');cv.width=128;cv.height=64;const g=cv.getContext('2d');g.fillStyle='#16a085';g.fillRect(0,0,128,64);g.fillStyle='#e8fff8';g.font='bold 40px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('00.0',64,34);
  const tx=new THREE.CanvasTexture(cv);const h=new THREE.Group();scene.add(h);const p=new THREE.Mesh(new THREE.PlaneGeometry(.26,.13),new THREE.MeshBasicMaterial({map:tx,toneMapped:false}));p.position.set(SCALE.x,.3,SCALE.z+.415);p.rotation.y=Math.PI;h.add(p);SCALE.cv=cv;SCALE.tx=tx}
-box(.8,.04,.4,mat(0xb8c4ca),27.3,1.3,15.8);box(.06,1.3,.4,mat(0xb8c4ca),27.3,.65,15.8);
-const CONES={x:27.3,z:15.8};{const cm=new THREE.MeshStandardMaterial({color:0xf6f6f2,transparent:true,opacity:.75,side:THREE.DoubleSide});for(let i=0;i<3;i++){const c=mesh(new THREE.CylinderGeometry(.28,.12,.2,16,1,true),cm,27.3,1.42+i*.06,15.8)}}
+box(.8,.04,.4,mat(0xb8c4ca),31.2,1.3,15.8);box(.06,1.3,.4,mat(0xb8c4ca),31.2,.65,15.8);
+const CONES={x:31.2,z:15.8};{const cm=new THREE.MeshStandardMaterial({color:0xf6f6f2,transparent:true,opacity:.75,side:THREE.DoubleSide});for(let i=0;i<3;i++){const c=mesh(new THREE.CylinderGeometry(.28,.12,.2,16,1,true),cm,31.2,1.42+i*.06,15.8)}}
 const syringe=new THREE.Group();scene.add(syringe);{const glass=new THREE.MeshStandardMaterial({color:0xdff3ff,transparent:true,opacity:.6,roughness:.1});const b=cyl(.09,.7,glass,0,0,0,syringe);b.rotation.z=Math.PI/2;
  const liq=cyl(.07,.4,mat(0x7fd3ff,.3),-.1,0,0,syringe);liq.rotation.z=Math.PI/2;const pl=cyl(.03,.4,mat(0xffffff),.5,0,0,syringe);pl.rotation.z=Math.PI/2;box(.04,.22,.22,mat(0xffffff),.7,0,0,syringe);const nd=cyl(.012,.3,mat(0xcccccc,.2),-.5,0,0,syringe);nd.rotation.z=Math.PI/2}
 syringe.position.set(25.8,.98,13.2);

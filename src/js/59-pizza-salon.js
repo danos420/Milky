@@ -1,13 +1,13 @@
 var PUFF=0;
 // ===== Street stage 3: Pizza & Falafel + the dog grooming salon =====
-const PIZ={x0:20.2,x1:27.6,z0:20.6,z1:29.6},SAL={x0:20.2,x1:27.6,z0:30.6,z1:39.6};
+const PIZ={x0:20.2,x1:31.4,z0:20.2,z1:29.8},SAL={x0:20.2,x1:31.4,z0:30.2,z1:39.8};
 AREAS.push(PIZ,SAL);DOORS.push({ax:true,x0:18.5,x1:21.1,z0:21.6,z1:23.8},{ax:true,x0:18.5,x1:21.1,z0:31.6,z1:33.8});
 function shopShell(z0,wallM,floorM,frontGlassZ){const z1=z0+9;box(.2,6,1.4,wallM,19.95,3,z0+.35);box(.2,6,5.8,wallM,19.95,3,z0+6.1);box(.2,3,2.2,wallM,19.95,4.5,z0+2.1);box(.2,6,9.8,wallM,27.9,3,z0+4.5);box(8,6,.2,wallM,24,3,z1+.35);box(8,6,.2,wallM,24,3,z0-.25);
  box(.08,1.4,2.2,winM,19.86,1.7,z0+6);box(7.6,.05,9,floorM,24,.02,z0+4.5)}
-shopShell(20.6,mat(0xf3e2c4),mat(0xc9a27a));shopShell(30.6,mat(0xfbe3ef),mat(0xe9eef2));
-for(let x=20.6;x<27.6;x+=1)for(let z=20.8;z<29.6;z+=1)if(((x+z)|0)%2===0){const t=box(1,.01,1,decal(mat(0xb0885f)),x+.5,.05,z+.5);t.castShadow=false}
+
+for(let x=20.2;x<31.4;x+=1)for(let z=20.8;z<29.6;z+=1)if(((x+z)|0)%2===0){const t=box(1,.01,1,decal(mat(0xb0885f)),x+.5,.05,z+.5);t.castShadow=false}
 // ---------- pizzeria ----------
-const OVEN={x:26.6,z:27.6};{box(1.8,1.6,1.6,mat(0xb5532e,.9),OVEN.x,.8,OVEN.z);const dm=ball(1,mat(0xb5532e,.9),OVEN.x,1.6,OVEN.z);dm.scale.set(.9,.6,.8);box(.08,.6,.8,new THREE.MeshBasicMaterial({color:0xff8a2a}),OVEN.x-.92,.75,OVEN.z);cyl(.18,1.6,mat(0x6b5a50),OVEN.x+.3,2.6,OVEN.z+.3)}
+const OVEN={x:30.2,z:27.6};{box(1.8,1.6,1.6,mat(0xb5532e,.9),OVEN.x,.8,OVEN.z);const dm=ball(1,mat(0xb5532e,.9),OVEN.x,1.6,OVEN.z);dm.scale.set(.9,.6,.8);box(.08,.6,.8,new THREE.MeshBasicMaterial({color:0xff8a2a}),OVEN.x-.92,.75,OVEN.z);cyl(.18,1.6,mat(0x6b5a50),OVEN.x+.3,2.6,OVEN.z+.3)}
 obstacles.push({name:'תנור',x:OVEN.x,z:OVEN.z,w:1.8,d:1.6,top:2.2,solid:true});
 const PCOUNTER={x:25.0,z:23.4};box(.9,1.05,3.4,mat(0x2f6e4a),PCOUNTER.x,.52,PCOUNTER.z);box(1.0,.06,3.5,mat(0xf3f3ef),PCOUNTER.x,1.06,PCOUNTER.z);obstacles.push({name:'דלפק פיצה',x:PCOUNTER.x,z:PCOUNTER.z,w:.9,d:3.4,top:1.06});
 for(const [dz,c] of [[-1.1,0xe8b04a],[0,0xd9573d],[1.1,0x7fb069]]){cyl(.36,.04,mat(0xd9a557),PCOUNTER.x,1.1,PCOUNTER.z+dz);cyl(.32,.02,mat(c),PCOUNTER.x,1.13,PCOUNTER.z+dz)}
@@ -23,11 +23,11 @@ const PBOX_HOME=new THREE.Vector3(23.2,0,21.6);pizzaBox.position.copy(PBOX_HOME)
 addBody(pizzaBox,.22,()=>[pboxRec.vx,pboxRec.vz],(x,z)=>{pboxRec.vx=x;pboxRec.vz=z});Object.assign(bodies[bodies.length-1],{rec:pboxRec,kind:'pizzabox'});KIND_ICON.pizzabox='🍕';KIND_NAME.pizzabox='קרטון פיצה';
 const CHEF_LINES=['מאמא מיה! כלב במסעדה!','פיצה טובה צריכה אהבה... ולא פרווה','אתה רוצה משלוח? אין לך כסף!','פלאפל או פיצה? שניהם? בחור!'];
 // ---------- grooming salon ----------
-const STUB={x:26.2,z:37.6,r:.75};{const t=cyl(.8,.6,mat(0xf6f6f2,.3),STUB.x,.3,STUB.z);const w=cyl(.72,.02,mat(0xbfe6ff,.2),STUB.x,.55,STUB.z);for(let i=0;i<8;i++){const a=i/8*6.28;ball(.13,mat(0xffffff,.9),STUB.x+Math.cos(a)*.45,.6,STUB.z+Math.sin(a)*.45)}}
-const DRYER={x:26.8,z:33.2};{cyl(.06,1.5,metal,DRYER.x,.75,DRYER.z);const h=ball(.32,mat(0xe98ab0,.4),DRYER.x-.1,1.6,DRYER.z);h.scale.set(1,.8,1);cyl(.18,.4,mat(0xe98ab0,.4),DRYER.x-.45,1.55,DRYER.z).rotation.z=Math.PI/2}
+const STUB={x:29.2,z:37.6,r:.75};{const t=cyl(.8,.6,mat(0xf6f6f2,.3),STUB.x,.3,STUB.z);const w=cyl(.72,.02,mat(0xbfe6ff,.2),STUB.x,.55,STUB.z);for(let i=0;i<8;i++){const a=i/8*6.28;ball(.13,mat(0xffffff,.9),STUB.x+Math.cos(a)*.45,.6,STUB.z+Math.sin(a)*.45)}}
+const DRYER={x:30.4,z:33.2};{cyl(.06,1.5,metal,DRYER.x,.75,DRYER.z);const h=ball(.32,mat(0xe98ab0,.4),DRYER.x-.1,1.6,DRYER.z);h.scale.set(1,.8,1);cyl(.18,.4,mat(0xe98ab0,.4),DRYER.x-.45,1.55,DRYER.z).rotation.z=Math.PI/2}
 const GTABLE={x:23.6,z:35.8};box(1.4,.9,.8,mat(0xd9dee2,.4),GTABLE.x,.45,GTABLE.z);box(1.5,.06,.9,mat(0x9aa3a6,.3),GTABLE.x,.92,GTABLE.z);obstacles.push({name:'שולחן טיפוח',x:GTABLE.x,z:GTABLE.z,w:1.4,d:.8,top:.95});
-const MIRROR={x:27.75,z:35.5};box(.06,1.6,1.4,new THREE.MeshBasicMaterial({color:0xbfdcea}),MIRROR.x,1.3,MIRROR.z);box(.08,1.75,1.55,mat(0xf2c14e),MIRROR.x+.02,1.3,MIRROR.z);
-for(let i=0;i<4;i++){box(.6,.05,.25,mat(0xe98ab0),27.4,1.0+i*.35,31.5);cyl(.06,.14,mat([0xf2c14e,0x7fd3ff,0xffffff,0x9b59b6][i]),27.4,1.12+i*.35,31.5)}
+const MIRROR={x:31.45,z:35.5};box(.06,1.6,1.4,new THREE.MeshBasicMaterial({color:0xbfdcea}),MIRROR.x,1.3,MIRROR.z);box(.08,1.75,1.55,mat(0xf2c14e),MIRROR.x+.02,1.3,MIRROR.z);
+for(let i=0;i<4;i++){box(.6,.05,.25,mat(0xe98ab0),31.2,1.0+i*.35,31.5);cyl(.06,.14,mat([0xf2c14e,0x7fd3ff,0xffffff,0x9b59b6][i]),31.2,1.12+i*.35,31.5)}
 const PIPI=makeDog({name:'פיפי',color:0xf3c1d6,size:.6,speed:0,fluffy:true,x:GTABLE.x,z:GTABLE.z});PIPI.g.position.y=.95;PIPI.g.rotation.y=Math.PI/2;
 const GROOMER=makePerson({skin:0xe2b48c,shirt:0xe98ab0,pants:0x2a2a2e,shoes:0xffffff,hair:h=>{const d=ball(.36,mat(0xf2e3b3),0,.14,-.04,h);d.scale.set(1.05,.85,1.05);ball(.2,mat(0xf2e3b3),0,.42,-.08,h);cyl(.3,.05,mat(0xe74c3c),0,.32,0,h)}});
 GROOMER.g.position.set(23.6,0,34.6);GROOMER.g.rotation.y=Math.PI;const groomB=makeBubble(GROOMER.g,3.05);
