@@ -4794,7 +4794,7 @@ const kman=()=>KIOSKMAN.g.position;
 const COPY={kiosk:['רק להסתכל! לא לגעת!','...מי אמר את זה?! אה, התוכי. שוב.'],jog:['עוד קילומטר! אתה איתי?','התוכי מחקה אותי?! ...אני באמת נשמע ככה?'],bench:['פעם הכל היה זול יותר','חחח! עכשיו גם התוכי מתלונן על המחירים'],stroll:['שששש... התינוק ישן','שששש!!! ...אוי, התוכי העיר את פיצי'],
  dani:['מה... קורה... פה','חחח! תוכי, אתה מושלם'],dad:['אבא קירח! אבא קירח!','מי לימד אותו את זה?! דני!!!'],nb:['עוד שיפוד?','חחח התוכי רוצה קבב'],
  tv:['📺 *קליק* ...ערוץ הבישול!','מי שינה לי את הערוץ?!']};
-function visitPeople(list){PM.v=list.map(v=>({...v,done:false}))}
+function visitPeople(list){PM.v=list.map(v=>({...v,done:false}));PM.near=0}
 function visitNext(){return PM.v&&PM.v.find(v=>!v.done)}
 // ---------- missions ----------
 const STREET_RINGS=[[12,2.2,-2],[16,3,4],[12.5,4,10],[9,3.2,16],[13,4.6,22],[17,3.4,28],[12,5,34],[8.5,4.2,40]];
@@ -4829,8 +4829,8 @@ const P_MISSIONS=[
   done:()=>{if(!pCarry&&PM.item&&pDist(PM.item.position)<1.2)itemTake();return pCarry&&pXZ(PERCH)<1.6&&jumpY>2.6},hint:()=>pCarry?'🏠 למרפסת שלך ברחוב':'🍢 השיפוד על המנגל בחצר',target:()=>pCarry?PERCH:PM.item.position,end:()=>{itemDrop();pSay('😋 קבב של תוכים!',2)}},
  {t:'מילקי הלך לאיבוד',icon:'🐕',sub:'להוביל אותו הביתה',par:60,intro:'🐕 מילקי נתקע בקצה החצר ומפחד. תעוף לידו, הוא ילך אחריך הביתה לסלון',start:[0,0,-12],
   setup:()=>{NM.g.visible=true;NM.g.position.set(-16,0,-37);NM.nav.path=[];PM.follow=false},
-  update:dt=>{const d=pXZ(NM.g.position);const p0=NM.g.position.clone();if(d<5){if(!PM.follow){PM.follow=true;nmSay('🐕 קוקו! חכה לי!',1.6)}nmGo(pos.x,pos.z,3,dt,1.4)}else if(PM.follow&&d>9){PM.follow=false;nmSay('🥺 קוקו?',1.4)}nmAnim(NM.g.position.distanceTo(p0),dt)},
-  done:()=>Math.hypot(NM.g.position.x-1,NM.g.position.z+2)<2.4,hint:()=>PM.follow?'🐕 הוא אחריך! הביתה, לסלון':'🐕 מילקי בפינה הרחוקה של החצר',target:()=>PM.follow?p3(1,0,-2):NM.g.position,end:()=>{nmSay('❤️ הביתה!',2)}},
+  update:dt=>{const d=pXZ(NM.g.position);const p0=NM.g.position.clone();if(d<5&&!PM.follow){PM.follow=true;nmSay('🐕 קוקו! חכה לי!',1.6)}if(PM.follow){if(d<10)nmGo(pos.x,pos.z,d>5?3.6:3,dt,1.4);else{PM.follow=false;nmSay('🥺 קוקו? חכה!',1.4)}}nmAnim(NM.g.position.distanceTo(p0),dt)},
+  done:()=>Math.hypot(NM.g.position.x-1,NM.g.position.z+2)<2.4,hint:()=>PM.follow?(pXZ(NM.g.position)<6?'🐕 הוא אחריך! הביתה, לסלון':'🐕 לאט! מילקי נשאר מאחור, חכה לו'):'🐕 מילקי בפינה הרחוקה של החצר',target:()=>PM.follow&&pXZ(NM.g.position)<6?p3(1,0,-2):NM.g.position,end:()=>{nmSay('❤️ הביתה!',2)}},
  {t:'הקונצרט',icon:'🎤',sub:'לשיר לכל המשפחה',par:90,intro:'🎤 ערב גדול: תשיר לאבא, לדני, למילקי ולשכן, ואז קידה על המרפסת',start:[0,0,-6],
   setup:()=>{NM.g.visible=true;NM.g.position.set(-1.5,0,-12);visitPeople([{id:'dad',g:()=>dad.position,b:()=>dadB,song:'🎵 אבא אבא, הכי טוב בעולם 🎵',re:'...טוב. זה היה יפה. אבל אני עדיין לא קירח.'},{id:'dani',g:()=>dani.position,b:()=>daniB,song:'🎵 דני דני, מבשל לנו פיצה 🎵',re:'חחח! תוכי, תעשה הדרן!'},{id:'milky',g:()=>NM.g.position,b:()=>NM.b,song:'🎵 מילקי מילקי, ברדק אחולמניוקי 🎵',re:'🐕🎶 אוווווו!'},{id:'nb',g:()=>neighbor.g.position,b:()=>nbB,song:'🎵 שכן שכן, קבב על האש 🎵',re:'בראבו! קח שיפוד... רגע, כבר לקחת.'}])},
   update:dt=>{if(NM.g.visible){NM.g.rotation.y=Math.atan2(pos.x-NM.g.position.x,pos.z-NM.g.position.z);nmAnim(0,dt)}},
@@ -4838,7 +4838,7 @@ const P_MISSIONS=[
   done:()=>!visitNext()&&pXZ(PERCH)<1.6&&jumpY>2.6,hint:()=>visitNext()?'🎤 שירים '+PM.v.filter(v=>v.done).length+'/4':'🙇 קידה על המרפסת שלך!',target:()=>{const v=visitNext();return v?v.g():PERCH},
   end:()=>{pSay('🙇 תודה! תודה! אני כאן כל ערב!',2.6);speakDad('טוב... התוכי הזה בסדר.')}}
 ];
-Object.assign(_holdLabels,{catHold:'🐈 מעצבן את החתול...'});
+Object.assign(_holdLabels,{catHold:'🐈 מעצבן את החתול...',cocoNear:'🦜 מתכונן...'});
 function parrotFrame(dt){dog.visible=false;PP.visible=true;parrot.visible=false;
  PP.position.set(pos.x,Math.max(0,jumpY),pos.z);const air=!grounded;
  PP.rotation.set(0,yaw,0);PPb.rotation.z+=((air?-THREE.MathUtils.clamp(yawVel*.25,-.6,.6):0)-PPb.rotation.z)*Math.min(1,dt*6);PPb.rotation.x+=((air?THREE.MathUtils.clamp(lastDogSpeed/10,0,.45)-velocityY*.05:0)-PPb.rotation.x)*Math.min(1,dt*6);
@@ -4852,7 +4852,8 @@ function parrotMissionStart(i){PM.i=i;PM.m=P_MISSIONS[i];PM.t=0;PM.over=false;PM
  showBanner(PM.m.intro);PM.m.setup();PM.nmRoam=!NM.g.visible;if(PM.nmRoam){NM.g.visible=true;NM.g.position.set(-2,0,-3);NM.nav.path=[]}}
 // when a mission doesn't need him, Milky lives his life: wanders, and chases Coco when he flies low
 function nmRoam(dt){const p0=NM.g.position.clone();NM.stun=Math.max(0,NM.stun-dt);const d=pXZ(NM.g.position);
- if(NM.stun<=0){if(jumpY<1.3&&d<6){if(NM.state!=='chase'){NM.state='chase';nmSay(pick(['🐕 קוקו!!!','😆 תפסתי... כמעט!','🐕 וואף וואף!']),1.2)}nmGo(pos.x,pos.z,3.2,dt,.9);if(d<1&&jumpY<.8){NM.stun=1.2;pSay(pick(['🦜 אאא! כלב!','😱 מילקי! לא!']),1.2);velocityY=4;grounded=false}}
+ NM.chaseCool=Math.max(0,(NM.chaseCool||0)-dt);
+ if(NM.stun<=0){if(jumpY<1.3&&d<6&&NM.chaseCool<=0&&!(PM.m&&PM.v)){if(NM.state!=='chase'){NM.state='chase';nmSay(pick(['🐕 קוקו!!!','😆 תפסתי... כמעט!','🐕 וואף וואף!']),1.2)}nmGo(pos.x,pos.z,3.2,dt,.9);if(d<1&&jumpY<.8){NM.stun=1.2;NM.chaseCool=9;NM.state='wander';pSay(pick(['🦜 אאא! כלב!','😱 מילקי! לא!']),1.2);velocityY=2.6;grounded=false}}
   else{if(NM.state!=='wander'||Math.hypot(NM.tx-NM.g.position.x,NM.tz-NM.g.position.z)<.6){const s=pick(NM_SPOTS);NM.tx=s[0];NM.tz=s[1];NM.state='wander'}nmGo(NM.tx,NM.tz,1.4,dt)}}
  nmAnim(NM.g.position.distanceTo(p0),dt)}
 function parrotMissionEnd(win){if(PM.over)return;PM.over=true;evtPill.hidden=true;const m=PM.m;if(m.end)m.end();RINGS.forEach(r=>r.visible=false);
@@ -4860,6 +4861,8 @@ function parrotMissionEnd(win){if(PM.over)return;PM.over=true;evtPill.hidden=tru
  setTimeout(()=>epFinish(win,st,win?['⏱️ '+fmtTime(t)+' (ל־3 כוכבים: עד '+fmtTime(m.par)+')','⭐ ניקוד '+score.toLocaleString('he-IL')]:['⏰ נגמר הזמן'],win?m.icon+' '+m.t+' — הצלחה!':'🦜 כמעט! עוד ניסיון?'),win?1500:900);
  if(win&&window.JUICE_READY){slowMo(.5);pow('קוקו!!!',pos.x,jumpY+2,pos.z,true)}}
 function updateParrotMission(dt){if(!PM.m||PM.over)return;PM.t+=dt;const m=PM.m;NM.stun=Math.max(0,NM.stun-dt);if(m.update)m.update(dt);
+ // next to the person for a moment = the act happens by itself (pressing the button is just faster)
+ if(PM.v&&m.act){const v=PM.v.find(v=>!v.done&&pXZ(v.g())<2.4);if(v){PM.near+=dt;holdShow('cocoNear',PM.near,1);if(PM.near>=1){PM.near=0;const h=m.act();if(h)h.fn()}}else PM.near=0}
  evtPill.hidden=false;const l=m.icon+' '+(PM.i+1)+'/10: '+m.t+(m.limit?' · '+Math.max(0,Math.ceil(m.limit-PM.t)):'');if(evtPill.textContent!==l)evtPill.textContent=l;
  if(m.done())return parrotMissionEnd(true);if(m.limit&&PM.t>=m.limit)parrotMissionEnd(false)}
 function setParrotPlay(on){if(on===PARP&&on)return;
@@ -4878,7 +4881,7 @@ CTX_HOOKS.grab.unshift(()=>{if(!PARP)return null;if(pCarry)return {i:'⬇️',l:
 // hooks
 const _bub6=sayText;sayText=function(b,text,dur,kind,force){if(PARP&&b===milkyB)b=pB;return _bub6(b,text,dur,kind,force)};
 const _thd6=thought;thought=function(b,e,d,f){if(PARP&&b===milkyB)b=pB;return _thd6(b,e,d,f)};
-const _nth6=nextTaskHint;nextTaskHint=function(){if(!PARP)return _nth6();if(PM.m&&!PM.over)return PM.m.hint();return '🦜 קוקו · החזק קפיצה = לעוף · 🗣️ לצרוח'};
+const _nth6=nextTaskHint;nextTaskHint=function(){if(!PARP)return _nth6();if(PM.m&&!PM.over&&PM.v&&PM.v.some(v=>!v.done&&pXZ(v.g())<2.4)){ctxT=0;const a=actInfo();return '👉 לחץ על "'+(a?a.l:'')+'" (או E במקלדת)'}if(PM.m&&!PM.over)return PM.m.hint();return '🦜 קוקו · החזק קפיצה = לעוף · 🗣️ לצרוח'};
 const _ct6=currentTarget;currentTarget=function(){if(!PARP)return _ct6();if(!guideOn||!PM.m||PM.over)return null;const p=PM.m.target&&PM.m.target();return p&&pXZ(p)>1.5?p:null};
 const _uow6=updateOpenWorld;updateOpenWorld=function(dt){if(!PARP)return _uow6(dt);swapRefresh();if(!day.finished)owApply();for(const s of Object.values(OW_MARKS))s.visible=false;
  parrotFrame(dt);if(PM.m)updateParrotMission(dt);if(PM.nmRoam||!PM.m)nmRoam(dt)};
