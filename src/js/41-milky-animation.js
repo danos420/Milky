@@ -106,11 +106,22 @@ if(dizzy.active){dizzy.t+=dt;const k=dizzy.t,f=Math.max(0,1-k/1.9);
 // Shaking off water, flips and ragdoll tumbling (rotate around the body centre, not the paws)
 torso.rotation.y=shakeT>0?Math.sin(t*45)*.4:0;
 if(rag.active||flip.active){
- dog.quaternion.setFromEuler(rag.active?_eu.set(rag.rx,yaw+rag.ry,rag.rz,'YXZ'):_eu.set(-Math.PI*2*Math.min(1,flip.t/.55),yaw,0,'YXZ'));
- const v=_c115.set(0,1.15*MS,0).applyQuaternion(dog.quaternion),baseY=rag.active?rag.y+.4*MS:Math.max(0,jumpY);
- dog.position.set(pos.x-v.x,baseY+1.15*MS-v.y,pos.z-v.z);
- if(rag.active)legs.forEach((l,i)=>{l.pivot.rotation.x=Math.sin(t*19+i*1.7)*1.1;l.knee.rotation.x=Math.sin(t*15+i)*.9});
-}else{dog.rotation.x=0;dog.rotation.z=0}
+ if(rag.active){dog.quaternion.copy(rag.q);
+  // body centre height follows the pose: standing on paws 1.15, lying on a side ~.42, belly-up ~.5
+  const v=_c115.set(0,1.15*MS,0).applyQuaternion(dog.quaternion),u=v.y/(1.15*MS);
+  let ch=u>0?.42+.73*u*u*u:.42+.1*(-u);if(rag.getup>0){const k=Math.min(1,rag.getup/.45);ch=THREE.MathUtils.lerp(ch,1.15,k)+Math.sin(k*Math.PI)*.18}
+  const cy=Math.max(0,rag.y)+ch*MS;dog.position.set(pos.x-v.x,cy-v.y,pos.z-v.z);
+  const air=rag.y>rag.floor+.05,roll=Math.hypot(rag.vx,rag.vz),splat=rag.still>0&&rag.getup<=0;
+  legs.forEach((l,i)=>{const k=Math.min(1,dt*14);let px,kx,pz=0;
+   if(air){px=Math.sin(t*22+i*1.7)*1.2;kx=Math.sin(t*17+i)*1}
+   else if(splat){px=(l.front?-.9:.9);kx=.15;pz=l.s*.9}
+   else{px=Math.sin(t*(6+roll*3)+i*1.7)*(.4+roll*.12);kx=Math.sin(t*8+i)*.5}
+   l.pivot.rotation.x+=(px-l.pivot.rotation.x)*k;l.knee.rotation.x+=(kx-l.knee.rotation.x)*k;l.pivot.rotation.z+=(pz-l.pivot.rotation.z)*k});
+  tongue.scale.y=.32;tongue.position.y=-.3;headPivot.rotation.z=Math.sin(t*(air?16:5))*(air?.4:.15);
+  if(splat)eyes.forEach(e=>{e.white.scale.y=.012;e.pupil.visible=false});else eyes.forEach(e=>{e.pupil.visible=true});
+ }else{dog.quaternion.setFromEuler(_eu.set(-Math.PI*2*Math.min(1,flip.t/.55),yaw,0,'YXZ'));
+  const v=_c115.set(0,1.15*MS,0).applyQuaternion(dog.quaternion),baseY=Math.max(0,jumpY);dog.position.set(pos.x-v.x,baseY+1.15*MS-v.y,pos.z-v.z)}
+}else{dog.rotation.x=0;dog.rotation.z=0;if(!dizzy.active)legs.forEach(l=>{l.pivot.rotation.z*=.82})}
 }}
 const _camDir=new THREE.Vector3(),_camDesired=new THREE.Vector3(),_eu=new THREE.Euler(0,0,0,'YXZ'),_c115=new THREE.Vector3();
 function renderFrame(){

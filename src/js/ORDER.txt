@@ -64,4 +64,5 @@
 64-episodes.js
 66-dad.js
 67-parrot.js
+68-race.js
 47-render-setup.js

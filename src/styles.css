@@ -235,3 +235,5 @@ body.parPlay #turboBtn,body.parPlay #trainBtn,body.parPlay #ragdollBtn,body.parP
 #bootErr[hidden]{display:none}
 #bootErr code{direction:ltr;unicode-bidi:plaintext;text-align:start;white-space:pre-wrap;font-size:12px;background:#0004;padding:6px;border-radius:8px;max-height:30vh;overflow:auto}
 #bootErr button{font:inherit;padding:8px;border-radius:10px;border:0;background:#ffcf70;color:#2b1d1d}
+
+body.racePlay #turboBtn,body.racePlay #trainBtn,body.racePlay #ragdollBtn,body.racePlay #moodBtn,body.racePlay #tongueBtn,body.racePlay #snackBtn,body.racePlay #slipperBtn,body.racePlay #dadInteractBtn,body.racePlay #interactBtn{display:none!important}

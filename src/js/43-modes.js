@@ -137,6 +137,7 @@ function allModesOff(keep){
  if(keep!=='zombie'&&window.ZOMBIE&&typeof zApply==='function'){ZOMBIE=false;zApply(false)}
  if(keep!=='dad'&&window.DADP&&typeof setDadPlay==='function')setDadPlay(false);
  if(keep!=='parrot'&&window.PARP&&typeof setParrotPlay==='function')setParrotPlay(false);
+ if(keep!=='race'&&window.RACE_ON&&typeof setRace==='function')setRace(false);
 }
 
 // Who is the player right now, and where is Milky (the player, or the AI copy when you play someone else)
@@ -160,4 +161,4 @@ const ALT_LINES={
   groom:['באת לקבוע תור למילקי?','אולי גם לך תספורת, דרלינג?']}};
 function npcLine(kind,def){const L=ALT_LINES[playerKind()];return L&&L[kind]?L[kind]:def}
 
-function specialMode(){return !!(window.HUMAN||window.DETECT||window.ZOMBIE||window.DADP||window.PARP)}
+function specialMode(){return !!(window.HUMAN||window.DETECT||window.ZOMBIE||window.DADP||window.PARP||window.RACE_ON)}
