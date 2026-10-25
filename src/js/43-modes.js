@@ -138,3 +138,26 @@ function allModesOff(keep){
  if(keep!=='dad'&&window.DADP&&typeof setDadPlay==='function')setDadPlay(false);
  if(keep!=='parrot'&&window.PARP&&typeof setParrotPlay==='function')setParrotPlay(false);
 }
+
+// Who is the player right now, and where is Milky (the player, or the AI copy when you play someone else)
+const _FAR=new THREE.Vector3(0,0,-200);
+function playerKind(){return window.DADP?'dad':window.PARP?'parrot':'milky'}
+function milkyPos(){if(playerKind()==='milky')return pos;const n=window.NM_OBJ;return n&&n.g.visible?n.g.position:_FAR}
+const ALT_LINES={
+ parrot:{kiosk:['תוכי! לא לנקר בבמבות!','אתה שוב? הגנב עם הנוצות!','אם תגיד "במבה" עוד פעם אחת...','רק להסתכל, ציפור!'],
+  jog:['תוכי שעף יותר מהר ממני. נהדר.','אל תחקה את הנשימות שלי!','קדימה קוקו! קצב!'],
+  scoot:['זוז מהדרך, ציפור!','תוכי על הכידון?! לא!','משלוח! גם לך יש משלוח?'],
+  bench:['קוקו! בוא, יש לי גרעינים','היונים מקנאות בך','בזמני התוכים היו מנומסים'],
+  stroll:['שששש... התינוק ישן, קוקו!','פיצי, תראה! תוכי!','אל תצרח ליד העגלה!'],
+  chef:['ציפור במטבח?! מאמא מיה!','קוקו, אין פיצה לתוכים!','אל תנחת על הבצק!!!'],
+  groom:['דרלינג, הנוצות האלה זועקות לעזרה','אצלנו גם תוכים יוצאים כוכבים','פיפי מפחדת מציפורים!']},
+ dad:{kiosk:['ערב טוב! עוד פעם עיתון?','הכלב שלך גנב לי במבה אתמול!','תגיד למילקי שיש לו חוב'],
+  jog:['בוקר טוב! מצטרף לריצה?','ראיתי את הכלב שלך רץ פה כמו טיל','קצב, קצב!'],
+  scoot:['סליחה אדוני! משלוח!','זוז זוז, יש לי 40 משלוחים!'],
+  bench:['שב שב, יש מקום','הכלב שלך מפחיד לי את היונים','פעם הכל היה זול יותר, נכון?'],
+  stroll:['ערב טוב! שששש, התינוק ישן','איפה מילקי? פיצי מחפש אותו'],
+  chef:['השכן! משפחתית כרגיל?','בלי הכלב היום? יופי!','פיצה טובה צריכה אהבה'],
+  groom:['באת לקבוע תור למילקי?','אולי גם לך תספורת, דרלינג?']}};
+function npcLine(kind,def){const L=ALT_LINES[playerKind()];return L&&L[kind]?L[kind]:def}
+
+function specialMode(){return !!(window.HUMAN||window.DETECT||window.ZOMBIE||window.DADP||window.PARP)}

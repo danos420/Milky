@@ -71,3 +71,6 @@ function pointOfInterest(){
  return best;
 }
 
+
+// Everything above is Milky's own body; accessories added by later modules are not part of it.
+const MILKY_BASE=new Set();dog.traverse(o=>MILKY_BASE.add(o));

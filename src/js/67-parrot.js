@@ -98,7 +98,12 @@ function parrotFrame(dt){dog.visible=false;PP.visible=true;parrot.visible=false;
 function pMax(){const x=pos.x,z=pos.z;if(x>20)return 2.4;if(x>-6.8&&x<6.8&&z>-9&&z<16.2)return 2.3;return 7.5}
 function parrotMissionStart(i){PM.i=i;PM.m=P_MISSIONS[i];PM.t=0;PM.over=false;PM.k=0;PM.rings=null;PM.v=null;PM.item=null;PM.feathers=0;PM.cats=null;PM.follow=false;PM.ouch=0;NM.g.visible=false;itemDrop();for(const it of Object.values(ITEMS))it.visible=false;RINGS.forEach(r=>r.visible=false);
  document.querySelector('#overlay').style.display='none';setParrotPlay(true);startGame();const s=PM.m.start;pos.set(s[0],0,s[2]);jumpY=0;velocityY=0;grounded=true;yaw=0;camYaw=0;
- showBanner(PM.m.intro);PM.m.setup()}
+ showBanner(PM.m.intro);PM.m.setup();PM.nmRoam=!NM.g.visible;if(PM.nmRoam){NM.g.visible=true;NM.g.position.set(-2,0,-3);NM.nav.path=[]}}
+// when a mission doesn't need him, Milky lives his life: wanders, and chases Coco when he flies low
+function nmRoam(dt){const p0=NM.g.position.clone();NM.stun=Math.max(0,NM.stun-dt);const d=pXZ(NM.g.position);
+ if(NM.stun<=0){if(jumpY<1.3&&d<6){if(NM.state!=='chase'){NM.state='chase';nmSay(pick(['🐕 קוקו!!!','😆 תפסתי... כמעט!','🐕 וואף וואף!']),1.2)}nmGo(pos.x,pos.z,3.2,dt,.9);if(d<1&&jumpY<.8){NM.stun=1.2;pSay(pick(['🦜 אאא! כלב!','😱 מילקי! לא!']),1.2);velocityY=4;grounded=false}}
+  else{if(NM.state!=='wander'||Math.hypot(NM.tx-NM.g.position.x,NM.tz-NM.g.position.z)<.6){const s=pick(NM_SPOTS);NM.tx=s[0];NM.tz=s[1];NM.state='wander'}nmGo(NM.tx,NM.tz,1.4,dt)}}
+ nmAnim(NM.g.position.distanceTo(p0),dt)}
 function parrotMissionEnd(win){if(PM.over)return;PM.over=true;evtPill.hidden=true;const m=PM.m;if(m.end)m.end();RINGS.forEach(r=>r.visible=false);
  const t=PM.t,st=win?(m.stars?Math.min(m.stars(),t<=m.par?3:t<=m.par*1.8?2:1):(t<=m.par?3:t<=m.par*1.8?2:1)):0;
  setTimeout(()=>epFinish(win,st,win?['⏱️ '+fmtTime(t)+' (ל־3 כוכבים: עד '+fmtTime(m.par)+')','⭐ ניקוד '+score.toLocaleString('he-IL')]:['⏰ נגמר הזמן'],win?m.icon+' '+m.t+' — הצלחה!':'🦜 כמעט! עוד ניסיון?'),win?1500:900);
@@ -112,7 +117,7 @@ function setParrotPlay(on){if(on===PARP&&on)return;
  document.body.classList.toggle('parPlay',PARP);{const jb=document.getElementById('jumpBtn');if(jb){jb.querySelector('b').textContent=PARP?'🪶':'🐾';jb.querySelector('small').textContent=PARP?'לנפנף':'קפיצה'}}if(typeof charLabel==='function')charLabel()}
 epRegister({id:'parrot',icon:'🦜',title:'קוקו התוכי: 10 משימות',reward:'לפתוח את קוקו בעולם הפתוח',rewardDone:'קוקו נפתח! בעולם הפתוח לוחצים 🔄 כדי להחליף דמות',
  levels:P_MISSIONS.map((m,i)=>({id:'p'+(i+1),title:m.t,icon:m.icon,sub:m.sub})),start:parrotMissionStart,quit:()=>setParrotPlay(false),alive:()=>PARP});
-CHARS.push({id:'parrot',icon:'🦜',name:'קוקו',ok:()=>epComplete('parrot'),active:()=>PARP,on:()=>{setParrotPlay(true);PM.m=null},off:()=>setParrotPlay(false),hello:'🦜 עכשיו אתה קוקו! החזק קפיצה כדי לעוף · 🗣️ לצרוח'});
+CHARS.push({id:'parrot',icon:'🦜',name:'קוקו',ok:()=>epComplete('parrot'),active:()=>PARP,on:()=>{setParrotPlay(true);PM.m=null;PM.nmRoam=true;NM.g.visible=true;NM.g.position.set(-2,0,-3);NM.nav.path=[]},off:()=>setParrotPlay(false),hello:'🦜 עכשיו אתה קוקו! החזק קפיצה כדי לעוף · 🗣️ לצרוח'});
 WORLDS.push({icon:'🦜',name:'קוקו התוכי',col:'#9fe0a0',sub:()=>epComplete('parrot')?'✔ פתוח בעולם הפתוח · ⭐ '+epStars('parrot')+'/30':'10 משימות · ⭐ '+epStars('parrot')+'/30',go:()=>epBoard('parrot')});if(typeof universeRender==='function')universeRender();
 // buttons
 CTX_HOOKS.act.unshift(()=>{if(!PARP)return null;const h=PM.m&&!PM.over&&PM.m.act&&PM.m.act();if(h)return h;
@@ -125,8 +130,10 @@ const _thd6=thought;thought=function(b,e,d,f){if(PARP&&b===milkyB)b=pB;return _t
 const _nth6=nextTaskHint;nextTaskHint=function(){if(!PARP)return _nth6();if(PM.m&&!PM.over)return PM.m.hint();return '🦜 קוקו · החזק קפיצה = לעוף · 🗣️ לצרוח'};
 const _ct6=currentTarget;currentTarget=function(){if(!PARP)return _ct6();if(!guideOn||!PM.m||PM.over)return null;const p=PM.m.target&&PM.m.target();return p&&pXZ(p)>1.5?p:null};
 const _uow6=updateOpenWorld;updateOpenWorld=function(dt){if(!PARP)return _uow6(dt);swapRefresh();if(!day.finished)owApply();for(const s of Object.values(OW_MARKS))s.visible=false;
- parrotFrame(dt);if(PM.m)updateParrotMission(dt);else{const p0=NM.g.position.clone();}};
+ parrotFrame(dt);if(PM.m)updateParrotMission(dt);if(PM.nmRoam||!PM.m)nmRoam(dt)};
 for(const id of ['start','startOpen','startZombie','startHuman','startDetective','modeSwitch','zSwitch'])document.getElementById(id).addEventListener('click',()=>{if(PARP)setParrotPlay(false)},true);
 document.getElementById('menuBtn').addEventListener('click',()=>{if(PARP&&PM.m)setParrotPlay(false)});
 window.addEventListener('keydown',e=>{if(PARP&&['KeyQ','KeyR','KeyX','KeyF','KeyT','KeyP','KeyH'].includes(e.code))e.stopImmediatePropagation()},true);
+// side challenges are Milky's open-world progress: in special modes they only gate one-shot reactions for this session
+{const _ccX=completeChallenge;completeChallenge=function(id){if(specialMode()){challengesDone.add(id);return}return _ccX(id)}}
 window.PM=PM;window.PAR_READY=true;

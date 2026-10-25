@@ -59,6 +59,8 @@ function updateEvents(dt,t){
    P[k+1]=y;_rm.makeTranslation(P[k],P[k+2]>-9.2||Math.abs(P[k]-cx)+Math.abs(P[k+2]-cz)<2.6?-50:y,P[k+2]);rain.setMatrixAt(i,_rm)}
   rain.instanceMatrix.needsUpdate=true}
  if(day.finished&&!OPEN_WORLD){if(evt.cur)endEvent('cancel');return}
+ // surprise events belong to Milky's open world/story, not to the special modes
+ if(specialMode()){if(evt.cur){const E=EVENTS[evt.cur];if(E&&E.end)E.end();evt.cur=null;evt.label=''}pizza.visible=false;return}
  if(!evt.cur){if(BATH_BLOCK||rag.active||slipperState==='carried'||kebabState==='carried')return;evt.cool-=dt;if(evt.cool<=0)startEvent();return}
  const E=EVENTS[evt.cur];evt.t+=dt;
  let r=E.update(dt);evt.prevGround=grounded;

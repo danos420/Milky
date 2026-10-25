@@ -41,7 +41,7 @@ function daniNear(d){return Math.hypot(pos.x-dani.position.x,pos.z-dani.position
 function displacedThing(){
  let best=null,bd=1.2;
  for(const p of [...chaosProps,...extras]){
-  if(p.kind==='trash'||carried.has(p.g)||(grab&&grab.b.o===p.g))continue;
+  if(p.kind==='trash'||carried.has(p.g)||(grab&&grab.b.o===p.g)||(p.daniSkip&&performance.now()<p.daniSkip))continue;
   const d=Math.hypot(p.g.position.x-p.home.x,p.g.position.z-p.home.z),v=Math.hypot(p.vx,p.vz);
   if(d>bd&&v<.4){bd=d;best=p}
  }
@@ -65,7 +65,8 @@ function updateDani(dt){
  const t=performance.now()*.001;
  daniAction+=dt;daniDecide-=dt;
  daniPlayCool=Math.max(0,daniPlayCool-dt);daniPetCool=Math.max(0,daniPetCool-dt);daniPartyCool=Math.max(0,daniPartyCool-dt);
- const dogD=Math.hypot(pos.x-dani.position.x,pos.z-dani.position.z);
+ const _P=milkyPos();
+ const dogD=Math.hypot(_P.x-dani.position.x,_P.z-dani.position.z);
  // Decide what to do next while cooking.
  if(daniState==='cook'&&daniDecide<=0){
   daniDecide=2;
@@ -74,22 +75,22 @@ function updateDani(dt){
   else if(fridgeOpen&&sausageState!=='flying')setDani('closeFridge','המקרר פתוח! החשמל!','🧊');
   else{const p=displacedThing();
    if(p){daniTarget=p;setDani('tidy',TIDY_LINES[Math.floor(Math.random()*TIDY_LINES.length)],'🧹')}
-   else if(daniPlayCool===0&&dogD<7&&toyVelocity.length()<.3)setDani('play','מילקי! תביא!','⚽');
+   else if(daniPlayCool===0&&dogD<7&&toyVelocity.length()<.3&&!specialMode())setDani('play','מילקי! תביא!','⚽');
   }
  }
- if(daniState==='cook'&&dogD<1.5&&daniPetCool===0&&jumpY<.5){setDani('pet','מי זה הכלב הכי מבולגן בעולם?','🥰');daniPetCool=22}
+ if(daniState==='cook'&&dogD<1.5&&daniPetCool===0&&(_P!==pos||jumpY<.5)){setDani('pet','מי זה הכלב הכי מבולגן בעולם?','🥰');daniPetCool=22}
  let tx=DANI_HOME.x,tz=DANI_HOME.z,speed=0,stop=.3,faceX=null,faceZ=null;
  switch(daniState){
   case 'cook':speed=2.3;faceX=dani.position.x;faceZ=16;break;
-  case 'bday':tx=bd.hugT>0?pos.x-1.2:BDAY_DANI.x;tz=bd.hugT>0?pos.z:BDAY_DANI.z;stop=.3;speed=2.2;faceX=pos.x;faceZ=pos.z;break;
+  case 'bday':tx=bd.hugT>0?_P.x-1.2:BDAY_DANI.x;tz=bd.hugT>0?_P.z:BDAY_DANI.z;stop=.3;speed=2.2;faceX=_P.x;faceZ=_P.z;break;
   case 'dinner':tx=DANI_DINNER.x;tz=DANI_DINNER.z;stop=.2;speed=2.2;faceX=DTABLE.x;faceZ=DTABLE.z;break;
   case 'park':{const o=parkDani(dt);faceX=o.fx;faceZ=o.fz;tx=dani.position.x;tz=dani.position.z;break}
   case 'tidy':{const p=daniTarget;if(!p){setDani('cook');break}
    if(!daniCarry){tx=p.g.position.x;tz=p.g.position.z;stop=.6;speed=2.7;
     if(Math.hypot(tx-dani.position.x,tz-dani.position.z)<.78){daniCarry=p;carried.add(p.g);p.vx=p.vz=0}}
    else{tx=p.home.x;tz=p.home.z;stop=.5;speed=2.5;
-    if(Math.hypot(tx-dani.position.x,tz-dani.position.z)<.8){daniDrop(true);daniTarget=null;thought(daniB,'✨',1.5);setDani('cook')}}
-   if(daniAction>25){daniDrop(false);daniTarget=null;setDani('cook')}
+    const dh=Math.hypot(tx-dani.position.x,tz-dani.position.z);if(dh<.8||(dh<1.5&&daniAction>2.5&&daniNav.path.length===0)){daniDrop(true);if(p){const now=performance.now();p.tidyN=(p.tidyLast&&now-p.tidyLast<60000)?(p.tidyN||0)+1:1;p.tidyLast=now;if(p.tidyN>=3)p.daniSkip=now+45000}daniTarget=null;thought(daniB,'✨',1.5);setDani('cook')}}
+   if(daniAction>20){daniDrop(false);if(p)p.daniSkip=performance.now()+60000;daniTarget=null;setDani('cook')}
    break}
   case 'fixTrash':tx=trashProp.g.position.x;tz=trashProp.g.position.z;stop=.62;speed=2.6;
    if(Math.hypot(tx-dani.position.x,tz-dani.position.z)<.8){standTrash();trashProp.g.position.copy(trashProp.home);sayDani('נקי. כמעט.');thought(daniB,'😮‍💨',1.6);setDani('cook')}
@@ -108,8 +109,8 @@ function updateDani(dt){
    }
    if(daniAction>14){daniPlayCool=15;setDani('cook')}break;
   case 'cheer':faceX=toyBall.position.x;faceZ=toyBall.position.z;if(daniAction>1.6)setDani('cook');break;
-  case 'pet':tx=pos.x;tz=pos.z;stop=1.0;speed=2.2;faceX=pos.x;faceZ=pos.z;if(daniAction>4.5||dogD>4)setDani('cook');break;
-  case 'scold':tx=pos.x;tz=pos.z;stop=1.15;speed=3.0;faceX=pos.x;faceZ=pos.z;if(daniAction>3.5){setDani('cook');sayDani('טוב... גם אני הייתי אוכל אותה.')}break;
+  case 'pet':tx=_P.x;tz=_P.z;stop=1.0;speed=2.2;faceX=_P.x;faceZ=_P.z;if(daniAction>4.5||dogD>4)setDani('cook');break;
+  case 'scold':tx=_P.x;tz=_P.z;stop=1.15;speed=3.0;faceX=_P.x;faceZ=_P.z;if(daniAction>3.5){setDani('cook');sayDani('טוב... גם אני הייתי אוכל אותה.')}break;
   case 'party':if(daniAction>3.4){setDani('cook','רגע... אני אמור לסדר פה 😅','😅');daniDecide=0}break;
  }
  const r=navStep(dani,daniNav,DANI_R,tx,tz,speed,stop,dt,[{x:pos.x,z:pos.z,r:dogRadius,skip:jumpY>=1.2},{x:dad.position.x,z:dad.position.z,r:DAD_R}]);

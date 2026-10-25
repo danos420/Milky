@@ -28,7 +28,7 @@ const {open}=require('./lib');
   const alt=b==='dad'||b==='dadFree'||b==='parrot';
   if(s.dog!==(!alt&&b!=='human'&&b!=='detective'))bad.push('dog='+s.dog);
   if(s.pp!==(b==='parrot'))bad.push('pp='+s.pp);
-  if(s.nm!==(b==='dad'||b==='dadFree'))bad.push('nm='+s.nm);
+  if(s.nm!==(b==='dad'||b==='dadFree'||b==='parrot'))bad.push('nm='+s.nm);
   if(s.hat!==(b==='human'))bad.push('hat='+s.hat);
   if(s.hm!==(b==='human'))bad.push('hm='+s.hm);
   if(s.rings!==(b==='parrot'?8:0))bad.push('rings='+s.rings);

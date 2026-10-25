@@ -15,7 +15,7 @@ function updateRagdoll(dt){
  const nx=pos.x+rag.vx*dt,nz=pos.z+rag.vz*dt;
  if(blocked(nx,pos.z))rag.vx*=-.5;else pos.x=nx;
  if(blocked(pos.x,nz))rag.vz*=-.5;else pos.z=nz;
- const floor=obstacles.reduce((h,o)=>!o.solid&&insidePlatform(o,pos.x,pos.z,-.1)&&rag.y>=o.top-.2?Math.max(h,o.top):h,0);
+ const floor=obstacles.reduce((h,o)=>!o.solid&&insidePlatform(o,pos.x,pos.z,.12)&&rag.y>=o.top-.2?Math.max(h,o.top):h,0); // the rim counts too: no sinking into a sofa edge
  if(rag.y<=floor){rag.y=floor;const tr=obstacles.find(o=>o.bouncy&&insidePlatform(o,pos.x,pos.z,-.1)&&Math.abs(o.top-floor)<.01);
   if(tr&&rag.vy<-1){rag.vy=Math.min(11,-rag.vy*.9+2);playToySound(180,.12,'sine')}
   else if(rag.vy<-2){rag.vy*=-.4;playToySound(130,.06,'sine')}else rag.vy=0;

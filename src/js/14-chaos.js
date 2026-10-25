@@ -7,8 +7,8 @@ function looseProp(x,z,color,kind){
  g.position.set(x,0,z);
  chaosProps.push({g,home:new THREE.Vector3(x,0,z),vx:0,vz:0,vy:0,spin:0,kind,cooldown:0,hit:false});
 }
-looseProp(-3.7,-1.8,0xc87963,'cushion');
-looseProp(-4.5,-.8,0x7a9b89,'cushion');
+looseProp(-3.25,-1.85,0xc87963,'cushion'); // on the floor right by the sofa (inside the sofa it gets pushed out and Dani tidies forever)
+looseProp(-3.25,-.7,0x7a9b89,'cushion');
 looseProp(3.2,2.7,0xa7784c,'box');
 looseProp(4.25,3.6,0xb78d6d,'box');
 looseProp(-2.2,4.0,0x6d9eab,'cushion');

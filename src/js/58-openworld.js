@@ -21,7 +21,8 @@ function owApply(){
  day.finished=true;document.getElementById('dayEnd').hidden=true;PARK_OPEN=true;if(typeof gateOpen==='function')gateOpen();BATH_BLOCK=false;
  if(typeof applyModes==='function')applyModes(true);if(typeof renderModes==='function')renderModes();owChip();
 }
-function owChip(){if(!OPEN_WORLD)return;if(window.Z_READY&&ZOMBIE){dayChip.textContent='🧟 שיא: גל '+zs.best;return}dayChip.textContent='🌍 '+challengesDone.size+'/'+challengeDefs.length}
+function owChip(){if(!OPEN_WORLD)return;if(window.Z_READY&&ZOMBIE){dayChip.textContent='🧟 שיא: גל '+zs.best;return}
+ if(typeof specialMode==='function'&&specialMode()&&window.EP_READY){const id=window.DADP?'dad':window.PARP?'parrot':window.HUMAN?'human':null;const ic={dad:'👨',parrot:'🦜',human:'🕺'};dayChip.textContent=id?ic[id]+' ⭐ '+epStars(id)+'/30':'🕵️ ⭐ '+totalStars()+'/30';return}dayChip.textContent='🌍 '+challengesDone.size+'/'+challengeDefs.length}
 function setMode(open){OPEN_WORLD=open;try{localStorage.setItem('milky-mode',open?'open':'story')}catch(_){}
  document.body.classList.toggle('openWorld',open);Object.values(OW_MARKS).forEach(s=>s.visible=false);reset();if(open)owApply();else{renderDay();if(typeof applyModes==='function')applyModes(true)}}
 // story vs open world: start buttons + a switch inside the 🏆 panel

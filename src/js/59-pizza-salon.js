@@ -30,7 +30,8 @@ const MIRROR={x:31.45,z:35.5};box(.06,1.6,1.4,new THREE.MeshBasicMaterial({color
 for(let i=0;i<4;i++){box(.6,.05,.25,mat(0xe98ab0),31.2,1.0+i*.35,31.5);cyl(.06,.14,mat([0xf2c14e,0x7fd3ff,0xffffff,0x9b59b6][i]),31.2,1.12+i*.35,31.5)}
 const PIPI=makeDog({name:'פיפי',color:0xf3c1d6,size:.6,speed:0,fluffy:true,x:GTABLE.x,z:GTABLE.z});PIPI.g.position.y=.95;PIPI.g.rotation.y=Math.PI/2;
 const GROOMER=makePerson({skin:0xe2b48c,shirt:0xe98ab0,pants:0x2a2a2e,shoes:0xffffff,hair:h=>{const d=ball(.36,mat(0xf2e3b3),0,.14,-.04,h);d.scale.set(1.05,.85,1.05);ball(.2,mat(0xf2e3b3),0,.42,-.08,h);cyl(.3,.05,mat(0xe74c3c),0,.32,0,h)}});
-GROOMER.g.position.set(23.6,0,34.6);GROOMER.g.rotation.y=Math.PI;const groomB=makeBubble(GROOMER.g,3.05);
+GROOMER.g.position.set(23.6,0,37.05);GROOMER.g.rotation.y=Math.PI; // behind the table, facing the door (not in the way)
+const groomB=makeBubble(GROOMER.g,3.05);
 const GROOM_LINES=['דרלינג! הפרווה הזאת זועקת לעזרה!','פיפי היא הלקוחה הכי מפורסמת שלי','אצלי כל כלב יוצא כוכב ✨','אל תתנער פה!!! הכל ורוד!'];
 const bowG=new THREE.Group();headPivot.add(bowG);bowG.position.set(.12,.28,-.02);{const pk=mat(0xff5fa2,.4);for(const s of [-1,1]){const l=ball(.09,pk,s*.08,0,0,bowG);l.scale.set(1.2,.8,.5)}ball(.04,pk,0,0,0,bowG)}bowG.visible=false;
 WEAR.bow=bowG;WEAR_DEFS.push({id:'bow',icon:'🎀',name:'פפיון ורוד',need:s=>[save.mods&&save.mods.bow?1:0,1,'לבקר במספרה']});
@@ -64,7 +65,7 @@ function updatePizzaSalon(dt){
  // pizza delivery to dad
  if(pizzaBox.visible&&Math.hypot(pizzaBox.position.x-dad.position.x,pizzaBox.position.z-dad.position.z)<1.9&&pizzaBox.position.x<6.4&&!challengesDone.has('delivery')){completeChallenge('delivery');addScore(600,'משלוח!');if(grab&&grab.b.o===pizzaBox)releaseGrab(false);pizzaBox.position.copy(PBOX_HOME);speakDad('פיצה?! מילקי, אתה הכלב הכי טוב בעולם!!! ...מי שילם?');thought(dadB,'🍕',2,true)}
  pizzaBox.position.x+=pboxRec.vx*dt;pizzaBox.position.z+=pboxRec.vz*dt;pboxRec.vx*=Math.exp(-3*dt);pboxRec.vz*=Math.exp(-3*dt);
- ps.talk-=dt;if(nearP&&ps.talk<=0){ps.talk=6+Math.random()*4;sayText(chefB,pick(CHEF_LINES),2.2,'say')}
+ ps.talk-=dt;if(nearP&&ps.talk<=0){ps.talk=6+Math.random()*4;sayText(chefB,pick(npcLine('chef',CHEF_LINES)),2.2,'say')}
  // salon
  const G=GROOMER.g.position;animatePerson(GROOMER,0,dt,{arm:i=>i===0?-1.2+Math.sin(t*9)*.25:-.3});updateFace(GROOMER.face,bath.foam>0&&inSal()?'shock':'smile',dt);
  PIPI.g.position.set(GTABLE.x,.95,GTABLE.z);PIPI.tail.rotation.z=Math.sin(t*5)*.4;PIPI.head.rotation.y=Math.sin(t*.8)*.5;
@@ -74,7 +75,7 @@ function updatePizzaSalon(dt){
   if(ps.dryT>2.5){if(!challengesDone.has('dryer'))completeChallenge('dryer');ps.puff=15;ps.dryT=0;wet=0;setFoam(0);sayText(milkyB,'💨 אני... ענן?',2,'say',true);sayText(groomB,'וואו! פאפי! מושלם!',1.8,'say',true)}}else ps.dryT=0;
  if(ps.puff>0){ps.puff-=dt;PUFF=.18*Math.min(1,ps.puff);headPivot.scale.setScalar(1+.12*Math.min(1,ps.puff))}else if(PUFF){PUFF=0;headPivot.scale.setScalar(1)}
  if(Math.hypot(pos.x-MIRROR.x+1.1,pos.z-MIRROR.z)<1.1&&lastDogSpeed<.3){ps.mirrorT+=dt;holdShow('mirrorHold',ps.mirrorT,2);if(ps.mirrorT>2&&!challengesDone.has('mirror')){completeChallenge('mirror');sayText(milkyB,pick(['😍 מי החתיך הזה?!','😏 וואו. פשוט וואו.']),2.4,'say',true);idleAction='stand';idleClock=0}}else ps.mirrorT=0;
- ps.talk2-=dt;if(nearS&&ps.talk2<=0){ps.talk2=6+Math.random()*4;sayText(groomB,pick(GROOM_LINES),2.2,'say')}
+ ps.talk2-=dt;if(nearS&&ps.talk2<=0){ps.talk2=6+Math.random()*4;sayText(groomB,pick(npcLine('groom',GROOM_LINES)),2.2,'say')}
  if(nearS&&Math.random()<dt*.08)sayText(PIPI.b,pick(['אני לא מדברת עם כלבים מהרחוב 💅','אל תתקרב, אני אחרי פן','מיליון עוקבים, מותק']),2,'say');
 }
 function salonShake(){if(inSal()&&Math.hypot(pos.x-GTABLE.x,pos.z-GTABLE.z)<2.6&&!challengesDone.has('pipiShake')){completeChallenge('pipiShake');sayText(PIPI.b,'אאאאאא!!! הפן שלי!!! 😱',2.2,'say',true);sayText(groomB,'לאאאא! שעתיים עבדתי על הפודל הזה!',2.4,'say',true);if(window.JUICE_READY){slowMo(.4);pow('אאאאא!',GTABLE.x,2,GTABLE.z,true)}}}
@@ -82,3 +83,6 @@ const _holdL2={dryHold:'💨 מתייבש...',mirrorHold:'🪞 מסתכל במר
 Object.assign(SIDE_POS,{catchDough:()=>V(25,0,23.4),falafel:()=>V(FALAFEL.x-.3,1,FALAFEL.z),chili:()=>V(CHILI.x,1,CHILI.z),delivery:()=>grab&&grab.b.o===pizzaBox?dad.position:pizzaBox.position,
  groomBath:()=>V(STUB.x,.4,STUB.z),dryer:()=>V(DRYER.x-.9,0,DRYER.z),bow:()=>GROOMER.g.position,mirror:()=>V(MIRROR.x-1.1,0,MIRROR.z),pipiShake:()=>V(GTABLE.x,1,GTABLE.z)});
 window.PS_READY=true;
+
+// those side actions only exist for Milky himself, not during errands, cases, missions or other characters
+for(let i=_ctxSide0;i<CTX_HOOKS.act.length;i++){const h=CTX_HOOKS.act[i];CTX_HOOKS.act[i]=()=>specialMode()?null:h()}

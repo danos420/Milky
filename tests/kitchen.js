@@ -33,7 +33,7 @@ const {open}=require('./lib');
  // soak with everything moving
  r=await page.evaluate(()=>{reset();let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;let bad=0,badD=0,oob=0,inF=0;
    const insideF=(x,z)=>obstacles.some(o=>jumpY<o.top-.03&&Math.hypot(x-Math.max(o.x-o.w/2,Math.min(x,o.x+o.w/2)),z-Math.max(o.z-o.d/2,Math.min(z,o.z+o.d/2)))<dogRadius-.04);
-   for(let i=0;i<30*240;i++){if(i%20===0){for(const k of ['KeyW','KeyA','KeyD','ShiftLeft','Space'])keys[k]=false;keys.KeyW=rnd()<.8;if(rnd()<.4)keys[rnd()<.5?'KeyA':'KeyD']=true;keys.ShiftLeft=rnd()<.3;keys.Space=rnd()<.15;if(rnd()<.1)interact();if(rnd()<.03)triggerTurbo();if(rnd()<.04&&slipperState==='floor'){pos.set(slipper.position.x,0,slipper.position.z);jumpY=0;stealSlipper()}}
+   for(let i=0;i<30*240;i++){if(i%20===0){for(const k of ['KeyW','KeyA','KeyD','ShiftLeft','Space'])keys[k]=false;keys.KeyW=rnd()<.8;if(rnd()<.4)keys[rnd()<.5?'KeyA':'KeyD']=true;keys.ShiftLeft=rnd()<.3;keys.Space=rnd()<.15;if(rnd()<.1)interact();if(rnd()<.03)triggerTurbo();if(rnd()<.04&&slipperState==='floor'&&!collides(slipper.position.x,slipper.position.z,0)){pos.set(slipper.position.x,0,slipper.position.z);jumpY=0;stealSlipper()}}
     gameStep(1/30);if(!dadSeated&&!dadFree(dad.position.x,dad.position.z,DAD_R-.03))bad++;if(!dadFree(dani.position.x,dani.position.z,DANI_R-.03))badD++;if(!walkable(pos.x,pos.z,.4))oob++;if(insideF(pos.x,pos.z))inF++}
    return {dadInside:bad,daniInside:badD,milkyOut:oob,milkyInFurniture:inF,challenges:challengesDone.size,kitchenVisits:pos.z}});
  check('4-min soak (both rooms): nobody inside walls or furniture',r.dadInside+r.daniInside+r.milkyOut+r.milkyInFurniture===0,JSON.stringify(r));

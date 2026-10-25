@@ -21,8 +21,13 @@ const insidePlatform=(o,x,z,margin=0)=>Math.abs(x-o.x)<o.w/2+margin&&Math.abs(z-
 // A support is chosen only from platforms actually under the dog's center.
 // Landing detection is performed separately using a swept vertical crossing.
 const surfaceAt=(x,z,footY)=>obstacles.reduce((h,o)=>!o.solid&&insidePlatform(o,x,z,-.10)&&footY>=o.top-.045?Math.max(h,o.top):h,0);
+var airApex=0; // highest point of the current jump (set by the game loop)
 const landingSurface=(x,z,fromY,toY)=>obstacles.reduce((h,o)=>{
- if(o.solid||!insidePlatform(o,x,z,-.10))return h;
+ if(o.solid)return h;
+ // centre over the top: normal landing. A paw over the edge only counts when really coming down from above
+ // (so stepping off the edge of a chair still drops you to the floor)
+ const inner=insidePlatform(o,x,z,-.10),edge=!inner&&insidePlatform(o,x,z,.2)&&Math.max(fromY,airApex)>o.top+.12;
+ if(!inner&&!edge)return h;
  return fromY>=o.top-.005&&toY<=o.top+.005?Math.max(h,o.top):h;
 },0);
 let grounded=true, landingCooldown=0, chaos=0, sceneTriggered=false, sceneTimer=0;

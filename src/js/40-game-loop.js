@@ -25,7 +25,7 @@ if(!grounded)airTime+=dt;
 const previousFoot=jumpY;
 const wasAir=!grounded;
 if(!grounded){if(window.PARP){velocityY=Math.max(velocityY-4.5*dt,-2.6);jumpY+=velocityY*dt;const mx=pMax();if(jumpY>mx){jumpY=mx;velocityY=Math.min(velocityY,0)}}else{velocityY-=12*mutG()*dt;jumpY+=velocityY*dt}}
-const fallV=velocityY;
+const fallV=velocityY;airApex=grounded?jumpY:Math.max(airApex,jumpY);
 // Resolve landing only when descending across a real surface from above.
 // Never snap upward onto a table from below or from its side.
 const support=surfaceAt(pos.x,pos.z,previousFoot);
@@ -35,6 +35,7 @@ if(grounded && jumpY>support+.055){grounded=false;velocityY=Math.min(velocityY,0
 const crossed=velocityY<=0?landingSurface(pos.x,pos.z,previousFoot,jumpY):0;
 if(!grounded&&velocityY<=0 && crossed>0){
  jumpY=crossed;velocityY=0;grounded=true;
+ {const o=obstacles.find(o=>!o.solid&&Math.abs(o.top-crossed)<.01&&insidePlatform(o,pos.x,pos.z,.2));if(o){const hx=Math.max(.02,o.w/2-.14),hz=Math.max(.02,o.d/2-.14);pos.x=THREE.MathUtils.clamp(pos.x,o.x-hx,o.x+hx);pos.z=THREE.MathUtils.clamp(pos.z,o.z-hz,o.z+hz)}}
  const tr=obstacles.find(o=>o.bouncy&&Math.abs(o.top-crossed)<.01&&insidePlatform(o,pos.x,pos.z,-.1));
  if(tr){velocityY=Math.min(14,Math.max(9.5,-fallV*.85+3.5));grounded=false;squash=1;squashKick=1;SFX.boing()}
  if(crossed>.7&&landingCooldown<=0){landingCooldown=.55;

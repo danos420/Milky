@@ -37,7 +37,7 @@ const hPill=()=>{if(hs.i<0||hs.i>=ERRANDS.length)return;const e=ERRANDS[hs.i];ev
 function hErrandDone(idx,text){const e=ERRANDS[idx];const t=Math.round((performance.now()-hs.started)/1000);evtPill.hidden=true;hs.i=-2;
  const st=t<=e.par?3:t<=e.par*1.8?2:1;
  if(window.EP_READY&&EP.cur&&EP.cur.id==='human')epFinish(true,st,['🤦 '+text,'⏱️ '+fmtTime(t)+' (ל־3 כוכבים: עד '+fmtTime(e.par)+')','⭐ ניקוד '+score.toLocaleString('he-IL')],e.icon+' סידור '+(idx+1)+' "בוצע"')}
-function hStartErrand(i){hs.i=i;hs.step=0;hs.t=0;hs.t2=0;hs.done=-1;hs.fiascos=[];hs.started=performance.now();hs.hasExt=false;hs.fire=0;hs.taught=0;hs.drag=0;
+function hStartErrand(i){hs.i=i;hs.step=0;hs.t=0;hs.t2=0;hs.done=-1;hs.fiascos=[];hs.started=performance.now();hs.hasExt=false;hs.fire=0;hs.taught=0;hs.drag=0;hs.seat=false;
  for(const g of [mohawk,milkG,extG,chefSnow,dadMilk,parcelG,falG])g.visible=false;extWall.visible=true;bullRun.g.visible=false;GUARD.g.visible=true;hat.visible=true;
  if(ERRANDS[i].id==='home')milkG.visible=true;if(ERRANDS[i].id==='post')parcelG.visible=true;
  const e=ERRANDS[i];showBanner(e.icon+' סידור '+(i+1)+': '+e.name);hPill();
@@ -105,7 +105,9 @@ function updateHuman(dt){
   leash.position.set((b.x+pos.x)/2,.9,(b.z+pos.z)/2);leash.scale.y=Math.hypot(b.x-pos.x,b.z-pos.z);leash.lookAt(b.x,.9,b.z);leash.rotateX(Math.PI/2);
   if(Math.random()<dt*.8)sayText(milkyB,pick(['😱 אאאאאא','🎩 זה טיול רגוע?!','😵 בולדוזר!!!']),1,'say',true);
   if(d<.6||hs.drag>9){hs.step=3;leash.visible=false;startRagdoll();rag.vx=4;rag.vz=0;rag.vy=4;showBurst(18.7,9.6);chaosShake=.35;sayText(GUARD.b,'וואף! וואף! ...פחים! הכי טוב!',2,'say',true);if(window.JUICE_READY){slowMo(.5);pow('בום! לפחים!',18.7,2,9.6,true)}hFiasco('בולדוזר לקח אותו לטיול... לפחים')}}
- if(e.id==='hair'&&hs.step===0){const on=jumpY>.85&&grounded&&insidePlatform(obstacles.find(o=>o.name==='שולחן טיפוח'),pos.x,pos.z,.1);if(inSal()&&!on&&Math.random()<dt*.3)sayText(groomB,'עלה לשולחן, דרלינג',1.6,'say');
+ if(e.id==='hair'&&hs.step===0){let on=jumpY>.85&&grounded&&insidePlatform(obstacles.find(o=>o.name==='שולחן טיפוח'),pos.x,pos.z,.1);
+  // once he lands on the narrow table he sits in the middle (no sliding off the far edge)
+  if(on)hs.seat=true;if(hs.seat&&!rag.active){pos.set(GTABLE.x,0,GTABLE.z);jumpY=.95;velocityY=0;grounded=true;curSpeed=0;on=true}if(inSal()&&!on&&Math.random()<dt*.3)sayText(groomB,'עלה לשולחן, דרלינג',1.6,'say');
   if(on){hs.t2=(hs.t2||0)+dt;holdShow('hairHold',hs.t2,3);if(hs.t2>3){hs.step=1;hs.t2=0;sayText(groomB,'תספורת לבן אדם? בטח! ...רגע, איך עושים את זה?',2.4,'say',true);
    setTimeout(()=>{if(!HUMAN)return;mohawk.visible=true;if(window.JUICE_READY)pow('בזזזזז!',pos.x,2.4,pos.z);setTimeout(()=>{if(!HUMAN)return;sayText(groomB,'אופס... הפעלתי את המייבש',1.8,'say',true);startRagdoll();rag.vx=-7;rag.vz=0;rag.vy=6;hFiasco('יצא עם מוהיקן ורוד')},1200)},1500)}}else hs.t2=0}
  if(e.id==='home'&&hs.step===0&&dad.visible&&Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z)<2.2&&pos.x<6.4){hs.step=1;sayText(milkyB,'🎩 אבא! הבאתי את ה...',1.6,'say',true);

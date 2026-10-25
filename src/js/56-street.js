@@ -1,3 +1,5 @@
+// (street, vet and pizza/salon side actions are Milky's open-world fun; they're wrapped at the end of 59)
+const _ctxSide0=CTX_HOOKS.act.length;
 // ===== The street: out the front door. Sidewalks, a road with polite cars, shops, funny neighbours and animals =====
 const STREET={x0:6.6,x1:19.4,z0:-8.6,z1:44},KIOSK={x0:20.2,x1:31.4,z0:.2,z1:9.8};
 AREAS.push(STREET,KIOSK);
@@ -104,7 +106,7 @@ const street={guardFriend:false,guardBark:0,parrotHeard:new Set(),parrotT:0,bamb
 box(.8,1.05,3.2,mat(0x8b5a3a),25.4,.52,5);box(.9,.06,3.3,mat(0xe9e4da),25.4,1.06,5); // counter
 for(const z of [1.6,8.4])for(const y of [.5,1.1,1.7]){box(3.6,.06,.5,mat(0x9c6b3e),23.6,y,z)}
 for(let i=0;i<10;i++){const z=i<5?1.6:8.4,x=22+((i%5)*.7);box(.35,.4,.2,mat([0xf2c14e,0xe74c3c,0x3a7bd5,0x7fb069,0xe98ab0][i%5],.7),x,(i%2?1.35:.75),z)}
-const FREEZER={x:22.2,z:5};box(1.4,.9,.9,mat(0xf3f3f3,.4),FREEZER.x,.45,FREEZER.z);box(1.3,.04,.8,mat(0x9fd3ef,.2),FREEZER.x,.92,FREEZER.z);obstacles.push({name:'מקפיא',x:FREEZER.x,z:FREEZER.z,w:1.4,d:.9,top:.95},{name:'דלפק',x:25.4,z:5,w:.8,d:3.2,top:1.06});
+const FREEZER={x:22.2,z:8.3}; // by the wall, not in the doorwaybox(1.4,.9,.9,mat(0xf3f3f3,.4),FREEZER.x,.45,FREEZER.z);box(1.3,.04,.8,mat(0x9fd3ef,.2),FREEZER.x,.92,FREEZER.z);obstacles.push({name:'מקפיא',x:FREEZER.x,z:FREEZER.z,w:1.4,d:.9,top:.95},{name:'דלפק',x:25.4,z:5,w:.8,d:3.2,top:1.06});
 for(let i=0;i<6;i++){const c=cyl(.06,.18,mat([0xffffff,0xf2c14e,0xe98ab0][i%3]),FREEZER.x-.45+i*.18,.98,FREEZER.z,scene)}
 // the Bamba bag you can steal (a real grabbable body)
 const bambaG=new THREE.Group();scene.add(bambaG);{box(.3,.4,.12,mat(0xf2c14e,.6),0,.2,0,bambaG);box(.2,.12,.125,mat(0xe74c3c,.6),0,.25,.001,bambaG)}
@@ -123,7 +125,7 @@ function updateStreet(dt){
  // people
  for(const p of PEOPLE){const P=p.P,o=P.g.position;let step=0;
   if(p.kind==='jog'||p.kind==='stroll'||p.kind==='scoot'){const z1=p.kind==='scoot'?42:40,z0=-6;let sp=p.sp;
-   if(p.kind==='scoot'&&Math.abs(pos.x-o.x)<1&&p.dir*(pos.z-o.z)>0&&p.dir*(pos.z-o.z)<2.5){sp=1;if(p.hit<=0){p.hit=3;sayText(p.b,pick(p.lines),1.6,'say',true);thought(milkyB,'😱',1,true)}}
+   if(p.kind==='scoot'&&Math.abs(pos.x-o.x)<1&&p.dir*(pos.z-o.z)>0&&p.dir*(pos.z-o.z)<2.5){sp=1;if(p.hit<=0){p.hit=3;sayText(p.b,pick(npcLine(p.kind,p.lines)),1.6,'say',true);thought(milkyB,'😱',1,true)}}
    o.z+=p.dir*sp*dt;step=sp*dt;if(o.z>z1){p.dir=-1}if(o.z<z0){p.dir=1}P.g.rotation.y=p.dir>0?0:Math.PI;
    if(p.kind==='jog'){const dm=Math.hypot(pos.x-o.x,pos.z-o.z);if(dm<2.2&&lastDogSpeed>4){p.run=(p.run||0)+dt;if(p.run>6&&!challengesDone.has('jogger')){completeChallenge('jogger');sayText(p.b,'אוקיי... אתה ניצחת... אני... צריך... מים',2.4,'say',true);addScore(300,'הרץ נשבר')}}else p.run=Math.max(0,(p.run||0)-dt*.5)}
    if(p.kind==='stroll'){stroller.position.set(o.x,0,o.z+p.dir*.9);stroller.rotation.y=P.g.rotation.y}}
@@ -132,7 +134,7 @@ function updateStreet(dt){
   animatePerson(P,step,dt,{run:p.kind==='jog'||(p.kind==='kiosk'&&street.bamba.state==='chase'),arm:i=>p.kind==='scoot'?-1.3:p.kind==='stroll'?-1.0:p.kind==='bench'?-.3:0});
   if(p.kind==='bench'){P.legs.forEach(l=>l.rotation.x=-1.45);P.g.position.y=-.42;P.g.rotation.y=Math.PI/2}
   updateFace(P.face,p.kind==='kiosk'?(street.bamba.state==='chase'?'shout':'angry'):p.kind==='jog'?'focus':p.kind==='bench'?'smile':'neutral',dt);
-  p.hit=Math.max(0,p.hit-dt);p.talk-=dt;const dm=Math.hypot(pos.x-o.x,pos.z-o.z);if(p.talk<=0&&dm<7&&near){p.talk=5+Math.random()*5;sayText(p.b,pick(p.lines),2.2,'say')}
+  p.hit=Math.max(0,p.hit-dt);p.talk-=dt;const dm=Math.hypot(pos.x-o.x,pos.z-o.z);if(p.talk<=0&&dm<7&&near){p.talk=5+Math.random()*5;sayText(p.b,pick(npcLine(p.kind,p.lines)),2.2,'say')}
  }
  // street cats: hiss and jump away when Milky gets close
  for(const c of SCATS){const g=c.g,h=c.home,dm=Math.hypot(pos.x-h[0],pos.z-h[2]);

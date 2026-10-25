@@ -8,7 +8,8 @@ function updateDadBehavior(dt){
  dadReactCooldown=Math.max(0,dadReactCooldown-dt);
  dadChairGrumble=Math.max(0,dadChairGrumble-dt);
  dadRoutine-=dt;dadAction+=dt;
- const dogDist=Math.hypot(pos.x-dad.position.x,pos.z-dad.position.z);
+ const _P=milkyPos();
+ const dogDist=Math.hypot(_P.x-dad.position.x,_P.z-dad.position.z);
  const calm=['rest','wander','sit','watch'];
  if(slipperState==='carried' && dadState!=='chase' && dadState!=='search' && dadState!=='sick'){
   setDadState('search','רגע... מילקי, מה יש לך בפה?!');dadAlert=1.6;
@@ -27,7 +28,7 @@ function updateDadBehavior(dt){
   else {setDadState('wander');const [wx,wz]=randomFreeSpot();dadTarget.set(wx,0,wz);}
  }
  // Armchair: dad sits to watch TV, unless Milky stole the seat.
- const chairTaken=jumpY>.4&&insidePlatform(armchairObs(),pos.x,pos.z,.1);if(chairTaken)dayEvent('armchair');
+ const chairTaken=_P===pos&&jumpY>.4&&insidePlatform(armchairObs(),_P.x,_P.z,.1);if(chairTaken)dayEvent('armchair');
  const wantsSeat=(dadState==='rest'||dadState==='watch'||dadState==='sick');
  if(dadSeated&&(!wantsSeat||chairTaken))unseatDad();
  let targetX=dad.position.x,targetZ=dad.position.z,speed=0,stopDistance=.3;
@@ -37,22 +38,22 @@ function updateDadBehavior(dt){
    else{dadSeated=true;if(tvOn)thought(dadB,'📺',2)}
   }}
  if(dadState==='wander'){targetX=dadTarget.x;targetZ=dadTarget.z;speed=.9;}
- if(dadState==='investigate'){targetX=pos.x;targetZ=pos.z;speed=1.65;stopDistance=1.4;dadAlert-=dt;if(dadAlert<=0){setDadState('rest','טוב... כנראה דמיינתי.');dadRoutine=4;}}
+ if(dadState==='investigate'){targetX=_P.x;targetZ=_P.z;speed=1.65;stopDistance=1.4;dadAlert-=dt;if(dadAlert<=0){setDadState('rest','טוב... כנראה דמיינתי.');dadRoutine=4;}}
  if(dadState==='search'){
-  if(slipperState==='carried'){targetX=pos.x;targetZ=pos.z;stopDistance=.85;dadAlert-=dt;if(dadAlert<=0)setDadState('chase','מילקי! תחזיר לי את הכפכף!');}
+  if(slipperState==='carried'){targetX=_P.x;targetZ=_P.z;stopDistance=.85;dadAlert-=dt;if(dadAlert<=0)setDadState('chase','מילקי! תחזיר לי את הכפכף!');}
   else if(slipperState==='floor'){targetX=slipper.position.x;targetZ=slipper.position.z;stopDistance=.55;
    if(Math.hypot(slipper.position.x-dad.position.x,slipper.position.z-dad.position.z)<.75){dadTakeSlipper();speakDad('אהה! הנה הכפכף שלי!');}}
   else setDadState('rest');
   speed=1.55;
  }
- if(dadState==='chase'){targetX=pos.x;targetZ=pos.z;speed=2.8;stopDistance=.84;if(slipperState!=='carried')setDadState('investigate');}
+ if(dadState==='chase'){targetX=_P.x;targetZ=_P.z;speed=2.8;stopDistance=.84;if(slipperState!=='carried')setDadState('investigate');}
  if(dadState==='return'){targetX=slipperHome.x;targetZ=slipperHome.z;speed=1.4;stopDistance=.45;
   if(Math.hypot(targetX-dad.position.x,targetZ-dad.position.z)<.7)dadPutSlipperBack();}
- if(dadState==='pet'){targetX=pos.x;targetZ=pos.z;speed=2.05;stopDistance=1.2;if(dadAction>9){setDadState('rest');dadRoutine=2;}}
+ if(dadState==='pet'){targetX=_P.x;targetZ=_P.z;speed=2.05;stopDistance=1.2;if(dadAction>9){setDadState('rest');dadRoutine=2;}}
  if(dadState==='sweep'){targetX=dadTarget.x;targetZ=dadTarget.z;speed=.9;if(Math.hypot(targetX-dad.position.x,targetZ-dad.position.z)<.5){const [wx,wz]=randomFreeSpot();dadTarget.set(wx,0,wz)}}
- if(dadState==='bday'){targetX=BDAY_DAD.x;targetZ=BDAY_DAD.z;speed=1.3;stopDistance=.3;if(bd.phase===2&&bd.hugT>0){targetX=pos.x+1.2;targetZ=pos.z}}
+ if(dadState==='bday'){targetX=BDAY_DAD.x;targetZ=BDAY_DAD.z;speed=1.3;stopDistance=.3;if(bd.phase===2&&bd.hugT>0){targetX=_P.x+1.2;targetZ=_P.z}}
  if(dadState==='dinner'){targetX=DAD_DINNER.x;targetZ=DAD_DINNER.z;speed=1.3;stopDistance=.2;}
- if(dadState==='bath'){targetX=pos.x;targetZ=pos.z;speed=2.7;stopDistance=.8;}
+ if(dadState==='bath'){targetX=_P.x;targetZ=_P.z;speed=2.7;stopDistance=.8;}
  if(dadState==='celebrate'){speed=0;if(dadAction>4){setDadState('rest');dadRoutine=3;}}
 
  let step=0;
@@ -73,7 +74,7 @@ function updateDadBehavior(dt){
  // Facing
  const faceDog=dadState==='chase'||dadState==='bath'||dadState==='search'&&slipperState==='carried'||dadState==='pet'||dadState==='investigate'||dadChairGrumble>6;
  if(dadSeated)faceToward(dad,6.3,1.2,dt,4);
- else if(faceDog)faceToward(dad,pos.x,pos.z,dt);
+ else if(faceDog){const _F=milkyPos();faceToward(dad,_F.x,_F.z,dt)}
  else faceToward(dad,dadNav.path[0]?dadNav.path[0][0]:targetX,dadNav.path[0]?dadNav.path[0][1]:targetZ,dt);
  // Body animation
  const walking=step>.001;
