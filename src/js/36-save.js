@@ -7,6 +7,7 @@ try{const raw=localStorage.getItem(SAVE_KEY);if(raw){const d=JSON.parse(raw);if(
   // later systems: story week, detective cases, episodes (stars are always 0..3)
   week:d.week&&typeof d.week==='object'?{cur:Math.max(0,Math.floor(+d.week.cur||0)),stars:Array.isArray(d.week.stars)?d.week.stars.map(v=>v==null?null:starN(v)):[]}:undefined,
   det:d.det&&typeof d.det==='object'?{stars:starMap(d.det.stars)}:undefined,
+  town:d.town&&typeof d.town==='object'?{visited:Array.isArray(d.town.visited)?d.town.visited.filter(x=>typeof x==='string'&&x.length<20).slice(0,20):['home']}:undefined,
   ep:d.ep&&typeof d.ep==='object'?Object.fromEntries(Object.entries(d.ep).filter(([k,v])=>/^[a-z0-9_]{1,24}$/i.test(k)&&v&&typeof v==='object').map(([k,v])=>[k,starMap(v)])):undefined}}}catch(_){}
 const bestAtStart=save.best;let bestAnnounced=false;
 function writeSave(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(_){}}

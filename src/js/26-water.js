@@ -1,7 +1,7 @@
 // ===== Pool, water, shaking off =====
 let wet=0,shakeT=0,inPool=false,poolCool=0;
 function updateWater(dt){
- const was=inPool;inPool=jumpY<.3&&!rag.active&&Math.hypot(pos.x-poolC.x,pos.z-poolC.z)<poolC.r-.15;
+ const was=inPool;inPool=jumpY<.3&&!rag.active&&(Math.hypot(pos.x-poolC.x,pos.z-poolC.z)<poolC.r-.15||(window.TOWN_READY&&townWater(pos.x,pos.z)));
  poolCool=Math.max(0,poolCool-dt);
  if(inPool){wet=1;MUDDY=false;if(lastDogSpeed>.5&&Math.random()<.6)emit(pos.x+(Math.random()-.5)*.6,.25,pos.z+(Math.random()-.5)*.6,(Math.random()-.5)*2,2+Math.random()*2,(Math.random()-.5)*2,'water',.7);
   if(!was){dayEvent('wet');SFX.splash();if(poolCool===0){addScore(100,'מקלחת חינם');poolCool=15}milkyThought('💦',1.5,true)}}

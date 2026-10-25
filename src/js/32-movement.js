@@ -4,8 +4,11 @@
 const decorRounds=[{x:-5.8,z:-6.3,r:.24,h:9},{x:4.85,z:-7.2,r:.42,h:1.2}];
 for(const [x,z] of trees)decorRounds.push({x,z,r:.32,h:9});decorRounds.push({x:-5,z:-11,r:.55,h:1.7});
 const _rb=[],_rbDyn=[0,1,2,3,4,5].map(()=>({x:0,z:0,r:0,h:9}));
+// only the decor near Milky matters (the forest alone has hundreds of trees): refresh that short list when he has moved a bit
+const _rbNear=[],_rbAt={x:1e9,z:1e9,n:-1};
 function roundBlockers(){
- _rb.length=0;for(const d of decorRounds)_rb.push(d);
+ if(Math.abs(pos.x-_rbAt.x)>2||Math.abs(pos.z-_rbAt.z)>2||_rbAt.n!==decorRounds.length){_rbAt.x=pos.x;_rbAt.z=pos.z;_rbAt.n=decorRounds.length;_rbNear.length=0;for(const d of decorRounds)if(Math.abs(d.x-pos.x)<9+d.r&&Math.abs(d.z-pos.z)<9+d.r)_rbNear.push(d)}
+ _rb.length=0;for(const d of _rbNear)_rb.push(d);
  const set=(k,x,z,r,h)=>{const o=_rbDyn[k];o.x=x;o.z=z;o.r=r;o.h=h;_rb.push(o)};
  if(chainPhase<3)set(0,dominoPlant.position.x,dominoPlant.position.z,.33,1.3);
  if(!window.DADP)set(1,dad.position.x,dad.position.z,DAD_R,9);set(2,dani.position.x,dani.position.z,DANI_R,9);
