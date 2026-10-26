@@ -31,11 +31,15 @@ function collides(x,z,footY=jumpY){
    return (x-cx)**2+(z-cz)**2<dogRadius**2 && (o.solid||footY<o.top-.025);
  });
 }
-function slideRound(sx,sz){const L=Math.hypot(sx,sz);if(L<1e-5)return;let best=null,bd=1e9;
- for(const c of roundBlockers()){if(jumpY>=c.h)continue;const d=Math.hypot(pos.x-c.x,pos.z-c.z)-c.r-dogRadius;if(d<.12&&d<bd){bd=d;best=c}}
- if(!best)return;let nx=pos.x-best.x,nz=pos.z-best.z;const nl=Math.hypot(nx,nz)||1;nx/=nl;nz/=nl;
- let tx=-nz,tz=nx;const dot=tx*sx+tz*sz;if(Math.abs(dot)<L*.05){/* dead-centre: pick the side away from the walk's slight bias, else a fixed side */}else if(dot<0){tx=-tx;tz=-tz}
- const k=L*.85,x=pos.x+tx*k,z=pos.z+tz*k;if(!collides(x,z,jumpY)){pos.x=x;pos.z=z}}
+let _slideSide=1,_slideT=0;
+function slideRound(sx,sz){const L=Math.hypot(sx,sz);if(L<1e-5)return;let nx=0,nz=0,hit=0;
+ // combine the normals of everything round we're touching (handles the pocket between two trees)
+ for(const c of roundBlockers()){if(jumpY>=c.h)continue;const dx=pos.x-c.x,dz=pos.z-c.z,d=Math.hypot(dx,dz);if(d-c.r-dogRadius<.12&&d>1e-4){nx+=dx/d;nz+=dz/d;hit++}}
+ if(!hit)return;const nl=Math.hypot(nx,nz);if(nl<1e-4){nx=-sx/L;nz=-sz/L}else{nx/=nl;nz/=nl}
+ // keep the side we chose while still pushing into the same thing, so a head-on push doesn't flip-flop
+ let tx=-nz,tz=nx;const dot=tx*sx+tz*sz,now=performance.now();
+ if(Math.abs(dot)>L*.35||now-_slideT>400)_slideSide=dot<0?-1:1;_slideT=now;tx*=_slideSide;tz*=_slideSide;
+ for(const [ax,az] of [[tx,tz],[-tx,-tz]])for(const k of [L*.85,L*.5]){const x=pos.x+ax*k+nx*L*.15,z=pos.z+az*k+nz*L*.15;if(!collides(x,z,jumpY)){pos.x=x;pos.z=z;return}}}
 function sweepMove(dx,dz){
  // Substeps prevent fast running from tunnelling through narrow furniture.
  const n=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.065));

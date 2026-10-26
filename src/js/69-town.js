@@ -87,8 +87,10 @@ const FOR={stones:[],frogs:[],squirrel:null,deer:null,camp:new THREE.Vector3(84,
  box(6.4,.1,3,mat(0x8b5a3a),bx,.03,72,g);for(let i=-3;i<=3;i++)box(.08,.02,2.9,mat(0x6b4a32),bx+i*.9,.09,72,g);for(const s of [-1,1]){box(6.4,.12,.12,mat(0x6b4a32),bx,.7,72+s*1.45,g);for(const px of [-3,-1,1,3])box(.12,.7,.12,mat(0x6b4a32),bx+px,.35,72+s*1.45,g)}
  for(let i=0;i<5;i++){const x=streamX(100)-2.4+i*1.2,z=100+(i%2?.5:-.5);const s=cyl(.42,.4,mat(0x9a9a92,.9),x,.2,z,g);obstacles.push({name:'אבן',x,z,w:.8,d:.8,top:.4});FOR.stones.push({x,z})}
  // trees (instanced) keeping the trail, stream, camp and clearing free
- const trees=[];for(let n=0;n<1400&&trees.length<230;n++){const x=21+trnd()*90,z=55+trnd()*96;if(Math.abs(x-streamX(z))<4.5)continue;if(Math.hypot(x-FOR.camp.x,z-FOR.camp.z)<9)continue;if(Math.hypot(x-95,z-70)<8)continue;if(inRect(TOWN_AREAS.plaza,x,z,3))continue;
-  let nearTrail=false;for(let i=0;i<trail.length-1;i++){const [x0,z0]=trail[i],[x1,z1]=trail[i+1];const t=Math.max(0,Math.min(1,((x-x0)*(x1-x0)+(z-z0)*(z1-z0))/((x1-x0)**2+(z1-z0)**2)));if(Math.hypot(x-(x0+(x1-x0)*t),z-(z0+(z1-z0)*t))<3)nearTrail=true}if(nearTrail||x<24)continue;trees.push([x,z,.8+trnd()*.8])}
+ const trees=[];for(let n=0;n<1400&&trees.length<230;n++){const x=21+trnd()*90,z=55+trnd()*96;if(Math.abs(x-streamX(z))<4.5)continue;if(Math.hypot(x-FOR.camp.x,z-FOR.camp.z)<9)continue;if(Math.hypot(x-95,z-70)<8)continue;if(inRect(TOWN_AREAS.plaza,x,z,3))continue;if(Math.abs(z-72)<4&&Math.abs(x-streamX(72))<12)continue;
+  let nearTrail=false;for(let i=0;i<trail.length-1;i++){const [x0,z0]=trail[i],[x1,z1]=trail[i+1];const t=Math.max(0,Math.min(1,((x-x0)*(x1-x0)+(z-z0)*(z1-z0))/((x1-x0)**2+(z1-z0)**2)));if(Math.hypot(x-(x0+(x1-x0)*t),z-(z0+(z1-z0)*t))<3)nearTrail=true}if(nearTrail||x<24)continue;const sc=.8+trnd()*.8;
+  // never leave a gap between two trunks that Milky can't fit through (no dead-end pockets)
+  if(trees.some(([tx,tz,ts])=>Math.hypot(tx-x,tz-z)<.32*(ts+sc)+1.0))continue;trees.push([x,z,sc])}
  instanced(new THREE.CylinderGeometry(.2,.28,1.6,6),mat(0x6b4a2a),trees.map(([x,z,s])=>[x,.8*s,z,s]),g);instanced(new THREE.ConeGeometry(1.5,3.6,7),mat(0x3f7a3c,.9),trees.map(([x,z,s])=>[x,3*s,z,s,trnd()*3]),g);
  for(const [x,z,s] of trees)decorRounds.push({x,z,r:.32*s,h:9});FOR.trees=trees;
  // camp: tent, fire, logs, two campers and the marshmallows
