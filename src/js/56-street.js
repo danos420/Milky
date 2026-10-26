@@ -48,7 +48,8 @@ obstacles.push({name:'ספסל רחוב',x:BENCH.x,z:BENCH.z,w:.5,d:2,top:.5});
 const BINS=[{x:18.7,z:9.2},{x:18.7,z:10.1}];for(const b of BINS){cyl(.32,.9,mat(0x2f6e4a),b.x,.45,b.z);cyl(.34,.06,mat(0x24573a),b.x,.92,b.z);obstacles.push({name:'פח רחוב',x:b.x,z:b.z,w:.6,d:.6,top:.95})}
 {box(.1,2.4,3,mat(0x7fa6b8,.2),18.9,1.2,16);box(.1,2.6,.1,metal,18.9,1.3,14.5);box(.1,2.6,.1,metal,18.9,1.3,17.5);box(.8,.1,3.1,mat(0x2f6e4a),18.6,2.5,16);box(.4,.08,2.4,mat(0x9c6b3e),18.6,.5,16)}
 box(.4,1,.35,mat(0xc0392b),9.1,.5,-6);
-for(const z of [STREET.z0-.3,STREET.z1+.3]){for(let x=7;x<19.5;x+=1.6){box(1.3,.9,.15,mat(0xe74c3c),x,.6,z);box(1.3,.18,.16,mat(0xffffff),x,.75,z)}box(13,6,.3,bldC,13,3,z+(z>0?1.2:-1.2))}
+for(const z of [STREET.z0-.3]){ // the south end opens into the neighbourhood (see 69-town)
+for(let x=7;x<19.5;x+=1.6){box(1.3,.9,.15,mat(0xe74c3c),x,.6,z);box(1.3,.18,.16,mat(0xffffff),x,.75,z)}box(13,6,.3,bldC,13,3,z+(z>0?1.2:-1.2))}
 // ---------- cars: drive slowly, stop for Milky, honk ----------
 const CAR_COLORS=[0xe74c3c,0x3a7bd5,0xf2c14e,0x7fb069];
 function makeCar(c){const g=new THREE.Group();scene.add(g);const b=mat(c,.4);box(1.7,.6,3.6,b,0,.55,0,g);box(1.5,.55,1.9,b,0,1.1,-.2,g);box(1.52,.45,.05,winM,0,1.12,.76,g);box(1.52,.4,.05,winM,0,1.12,-1.16,g);
@@ -56,15 +57,16 @@ function makeCar(c){const g=new THREE.Group();scene.add(g);const b=mat(c,.4);box
  for(const x of [-.55,.55]){ball(.1,new THREE.MeshBasicMaterial({color:0xfff6d0}),x,.6,1.81,g);ball(.08,new THREE.MeshBasicMaterial({color:0xd63a2f}),x,.6,-1.81,g)}return g}
 const CARS=[0,1,2,3].map(i=>({g:makeCar(CAR_COLORS[i]),lane:i%2,z:-6+i*13,sp:4.2+i*.4,cur:0,honk:0}));
 function updateCars(dt){
- for(const c of CARS){const dir=c.lane?1:-1,x=c.lane?14.6:11.4;
+ const CZ1=window.TOWN_READY?116:STREET.z1;
+ for(const c of CARS){const dir=c.lane?1:-1,x=c.lane?11.4:14.6;
   const ahead=dir*(pos.z-c.z),blocked=Math.abs(pos.x-x)<1.7&&ahead>0&&ahead<4.8||CARS.some(o=>o!==c&&o.lane===c.lane&&dir*(o.z-c.z)>0&&dir*(o.z-c.z)<4.8);
   c.cur+=((blocked?0:c.sp)-c.cur)*Math.min(1,dt*(blocked?5:1.5));c.z+=dir*c.cur*dt;
-  if(c.z>STREET.z1+2)c.z=STREET.z0-2;if(c.z<STREET.z0-2)c.z=STREET.z1+2;
-  c.g.position.set(x,0,c.z);c.g.rotation.y=c.lane?0:Math.PI;c.g.visible=c.z>STREET.z0-1.5&&c.z<STREET.z1+1.5;
+  if(c.z>CZ1+2)c.z=STREET.z0-2;if(c.z<STREET.z0-2)c.z=CZ1+2;
+  c.g.position.set(x,0,c.z);c.g.rotation.y=c.lane?0:Math.PI;c.g.visible=c.z>STREET.z0-1.5&&c.z<CZ1+1.5;
   c.honk=Math.max(0,c.honk-dt);if(blocked&&ahead<4.8&&Math.abs(pos.x-x)<1.7&&c.honk===0&&c.g.visible){c.honk=4;thought(milkyB,'🚗',1,true);if(window.JUICE_READY)pow('טוטטט!',x,2,c.z+dir*1.5);addActivity('🚗 טוטטט! המכונית עצרה בשביל מילקי');if(!challengesDone.has('stopCar'))completeChallenge('stopCar')}
  }
  // pressing on Milky if he stands right inside a car
- for(const c of CARS){const x=c.lane?14.6:11.4;if(Math.abs(pos.x-x)<1.25&&Math.abs(pos.z-c.z)<2.2&&jumpY<1.2){pos.x+=pos.x<x?-.05:.05}}
+ for(const c of CARS){const x=c.lane?11.4:14.6;if(Math.abs(pos.x-x)<1.25&&Math.abs(pos.z-c.z)<2.2&&jumpY<1.2){pos.x+=pos.x<x?-.05:.05}}
 }
 // ---------- characters ----------
 const JOGGER=makePerson({skin:0xc68a62,shirt:0x39e05a,shorts:0x222222,bareArms:true,shoes:0xff5a3c,hair:h=>{cyl(.35,.08,mat(0xff5a3c),0,.12,0,h)}});

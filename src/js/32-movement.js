@@ -31,13 +31,21 @@ function collides(x,z,footY=jumpY){
    return (x-cx)**2+(z-cz)**2<dogRadius**2 && (o.solid||footY<o.top-.025);
  });
 }
+function slideRound(sx,sz){const L=Math.hypot(sx,sz);if(L<1e-5)return;let best=null,bd=1e9;
+ for(const c of roundBlockers()){if(jumpY>=c.h)continue;const d=Math.hypot(pos.x-c.x,pos.z-c.z)-c.r-dogRadius;if(d<.12&&d<bd){bd=d;best=c}}
+ if(!best)return;let nx=pos.x-best.x,nz=pos.z-best.z;const nl=Math.hypot(nx,nz)||1;nx/=nl;nz/=nl;
+ let tx=-nz,tz=nx;const dot=tx*sx+tz*sz;if(Math.abs(dot)<L*.05){/* dead-centre: pick the side away from the walk's slight bias, else a fixed side */}else if(dot<0){tx=-tx;tz=-tz}
+ const k=L*.85,x=pos.x+tx*k,z=pos.z+tz*k;if(!collides(x,z,jumpY)){pos.x=x;pos.z=z}}
 function sweepMove(dx,dz){
  // Substeps prevent fast running from tunnelling through narrow furniture.
  const n=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.065));
  for(let i=0;i<n;i++){
   const sx=dx/n,sz=dz/n;
+  const ox=pos.x,oz=pos.z;
   if(!collides(pos.x+sx,pos.z,jumpY))pos.x+=sx;
   if(!collides(pos.x,pos.z+sz,jumpY))pos.z+=sz;
+  // blocked head-on by a round thing (a tree, a lamp, a person): slide around its rim instead of stopping dead
+  if(pos.x===ox&&pos.z===oz)slideRound(sx,sz);
  }
 }
 let ballTouches=0,ballCooldown=0;

@@ -23,13 +23,19 @@ function slab(g,x0,x1,z0,z1,y,color){const m=new THREE.Mesh(new THREE.BoxGeometr
 function instanced(geo,material,list,g){const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),S=new THREE.Vector3(),P=new THREE.Vector3(),im=new THREE.InstancedMesh(geo,material,list.length);
  list.forEach(([x,y,z,s,r],i)=>{Q.setFromAxisAngle(new THREE.Vector3(0,1,0),r||0);S.set(s,s,s);M.compose(P.set(x,y,z),Q,S);im.setMatrixAt(i,M)});im.castShadow=false;KEEP.add(im);g.add(im);return im}
 let tSeed=11;const trnd=()=>(tSeed=(tSeed*16807)%2147483647)/2147483647;
-function signBoard(g,text,x,y,z,ry,w=4){const c=document.createElement('canvas');c.width=512;c.height=110;const q=c.getContext('2d');q.fillStyle='#2b2420';q.fillRect(0,0,512,110);q.fillStyle='#ffd166';q.font='bold 58px system-ui,Arial';q.textAlign='center';q.textBaseline='middle';q.direction='rtl';q.fillText(text,256,58);
- const m=new THREE.Mesh(new THREE.PlaneGeometry(w,w*.215),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;KEEP.add(m);g.add(m);return m}
+function signBoard(g,text,x,y,z,ry,w=4){const c=document.createElement('canvas'),W=w>6?1024:512,H=Math.round(W*.215);c.width=W;c.height=H;const q=c.getContext('2d');q.fillStyle='#2b2420';q.fillRect(0,0,W,H);q.fillStyle='#ffd166';q.textAlign='center';q.textBaseline='middle';q.direction='rtl';
+ let fs=Math.round(H*.53);q.font='bold '+fs+'px system-ui,Arial';while(fs>14&&q.measureText(text).width>W*.92){fs-=2;q.font='bold '+fs+'px system-ui,Arial'}q.fillText(text,W/2,H*.53);
+ // two single-sided faces back to back: the text reads correctly from either side
+ const geo=new THREE.PlaneGeometry(w,w*.215),mt=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}),m=new THREE.Group();m.position.set(x,y,z);m.rotation.y=ry;
+ for(const r of [0,Math.PI]){const f=new THREE.Mesh(geo,mt);f.rotation.y=r;f.position.z=r?-.01:.01;KEEP.add(f);m.add(f)}g.add(m);return m}
 // ---------- roads and the square ----------
 {const g=ZG.roads,asph=0x4a4b50,walk=0xbdb6aa;
- slab(g,6.6,19.4,44,124,.0,walk);slab(g,9.6,16.4,44,124,.01,asph);slab(g,6.6,19.4,138,174,0,walk);slab(g,9.6,16.4,138,172,.01,asph);
+ // one continuous grass base under the whole neighbourhood, so no gap between areas shows the sky
+ slab(scene,-64,116,43.4,250,-.05,0x7fa35a);
+ // every floor sits at its own height so overlapping edges never flicker
+ slab(g,6.6,19.4,44,118,.008,walk);slab(g,9.6,16.4,44,118,.016,asph);slab(g,6.6,19.4,142,170,.008,walk);slab(g,9.6,16.4,142,170,.016,asph);
  for(let z=46;z<122;z+=3)box(.14,.02,1.4,mat(0xf2efe6),13,.03,z,g);for(let z=140;z<170;z+=3)box(.14,.02,1.4,mat(0xf2efe6),13,.03,z,g);
- slab(g,-14,44,118,142,0,0xd8cdb8);for(let x=-12;x<44;x+=4)for(let z=120;z<142;z+=4)if((x+z)%8===0)slab(g,x,x+2,z,z+2,.012,0xc9bda4);
+ slab(g,-14,44,118,142,.012,0xd8cdb8);for(let x=-12;x<44;x+=4)for(let z=120;z<142;z+=4)if((x+z)%8===0)slab(g,x,x+2,z,z+2,.02,0xc9bda4);
  // fountain
  const f=new THREE.Group();f.position.set(13,0,130);g.add(f);cyl(2.4,.6,mat(0xcfc6b5,.6),0,.3,0,f);const w=cyl(2.15,.05,new THREE.MeshLambertMaterial({color:0x7cc4e6,transparent:true,opacity:.85}),0,.58,0,f);KEEP.add(w);cyl(.35,1.6,mat(0xcfc6b5,.6),0,1.2,0,f);ball(.6,mat(0xcfc6b5,.6),0,2.1,0,f);
  decorRounds.push({x:13,z:130,r:2.45,h:.62});
@@ -38,7 +44,9 @@ function signBoard(g,text,x,y,z,ry,w=4){const c=document.createElement('canvas')
  // street lamps + benches on the square
  for(const [x,z] of [[0,121],[26,121],[0,139],[26,139],[8,60],[18,100],[8,150],[18,165]]){cyl(.08,3.6,mat(0x3a3a3a),x,1.8,z,g);ball(.25,new THREE.MeshLambertMaterial({color:0xfff1c4,emissive:0xffe08a,emissiveIntensity:.5}),x,3.7,z,g)}
  for(const [x,z] of [[4,128],[22,128],[4,134],[22,134]]){box(2,.08,.6,mat(0x9c6b3e),x,.48,z,g);obstacles.push({name:'ספסל',x,z,w:2,d:.6,top:.52})}
- // the street's dead end opens up: a crossing where it meets the new road
+ // the street's old dead end is now an open gateway: arch + sign, and a crossing
+ {const a=new THREE.Group();a.position.set(13,0,45.5);g.add(a);const am=mat(0x3a7bd5,.6);for(const s of [-1,1])box(.5,5.2,.5,am,s*6.6,2.6,0,a);box(13.8,.9,.5,mat(0xf2c14e,.5),0,5.4,0,a);
+  signBoard(g,'⬇️ לשכונה: בית ספר · יער · כיכר · חוף',13,5.4,45.2,0,12.6);const back=signBoard(g,'⬆️ לרחוב ולבית',13,5.4,45.8,Math.PI,8);}
  for(let i=0;i<6;i++)box(.42,.02,6.6,mat(0xf2efe6),9.9+i*1.2,.035,46,g)}
 // ---------- school ----------
 const SCH={bell:new THREE.Vector3(-26.4,2.4,85),teacher:null,kids:[],ball:null,goals:[62.6,107.4],notebook:null,recess:0};
@@ -68,17 +76,18 @@ const SCH={bell:new THREE.Vector3(-26.4,2.4,85),teacher:null,kids:[],ball:null,g
   K.g.scale.setScalar(.66);K.g.position.set(-20+i*4,0,74+i*5);g.add(K.g);SCH.kids.push({P:K,tx:K.g.position.x,tz:K.g.position.z,t:0,b:makeBubble(K.g,2.2),five:false,cool:0})}}
 // ---------- forest + stream ----------
 const FOR={stones:[],frogs:[],squirrel:null,deer:null,camp:new THREE.Vector3(84,0,118),marsh:true,stoneHit:new Set(),stoneT:0};
-{const g=ZG.forest;slab(g,20.6,112,54,152,0,0x5f8f45);
+{const g=ZG.forest;slab(g,20.6,112,54,118,0,0x5f8f45);slab(g,44,112,118,152,0,0x5f8f45);slab(g,20.6,44,142,152,0,0x5f8f45);
  // dirt trail from the gate to the camp
  const trail=[[20.6,90],[34,92],[44,100],[52,104],[64,108],[76,114],[84,118]];for(let i=0;i<trail.length-1;i++){const [x0,z0]=trail[i],[x1,z1]=trail[i+1];const len=Math.hypot(x1-x0,z1-z0);const m=box(len,.02,2.2,mat(0x9c7a4e,.95),(x0+x1)/2,.015,(z0+z1)/2,g);m.rotation.y=-Math.atan2(z1-z0,x1-x0)}
  // the stream: a ribbon that follows streamX
  {const pos=[],idx=[];for(let k=0;k<=98;k++){const z=54+k;const x=streamX(z);pos.push(x-2.2,.02,z,x+2.2,.02,z);if(k<98){const a=k*2;idx.push(a,a+2,a+1,a+1,a+2,a+3)}}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();const wm=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:0x5fb3d9,transparent:true,opacity:.88}));KEEP.add(wm);g.add(wm);FOR.water=wm}
  // bridge at z 72 and stepping stones at z 100
- const bx=streamX(72);box(5.4,.25,3,mat(0x8b5a3a),bx,.35,72,g);for(const s of [-1,1])box(5.4,.6,.12,mat(0x6b4a32),bx,.75,72+s*1.45,g);obstacles.push({name:'גשר',x:bx,z:72,w:5.4,d:3,top:.48});
+ const bx=streamX(72);// a low deck you walk straight across (no step to climb)
+ box(6.4,.1,3,mat(0x8b5a3a),bx,.03,72,g);for(let i=-3;i<=3;i++)box(.08,.02,2.9,mat(0x6b4a32),bx+i*.9,.09,72,g);for(const s of [-1,1]){box(6.4,.12,.12,mat(0x6b4a32),bx,.7,72+s*1.45,g);for(const px of [-3,-1,1,3])box(.12,.7,.12,mat(0x6b4a32),bx+px,.35,72+s*1.45,g)}
  for(let i=0;i<5;i++){const x=streamX(100)-2.4+i*1.2,z=100+(i%2?.5:-.5);const s=cyl(.42,.4,mat(0x9a9a92,.9),x,.2,z,g);obstacles.push({name:'אבן',x,z,w:.8,d:.8,top:.4});FOR.stones.push({x,z})}
  // trees (instanced) keeping the trail, stream, camp and clearing free
- const trees=[];for(let n=0;n<1400&&trees.length<230;n++){const x=21+trnd()*90,z=55+trnd()*96;if(Math.abs(x-streamX(z))<4.5)continue;if(Math.hypot(x-FOR.camp.x,z-FOR.camp.z)<9)continue;if(Math.hypot(x-95,z-70)<8)continue;
+ const trees=[];for(let n=0;n<1400&&trees.length<230;n++){const x=21+trnd()*90,z=55+trnd()*96;if(Math.abs(x-streamX(z))<4.5)continue;if(Math.hypot(x-FOR.camp.x,z-FOR.camp.z)<9)continue;if(Math.hypot(x-95,z-70)<8)continue;if(inRect(TOWN_AREAS.plaza,x,z,3))continue;
   let nearTrail=false;for(let i=0;i<trail.length-1;i++){const [x0,z0]=trail[i],[x1,z1]=trail[i+1];const t=Math.max(0,Math.min(1,((x-x0)*(x1-x0)+(z-z0)*(z1-z0))/((x1-x0)**2+(z1-z0)**2)));if(Math.hypot(x-(x0+(x1-x0)*t),z-(z0+(z1-z0)*t))<3)nearTrail=true}if(nearTrail||x<24)continue;trees.push([x,z,.8+trnd()*.8])}
  instanced(new THREE.CylinderGeometry(.2,.28,1.6,6),mat(0x6b4a2a),trees.map(([x,z,s])=>[x,.8*s,z,s]),g);instanced(new THREE.ConeGeometry(1.5,3.6,7),mat(0x3f7a3c,.9),trees.map(([x,z,s])=>[x,3*s,z,s,trnd()*3]),g);
  for(const [x,z,s] of trees)decorRounds.push({x,z,r:.32*s,h:9});FOR.trees=trees;
@@ -97,7 +106,7 @@ const FOR={stones:[],frogs:[],squirrel:null,deer:null,camp:new THREE.Vector3(84,
   dg.position.set(95,0,70);FOR.deer={g:dg,state:'graze',t:0,cool:0}}}
 // ---------- beach + promenade ----------
 const BCH={castle:null,castleUp:true,castleT:0,crab:null,buoy:new THREE.Vector3(20,0,231),dig:new THREE.Vector3(46,0,203),digs:0,stall:new THREE.Vector3(28,0,173.6),gulls:[],cone:null,ice:0,iceRun:0};
-{const g=ZG.beach;slab(g,-60,84,170,177,0,0xd9cdb5);slab(g,-60,84,177,214,0,0xf0dca8);
+{const g=ZG.beach;slab(g,-60,84,170,177,.004,0xd9cdb5);slab(g,-60,84,177,214,0,0xf0dca8);
  const sea=new THREE.Mesh(new THREE.PlaneGeometry(300,210,60,30),new THREE.MeshLambertMaterial({color:0x4fa3d1,transparent:true,opacity:.92}));sea.rotation.x=-Math.PI/2;sea.position.set(12,.06,318);KEEP.add(sea);g.add(sea);BCH.sea=sea;
  const foam=new THREE.Mesh(new THREE.PlaneGeometry(144,1.4),new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.7}));foam.rotation.x=-Math.PI/2;foam.position.set(12,.08,214);KEEP.add(foam);g.add(foam);BCH.foam=foam;
  // palms along the promenade
@@ -284,3 +293,5 @@ document.getElementById('menuBtn').addEventListener('click',()=>{if(DRIVE.on)dri
 {const _amo=allModesOff;allModesOff=function(k){if(DRIVE.on)driveStop();DRIVE.parked=false;DRIVE.K.g.visible=false;return _amo(k)}}
 document.addEventListener('keydown',e=>{if(e.code==='KeyM'&&started&&!e.repeat){mapEl.hidden?openMap():(mapEl.hidden=true)}if(e.code==='KeyC'&&started&&!e.repeat&&OPEN_WORLD&&!specialMode()){DRIVE.on?driveStop():driveStart()}});
 window.TOWN=TOWN;window.TOWN_READY=true;
+// upload the neighbourhood's textures to the GPU up front, so the first walk into an area doesn't hitch
+setTimeout(()=>{try{const seen=new Set();for(const g of Object.values(ZG))g.traverse(o=>{const ms=o.material?[].concat(o.material):[];for(const m of ms)if(m&&m.map&&!seen.has(m.map)){seen.add(m.map);renderer.initTexture&&renderer.initTexture(m.map)}})}catch(_){}},1500);
