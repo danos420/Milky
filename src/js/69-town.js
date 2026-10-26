@@ -295,5 +295,7 @@ document.getElementById('menuBtn').addEventListener('click',()=>{if(DRIVE.on)dri
 {const _amo=allModesOff;allModesOff=function(k){if(DRIVE.on)driveStop();DRIVE.parked=false;DRIVE.K.g.visible=false;return _amo(k)}}
 document.addEventListener('keydown',e=>{if(e.code==='KeyM'&&started&&!e.repeat){mapEl.hidden?openMap():(mapEl.hidden=true)}if(e.code==='KeyC'&&started&&!e.repeat&&OPEN_WORLD&&!specialMode()){DRIVE.on?driveStop():driveStart()}});
 window.TOWN=TOWN;window.TOWN_READY=true;
+// draw distance ends where the fog does: nothing hidden in fog gets drawn (the far street/house from the town was most of the draw calls)
+{let _vk='';const _rf=renderFrame;renderFrame=function(dt){if(!window.RACE_ON&&!window.ZOMBIE){const town=OPEN_WORLD&&pos.z>46,k=town?'t':'h';if(k!==_vk){_vk=k;scene.fog.near=town?28:30;scene.fog.far=town?92:115;camera.far=town?96:119;camera.updateProjectionMatrix()}}else _vk='';return _rf(dt)}}
 // upload the neighbourhood's textures to the GPU up front, so the first walk into an area doesn't hitch
 setTimeout(()=>{try{const seen=new Set();for(const g of Object.values(ZG))g.traverse(o=>{const ms=o.material?[].concat(o.material):[];for(const m of ms)if(m&&m.map&&!seen.has(m.map)){seen.add(m.map);renderer.initTexture&&renderer.initTexture(m.map)}})}catch(_){}},1500);

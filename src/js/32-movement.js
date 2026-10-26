@@ -32,14 +32,14 @@ function collides(x,z,footY=jumpY){
  });
 }
 let _slideSide=1,_slideT=0;
-function slideRound(sx,sz){const L=Math.hypot(sx,sz);if(L<1e-5)return;let nx=0,nz=0,hit=0;
+function slideRound(sx,sz){const L=Math.hypot(sx,sz);if(L<1e-5)return false;let nx=0,nz=0,hit=0;
  // combine the normals of everything round we're touching (handles the pocket between two trees)
  for(const c of roundBlockers()){if(jumpY>=c.h)continue;const dx=pos.x-c.x,dz=pos.z-c.z,d=Math.hypot(dx,dz);if(d-c.r-dogRadius<.12&&d>1e-4){nx+=dx/d;nz+=dz/d;hit++}}
- if(!hit)return;const nl=Math.hypot(nx,nz);if(nl<1e-4){nx=-sx/L;nz=-sz/L}else{nx/=nl;nz/=nl}
+ if(!hit)return false;const nl=Math.hypot(nx,nz);if(nl<1e-4){nx=-sx/L;nz=-sz/L}else{nx/=nl;nz/=nl}
  // keep the side we chose while still pushing into the same thing, so a head-on push doesn't flip-flop
  let tx=-nz,tz=nx;const dot=tx*sx+tz*sz,now=performance.now();
  if(Math.abs(dot)>L*.35||now-_slideT>400)_slideSide=dot<0?-1:1;_slideT=now;tx*=_slideSide;tz*=_slideSide;
- for(const [ax,az] of [[tx,tz],[-tx,-tz]])for(const k of [L*.85,L*.5]){const x=pos.x+ax*k+nx*L*.15,z=pos.z+az*k+nz*L*.15;if(!collides(x,z,jumpY)){pos.x=x;pos.z=z;return}}}
+ for(const [ax,az] of [[tx,tz],[-tx,-tz]])for(const k of [L*.85,L*.5]){const x=pos.x+ax*k+nx*L*.15,z=pos.z+az*k+nz*L*.15;if(!collides(x,z,jumpY)){pos.x=x;pos.z=z;return true}}return false}
 function sweepMove(dx,dz){
  // Substeps prevent fast running from tunnelling through narrow furniture.
  const n=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.065));
@@ -49,7 +49,7 @@ function sweepMove(dx,dz){
   if(!collides(pos.x+sx,pos.z,jumpY))pos.x+=sx;
   if(!collides(pos.x,pos.z+sz,jumpY))pos.z+=sz;
   // blocked head-on by a round thing (a tree, a lamp, a person): slide around its rim instead of stopping dead
-  if(pos.x===ox&&pos.z===oz)slideRound(sx,sz);
+  if(Math.hypot(pos.x-ox,pos.z-oz)<Math.hypot(sx,sz)*.33){const ax=pos.x,az=pos.z;pos.x=ox;pos.z=oz;if(!slideRound(sx,sz)){pos.x=ax;pos.z=az}}
  }
 }
 let ballTouches=0,ballCooldown=0;
