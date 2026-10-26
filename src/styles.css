@@ -237,3 +237,14 @@ body.parPlay #turboBtn,body.parPlay #trainBtn,body.parPlay #ragdollBtn,body.parP
 #bootErr button{font:inherit;padding:8px;border-radius:10px;border:0;background:#ffcf70;color:#2b1d1d}
 
 body.racePlay #turboBtn,body.racePlay #trainBtn,body.racePlay #ragdollBtn,body.racePlay #moodBtn,body.racePlay #tongueBtn,body.racePlay #snackBtn,body.racePlay #slipperBtn,body.racePlay #dadInteractBtn,body.racePlay #interactBtn{display:none!important}
+/* dates: conversation choices and the timing mini-game */
+#dtChoice{position:fixed;z-index:40;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);transform:translateX(-50%);width:min(92vw,440px);background:#3a1626f2;border:2px solid #ff8fb1;border-radius:18px;padding:10px 12px;direction:rtl;text-align:center;box-shadow:0 10px 30px #0008}
+#dtChoice p{margin:0 0 6px;font:800 15px system-ui;color:#ffe3ec}
+#dtChoice button{display:block;width:100%;margin:6px 0;padding:10px 12px;border-radius:12px;border:0;background:#ffd6e3;color:#3a1020;font:800 15px system-ui;text-align:right;cursor:pointer;touch-action:manipulation}
+#dtChoice button:active{background:#ff8fb1}
+#dtMini{position:fixed;z-index:30;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 30%);transform:translateX(-50%);width:min(86vw,380px);background:#3a1626f2;border:2px solid #ff8fb1;border-radius:16px;padding:10px 14px;direction:rtl;text-align:center;touch-action:manipulation;cursor:pointer}
+#dtMini span{display:block;font:800 15px system-ui;color:#ffe3ec;margin-bottom:8px}
+#dtMini small{display:block;font:700 12px system-ui;color:#ffd6e3;opacity:.8;margin-top:6px}
+#dtMini .bar{position:relative;height:20px;background:#ffffff22;border-radius:10px}
+#dtMini .zone{position:absolute;top:0;bottom:0;background:#7ee08acc;border-radius:10px}
+#dtMini .mk{position:absolute;top:-5px;width:7px;height:30px;background:#fff;border-radius:4px;transform:translateX(50%);box-shadow:0 0 8px #fff}

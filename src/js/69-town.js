@@ -5,6 +5,8 @@ const TOWN_AREAS={
  road1:{x0:6.6,x1:19.4,z0:42,z1:124},plaza:{x0:-14,x1:44,z0:118,z1:142},road2:{x0:6.6,x1:19.4,z0:138,z1:174},
  beach:{x0:-60,x1:84,z0:170,z1:236},school:{x0:-50,x1:5.6,z0:56,z1:114},forest:{x0:20.6,x1:112,z0:54,z1:152}};
 for(const a of Object.values(TOWN_AREAS))AREAS.push(a);
+// the street and road1 overlap only 2m; the kart (radius 1.05) needs a wider seam to drive through the gateway
+AREAS.push({x0:6.6,x1:19.4,z0:36,z1:50});
 DOORS.push({ax:true,x0:4.9,x1:7.3,z0:80,z1:84.6},{ax:true,x0:18.7,x1:21.3,z0:88,z1:92.6}); // school gate, forest trail
 const ZONES=[{id:'home',icon:'🏠',name:'הבית והרחוב',spawn:[13,0,30],rect:{x0:-20,x1:32,z0:-58,z1:44}},
  {id:'school',icon:'🏫',name:'בית הספר',spawn:[0,0,82],rect:TOWN_AREAS.school},{id:'plaza',icon:'⛲',name:'הכיכר',spawn:[13,0,124],rect:TOWN_AREAS.plaza},
