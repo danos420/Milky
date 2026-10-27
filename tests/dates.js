@@ -12,7 +12,7 @@ for(let i=0;i<10;i++){
  for(let chunk=0;chunk<60;chunk++){
   const r=await ev(pk=>{let n=0;for(;n<240;n++){
     const ch=document.getElementById('dtChoice');if(!ch.hidden){ch.querySelectorAll('button')[pk].click()}
-    if(DT.mini&&DT.mini.cool<=0){const M=DT.mini,m=.5+.5*Math.sin(M.t*M.speed);if(m>M.zone[0]+.02&&m<M.zone[1]-.02)CTX_HOOKS.act[0]().fn()}
+    if(DT.mini&&DT.mini.cool<=0){const M=DT.mini,m=.5+.5*Math.sin(M.t*M.speed);if(m>M.zone[0]+.02&&m<M.zone[1]-.02)ctxHook('act').fn()}
     const d=DATE_LIST[DT.i],s=DT.k>=0?d.steps[DT.k]:null;
     if(s&&s.go&&!DT.q.length&&!DT.seat){const t=s.go.at();if(Math.hypot(pos.x-t.x,pos.z-t.z)>1.2){pos.set(t.x+.25,0,t.z+.25);jumpY=0}}
     if(DT.act&&DT.act.target&&d.id==='roni'){const p=DT.act.target();pos.set(p.x+.4,0,p.z)}

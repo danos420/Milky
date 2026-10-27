@@ -248,3 +248,10 @@ body.racePlay #turboBtn,body.racePlay #trainBtn,body.racePlay #ragdollBtn,body.r
 #dtMini .bar{position:relative;height:20px;background:#ffffff22;border-radius:10px}
 #dtMini .zone{position:absolute;top:0;bottom:0;background:#7ee08acc;border-radius:10px}
 #dtMini .mk{position:absolute;top:-5px;width:7px;height:30px;background:#fff;border-radius:4px;transform:translateX(50%);box-shadow:0 0 8px #fff}
+/* neighbours book */
+#nbList{display:flex;flex-direction:column;gap:6px;direction:rtl;text-align:right}
+.nbRow{display:flex;gap:10px;align-items:center;background:#ffffff10;border-radius:12px;padding:8px 10px}
+.nbRow>b{font-size:30px}
+.nbRow strong{display:block;font:800 15px system-ui;color:#ffe9a8}
+.nbRow span{display:block;font-size:13px;letter-spacing:1px}
+.nbRow small{display:block;font:600 12px system-ui;opacity:.85;margin-top:2px}
