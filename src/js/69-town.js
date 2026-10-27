@@ -232,9 +232,11 @@ const driveOK=(x,z)=>{if(x>-6.6&&x<6.6&&z>-9.2&&z<16.2)return false;if(x>20&&z>-
  for(const o of obstacles){if(o.top<.45&&!o.solid)continue;if(Math.abs(x-o.x)<o.w/2+1&&Math.abs(z-o.z)<o.d/2+1)return false}for(const c of decorRounds)if(c.h>1&&Math.hypot(x-c.x,z-c.z)<c.r+.9)return false;return true};
 function driveStart(){if(DRIVE.on||specialMode())return;const K=DRIVE.K;
  if(!DRIVE.parked||Math.hypot(K.x-pos.x,K.z-pos.z)>3){if(!driveOK(pos.x,pos.z)){showBanner('🚗 אי אפשר לנהוג כאן. צא החוצה לרחוב או לשכונה');return}K.x=pos.x;K.z=pos.z;K.h=yaw;K.v=0;K.y=0;K.vy=0}
- DRIVE.on=true;DRIVE.parked=true;K.g.visible=true;dog.visible=false;document.body.classList.add('racePlay');raceButtonsDrive(true);RS.snap=true;showBanner('🚗 נוהגים! ג׳ויסטיק = גז והגה · 🌀 דריפט · ⚡ ניטרו')}
+ DRIVE.on=true;DRIVE.parked=true;K.g.visible=true;K.driver.visible=true;dog.visible=false;document.body.classList.add('racePlay');raceButtonsDrive(true);RS.snap=true;showBanner('🚗 נוהגים! ג׳ויסטיק = גז והגה · 🌀 דריפט · ⚡ ניטרו')}
 function driveStop(){if(!DRIVE.on)return;const K=DRIVE.K;DRIVE.on=false;document.body.classList.remove('racePlay');raceButtonsDrive(false);
- let x=K.x+Math.cos(K.h)*1.8,z=K.z-Math.sin(K.h)*1.8;if(!walkable(x,z,.45)){x=K.x-Math.cos(K.h)*1.8;z=K.z+Math.sin(K.h)*1.8}if(!walkable(x,z,.45))[x,z]=nearestWalkable(K.x,K.z,.45);pos.set(x,0,z);yaw=K.h;camYaw=K.h;jumpY=0;dog.visible=true;K.v=0}
+ let x=K.x+Math.cos(K.h)*1.8,z=K.z-Math.sin(K.h)*1.8;if(!walkable(x,z,.45)){x=K.x-Math.cos(K.h)*1.8;z=K.z+Math.sin(K.h)*1.8}if(!walkable(x,z,.45))[x,z]=nearestWalkable(K.x,K.z,.45);pos.set(x,0,z);yaw=K.h;camYaw=K.h;jumpY=0;dog.visible=true;K.v=0;
+ // the parked kart sits on the ground, empty (Milky got out; a hop or drift mid-air used to freeze it up there)
+ K.y=0;K.vy=0;K.driftOn=false;K.boostT=0;K.tilt.rotation.set(0,0,0);K.g.position.set(K.x,0,K.z);K.driver.visible=false}
 function raceButtonsDrive(on){const jb=document.getElementById('jumpBtn'),rb=document.querySelector('#big [data-key="ShiftLeft"]');if(!jb||!rb)return;jb.querySelector('b').textContent=on?'🌀':'🐾';jb.querySelector('small').textContent=on?'דריפט':'קפיצה';rb.querySelector('small').textContent=on?'ניטרו':'ריצה'}
 const DRV_D={max:21,acc:12,turn:1.9,grip:1,special:'none'};
 function driveStep(dt){const K=DRIVE.K,inp=rInput();K.nitroOn=inp.nitro&&K.nitro>.02;if(K.nitroOn)K.nitro=Math.max(0,K.nitro-dt*.45);else K.nitro=Math.min(1,K.nitro+dt*.04);
