@@ -255,3 +255,5 @@ body.racePlay #turboBtn,body.racePlay #trainBtn,body.racePlay #ragdollBtn,body.r
 .nbRow strong{display:block;font:800 15px system-ui;color:#ffe9a8}
 .nbRow span{display:block;font-size:13px;letter-spacing:1px}
 .nbRow small{display:block;font:600 12px system-ui;opacity:.85;margin-top:2px}
+/* lightning */
+#skyFlash{position:fixed;inset:0;z-index:20;background:#eef4ff;opacity:0;pointer-events:none;transition:opacity .06s}
