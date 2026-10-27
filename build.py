@@ -31,6 +31,13 @@ def app():
       '<meta property="og:title" content="'+TITLE+'"><meta property="og:image" content="icons/icon-512.png">')
     three='<script src="vendor/three.min.js"></script>\n<script>window.THREE||document.write(\'<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"><\\/script>\')</script>\n'
     sw=("<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>\n")
+    # a newer version on the server: offer a one-tap refresh (installed apps keep the old page open for a long time)
+    sw+=("<script>window.MILKY_V="+VERSION+";(function(){if(location.protocol!=='https:')return;let shown=false,last=0;"
+         "function check(){const now=Date.now();if(shown||now-last<60000)return;last=now;fetch('index.html?v='+now,{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/MILKY_V=(\\d+)/);if(m&&+m[1]>window.MILKY_V)show()}).catch(()=>{})}"
+         "function show(){shown=true;const b=document.createElement('button');b.id='updToast';b.type='button';b.textContent='✨ יש גרסה חדשה — לחץ לרענון';"
+         "b.style.cssText='position:fixed;z-index:99;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);background:#ffd166;color:#2b1f12;border:0;border-radius:14px;padding:10px 16px;font:800 15px system-ui;box-shadow:0 6px 20px #0007;cursor:pointer';"
+         "b.onclick=()=>{b.textContent='⏳ מרענן...';const go=()=>location.reload();navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).then(go,go):go()};document.body.appendChild(b)}"
+         "addEventListener('load',()=>setTimeout(check,20000));setInterval(check,300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});addEventListener('focus',check)})()</script>\n")
     # iPhone Safari (not yet installed): a one-line tip on the start screen
     tip=("<script>addEventListener('DOMContentLoaded',()=>{const ios=/iPhone|iPad|iPod/.test(navigator.userAgent),inst=navigator.standalone||matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;"
          "if(!ios||inst||window.top!==window)return;const n=document.getElementById('saveNote');if(!n)return;const p=document.createElement('p');p.id='installTip';"
