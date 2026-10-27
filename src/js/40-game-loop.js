@@ -1,6 +1,6 @@
 function animate(ts){requestAnimationFrame(animate);const t0=performance.now();let raw=lastTs&&ts?(ts-lastTs)/1000:1/60;lastTs=ts||0;if(!(raw>0)||raw>.25)raw=1/60;smoothDt+=(Math.min(raw,.05)-smoothDt)*.2;const dt=Math.min(smoothDt,.04);lastFrameDt=dt;if(started&&!window.PHOTO_ON)gameStep(dt*(window.JUICE_READY?juiceTick(dt):1));if(window.JUICE_READY&&started)levelupFrame(dt);renderFrame();perfMeterTick(t0)}
 function gameStep(dt){{const free=!rag.active&&!(dizzy.active&&dizzy.t<1.15),forward=free&&!!(keys.KeyW||keys.ArrowUp),back=free&&!!(keys.KeyS||keys.ArrowDown),left=free&&!!(keys.KeyA||keys.ArrowLeft),right=free&&!!(keys.KeyD||keys.ArrowRight);
-let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1)*(window.DADP?.82:1)*(window.PARP?(grounded?.6:1.55):1);
+let move=(forward?1:0)-(back?1:0),turn=(left?1:0)-(right?1:0),runSpeed=(keys.ShiftLeft||keys.ShiftRight?5.8:3.0)*mutSpeed()*(MS<1?.8:1)*(window.DADP?.82:1)*(window.PARP?(grounded?.6:1.55):1)*(window.ECO_READY?townSpeed():1);
 if(free&&stick.active&&stick.mag>.12){
  // Joystick: push where you want Milky to go, relative to the camera. Full push = run.
  const heading=camYaw+Math.atan2(-stick.x,stick.y),diff=Math.atan2(Math.sin(heading-yaw),Math.cos(heading-yaw)),stepTurn=Math.sign(diff)*Math.min(Math.abs(diff)*(1-Math.exp(-dt*13)),dt*10);
